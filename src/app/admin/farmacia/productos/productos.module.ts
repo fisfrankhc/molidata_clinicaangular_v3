@@ -4,11 +4,13 @@ import { CommonModule } from '@angular/common';
 import { ProductosRoutingModule } from './productos-routing.module';
 import { ProductosIndexComponent } from './productos-index/productos-index.component';
 import { SharedModule } from 'src/app/shared/shared.module';
+import { ProductosNuevoComponent } from './productos-nuevo/productos-nuevo.component';
 
 
 @NgModule({
   declarations: [
-    ProductosIndexComponent
+    ProductosIndexComponent,
+    ProductosNuevoComponent
   ],
   imports: [
     CommonModule,

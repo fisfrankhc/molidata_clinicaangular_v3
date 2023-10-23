@@ -28,9 +28,9 @@
                                     <div class="form-group">
                                         <label>USUARIO <span class="login-danger">*</span></label>
                                         <input class="form-control" formControlName="username" type="text" [ngClass]="{
-                        'is-invalid': f['username'].touched && f['username'].invalid
+                        'is-invalid': f['username'].touched
                       }" />
-                                        <div *ngIf="f['username'].touched && f['username'].invalid" class="invalid-feedback">
+                                        <div *ngIf="f['username'].touched" class="invalid-feedback">
                                             <div *ngIf="f['username'].errors && f['username'].errors['required']">
                                                 NOMBRE DE USUARIO es requerido.
                                             </div>

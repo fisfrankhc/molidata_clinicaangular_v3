@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { CategoriaService } from 'src/app/shared/services/categoria/categoria.service';
 import { Router } from '@angular/router';
 
@@ -11,39 +16,50 @@ import { Router } from '@angular/router';
 })
 export class CategoriasNuevoComponent {
   public ruta = rutas;
-  datos = {};
+  //datos = {};
 
-  form = new FormGroup({
+  /* form = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
     descripcion: new FormControl('', [Validators.required]),
+  }); */
+
+  form = this.fb.group({
+    // Define aquí las propiedades que coincidan con la clase Categoria
+    nombre: ['', Validators.required],
+    descripcion: ['', Validators.required],
+    // Otras propiedades...
   });
 
   get f() {
     return this.form.controls;
   }
   constructor(
-    private categoriaService: CategoriaService,
-    private router: Router
+    public categoriaService: CategoriaService,
+    private router: Router,
+    private fb: FormBuilder
   ) {}
 
   registrarCategoria() {
     //console.log(this.form.value);
     //console.log(this.form.value.nombre);
-    if (this.form.value) {
-      this.datos = this.form.value;
-      //console.log(this.datos);
-      this.categoriaService.postCategoria(this.form.value).subscribe(
+    if (this.form.valid) {
+      const datos = this.form.value;
+      /* const dato1 = this.form.value.nombre;
+      const dato2 = this.form.value.descripcion; */
+      //console.log(this.form.value);
+
+      this.categoriaService.postCategoria(datos).subscribe(
         (response) => {
           console.log('Respuesta de la API:', response);
-          // Puedes manejar la respuesta de la API aquí
         },
         (error) => {
           console.error('Error al enviar la solicitud POST:', error);
-          // Puedes mostrar un mensaje de error al usuario o realizar otras acciones de manejo de errores aquí
         }
       );
+
       this.form.reset();
       this.router.navigate(['/farmacia/categoria']);
+
     }
   }
 }

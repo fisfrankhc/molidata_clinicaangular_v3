@@ -20,6 +20,10 @@ export class rutas {
   public static get farmacia_producto(): string {
     return this.baseUrl + '/farmacia/producto';
   }
+
+  public static get farmacia_producto_nuevo(): string {
+    return this.baseUrl + '/farmacia/producto/nuevo';
+  }
 }
   
   
