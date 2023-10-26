@@ -17,6 +17,11 @@ const routes: Routes = [
           import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
       },
       {
+        path: 'logistica',
+        loadChildren: () =>
+          import('./logistica/logistica.module').then((m) => m.LogisticaModule),
+      },
+      {
         path: 'farmacia',
         loadChildren: () =>
           import('./farmacia/farmacia.module').then((m) => m.FarmaciaModule),

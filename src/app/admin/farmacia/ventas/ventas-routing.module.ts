@@ -1,16 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { VentasIndexComponent } from './ventas-index/ventas-index.component';
 
 const routes: Routes = [
   {
-    path: 'venta',
-    loadChildren: () =>
-      import('./ventas/ventas.module').then((m) => m.VentasModule),
+    path: '',
+    component: VentasIndexComponent,
   },
+
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class FarmaciaRoutingModule { }
+export class VentasRoutingModule { }

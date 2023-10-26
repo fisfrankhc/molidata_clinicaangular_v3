@@ -24,21 +24,46 @@ export class DatanavService {
         },
 
         {
-          menuValue: 'Farmacia',
+          menuValue: 'Logistica',
           hasSubRoute: true,
           showSubRoute: false,
           base: 'reports',
-          img: 'assets/img/icons/menu-icon-02.svg',
+          icon: 'fa-cube',
+          faIcon: true,
           subMenus: [
             {
               menuValue: 'Categorias',
-              route: 'farmacia/categoria'
+              route: 'logistica/categoria',
             },
             {
               menuValue: 'Productos',
-              route: 'farmacia/producto'
+              route: 'logistica/producto',
             },
-
+          ],
+        },
+        {
+          menuValue: 'Farmacia',
+          hasSubRoute: true,
+          showSubRoute: false,
+          base: 'payroll',
+          img: 'assets/img/icons/menu-icon-09.svg',
+          subMenus: [
+            {
+              menuValue: 'Venta',
+              route: 'farmacia/venta',
+            },
+            /*             {
+              menuValue: 'Payments',
+            },
+            {
+              menuValue: 'Expenses',
+            },
+            {
+              menuValue: 'Taxes',
+            },
+            {
+              menuValue: 'Provident Fund',
+            }, */
           ],
         },
         /* 
