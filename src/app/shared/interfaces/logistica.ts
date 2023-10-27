@@ -4,7 +4,7 @@ export interface pageSelection {
 }
 
 export interface Categoria {
-  cat_id: number | null;
+  cat_id: number;
   cat_nombre: string;
   cat_descripcion: string;
   cat_estado?: string | null;

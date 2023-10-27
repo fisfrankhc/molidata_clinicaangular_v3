@@ -32,6 +32,14 @@ export class rutas {
   public static get farmacia_venta(): string {
     return this.baseUrl + '/farmacia/venta';
   }
+
+  public static get farmacia_cliente(): string {
+    return this.baseUrl + '/farmacia/cliente';
+  }
+
+  public static get farmacia_cliente_nuevo(): string {
+    return this.baseUrl + '/farmacia/cliente/nuevo';
+  }
 }
   
   

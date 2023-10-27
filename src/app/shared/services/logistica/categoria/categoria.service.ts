@@ -32,7 +32,16 @@ export class CategoriaService {
     //return this.http.post<any>(this.apiUrl, datos, httpOptions);
     return this.http.post<any>(this.apiUrl, params.toString(), { headers });
   }
+
   getCategoria(id: number): Observable<Categoria> {
     return this.http.get<Categoria>(`${this.apiUrl}?id=${id}`);
+  }
+
+  updatedCategoria(datos: any) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.put(this.apiUrl, JSON.stringify(datos), { headers });
   }
 }

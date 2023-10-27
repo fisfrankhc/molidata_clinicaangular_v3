@@ -12,3 +12,14 @@ export interface Ventas {
   sucursal_id?: number;
   venta_estado: string;
 }
+
+export interface Clientes {
+  cli_id?: number | null;
+  tipo_documento: string;
+  numero_documento: number;
+  cli_nombre: string;
+  cli_direccion?: string;
+  cli_email?: string;
+  cli_telefono?: string;
+  cli_estado: string;
+}

@@ -49,12 +49,14 @@ export class DatanavService {
           img: 'assets/img/icons/menu-icon-09.svg',
           subMenus: [
             {
-              menuValue: 'Venta',
+              menuValue: 'Ventas',
               route: 'farmacia/venta',
             },
-            /*             {
-              menuValue: 'Payments',
+            {
+              menuValue: 'Clientes',
+              route: 'farmacia/cliente',
             },
+            /*
             {
               menuValue: 'Expenses',
             },

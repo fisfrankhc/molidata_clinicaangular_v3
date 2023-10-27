@@ -42,28 +42,59 @@ export class CategoriasEditarComponent implements OnInit {
     this.categoriaService.getCategoria(catId).subscribe({
       next: (data) => {
         this.datoCategoria = data;
-        console.log(this.datoCategoria);
+        //console.log(this.datoCategoria);
+        this.form.get('id')?.setValue(this.datoCategoria[0]['cat_id']);
         this.form.get('nombre')?.setValue(this.datoCategoria[0]['cat_nombre']);
-        this.form.get('descripcion')?.setValue(this.datoCategoria[0]['cat_descripcion']);
+        this.form
+          .get('descripcion')
+          ?.setValue(this.datoCategoria[0]['cat_descripcion']);
       },
       error: (errorData) => {
         console.error('Error al obtener los datos del usuario: ', errorData);
       },
       complete: () => {
-        console.log('DATOS OBTENIDOS EXITOSAMENTE');
+        //console.log('DATOS OBTENIDOS EXITOSAMENTE');
       },
     });
   }
 
   form = this.fb.group({
+    id: ['', Validators.required],
     nombre: ['', Validators.required],
     descripcion: ['', Validators.required],
   });
   get f() {
     return this.form.controls;
   }
+  transformarAMayusculasNombre(event: any) {
+    const valor = event.target.value;
+    this.form
+      .get('nombre')
+      ?.setValue(valor.toUpperCase(), { emitEvent: false });
+  }
+  transformarAMayusculasDescripcion(event: any) {
+    const valor = event.target.value;
+    this.form
+      .get('descripcion')
+      ?.setValue(valor.toUpperCase(), { emitEvent: false });
+  }
 
-  actualizarCategoria(cat: any) {
-    console.log(cat);
+  actualizarCategoria() {
+    if (this.form.valid) {
+      const datos = this.form.value;
+      //console.log(datos);
+      this.categoriaService.updatedCategoria(datos).subscribe({
+        next: (response) => {
+          console.log('Respuesta de la API:', response);
+        },
+        error: (errorData) => {
+          console.error('Error al enviar la solicitud POST:', errorData);
+        },
+        complete: () => {
+          this.form.reset();
+          this.router.navigate(['/logistica/categoria']);
+        },
+      });
+    }
   }
 }

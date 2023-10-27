@@ -21,7 +21,7 @@
 
                 <div class="card">
                     <div class="card-body" *ngIf="datoCategoria">
-                        <form [formGroup]="form"  (ngSubmit)="actualizarCategoria(datoCategoria[0]['cat_id'])">
+                        <form [formGroup]="form"  (ngSubmit)="actualizarCategoria()">
 
                             <div class="row" >
                                 <div class="col-12">
@@ -30,11 +30,12 @@
                                         <h2></h2>
                                     </div>
                                 </div>
+                                <input class="form-control" formControlName="id" type="hidden">
                                 <div class="row">
                                     <div class="col-12 col-md-6 col-xl-4">
                                         <div class="form-group local-forms">
                                             <label>NOMBRE <span class="login-danger">*</span></label>
-                                            <input class="form-control" formControlName="nombre" type="text" [ngClass]="{
+                                            <input class="form-control" formControlName="nombre" (input)="transformarAMayusculasNombre($event)" type="text" [ngClass]="{
                         'is-invalid': f['nombre'].touched && f['nombre'].invalid
                       }">
                                             <div *ngIf="f['nombre'].touched && f['nombre'].invalid"
@@ -50,7 +51,7 @@
                                     <div class="col-12 col-sm-12">
                                         <div class="form-group local-forms">
                                             <label>DESCRIPCI&Oacute;N <span class="login-danger">*</span></label>
-                                            <textarea class="form-control" formControlName="descripcion" rows="3"
+                                            <textarea class="form-control" formControlName="descripcion" (input)="transformarAMayusculasDescripcion($event)" rows="3"
                                                 cols="30" [ngClass]="{
                         'is-invalid':
                           f['descripcion'].touched && f['descripcion'].invalid
@@ -68,7 +69,7 @@
                                 <div class="col-12">
                                     <div class="doctor-submit text-end">
                                         <button type="submit" class="btn btn-primary submit-form me-2"
-                                            [disabled]="form.invalid">REGISTRAR</button>
+                                            [disabled]="form.invalid">ACTUALIZAR</button>
                                         <a class="btn btn-primary cancel-form"
                                             [routerLink]="ruta.logistica_categoria">Cancelar</a>
                                     </div>
