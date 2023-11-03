@@ -48,17 +48,18 @@ export class CategoriasNuevoComponent {
       const dato2 = this.form.value.descripcion; */
       //console.log(this.form.value);
 
-      this.categoriaService.postCategoria(datos).subscribe(
-        (response) => {
+      this.categoriaService.postCategoria(datos).subscribe({
+        next: (response) => {
           console.log('Respuesta de la API:', response);
         },
-        (error) => {
-          console.error('Error al enviar la solicitud POST:', error);
-        }
-      );
-
-      this.form.reset();
-      this.router.navigate(['/logistica/categoria']);
+        error: (errorData) => {
+          console.error('Error al enviar la solicitud POST:', errorData);
+        },
+        complete: () => {
+          this.form.reset();
+          this.router.navigate(['/logistica/categoria']);
+        },
+      });
     }
   }
 }

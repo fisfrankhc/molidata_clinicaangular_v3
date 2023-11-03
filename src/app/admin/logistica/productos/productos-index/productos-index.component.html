@@ -76,7 +76,6 @@
                                         <th mat-sort-header="prod_descripcion">DESCRIPCION</th>
                                         <th mat-sort-header="precio_venta">PRECIO</th>
                                         <th mat-sort-header="med_id">MEDIDA</th>
-                                        <th mat-sort-header="imagen_nombre">IMAGEN</th>
                                         <th mat-sort-header="cat_id">CATEGORIA</th>
                                         <th></th>
                                     </tr>
@@ -94,8 +93,6 @@
                                         <td>{{data.prod_descripcion}}</td>
                                         <td>{{data.precio_venta}}</td>
                                         <td>{{data.med_id}}</td>
-                                        <td class="profile-image"><img width="28" height="28" [src]="data.imagen_nombre"
-                                                class="rounded-circle m-r-5" alt=""></td>
                                         <td>{{data.cat_id}}</td>
                                         <td class="text-end">
                                             <div class="dropdown dropdown-action">

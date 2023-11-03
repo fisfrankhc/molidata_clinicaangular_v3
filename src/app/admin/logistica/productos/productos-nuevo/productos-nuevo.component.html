@@ -68,10 +68,10 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-12 col-md-6 col-xl-6">
+                                        <div class="col-12 col-md-6 col-xl-4">
                                             <div class="form-group local-forms">
                                                 <label>PRECIO <span class="login-danger">*</span></label>
-                                                <input class="form-control" formControlName="precio" type="text"
+                                                <input class="form-control" formControlName="precio" type="number"
                                                     placeholder="">
                                             </div>
                                         </div>
@@ -80,13 +80,9 @@
                                         <div class="col-12 col-md-6 col-xl-6">
                                             <div class="form-group local-forms">
                                                 <label>MEDIDA <span class="login-danger">*</span></label>
-                                                <!--                                                 <select class="form-control select" formControlName="medida" aria-label="Default select example" placeholder="Select Medida">
-                                                    <option selected>Seleccionar</option>
-                                                    <option *ngFor="let data of selectedList2" [value]="data.value">{{data.value}}</option>
-                                                </select> -->
                                                 <mat-select [(ngModel)]="selectedValue" formControlName="medida"
-                                                    class="form-control select" placeholder="Select Country">
-                                                    <mat-option *ngFor="let data of selectedList2" [value]="data.value">
+                                                    class="form-control select" placeholder="Seleccione">
+                                                    <mat-option *ngFor="let data of selectedList1" [value]="data.value">
                                                         {{data.value}}
                                                     </mat-option>
                                                 </mat-select>
@@ -95,32 +91,13 @@
                                         <div class="col-12 col-md-6 col-xl-6">
                                             <div class="form-group local-forms">
                                                 <label>CATEGORIA <span class="login-danger">*</span></label>
-                                                <mat-select [(ngModel)]="selectedValue2" formControlName="categoria"
-                                                    class="form-control select" placeholder="Select Country">
-                                                    <mat-option *ngFor="let data of selectedList3" [value]="data.value">
-                                                        {{data.value}}
+                                                <mat-select formControlName="categoria"
+                                                    class="form-control select" placeholder="Seleccione una categoria">
+                                                    <mat-option *ngFor="let option of options" [value]="option.cat_id">
+                                                        {{option.cat_nombre}}
                                                     </mat-option>
                                                 </mat-select>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-sm">
-                                    <div class="col-12 col-md-12 col-xl-12">
-                                        <div class="form-group local-top-form">
-                                            <label class="local-top">SUBIR IMAGEN <span
-                                                    class="login-danger">*</span></label>
-                                            <div class="settings-btn upload-files-avator">
-                                                <input type="file" accept="image/*" (change)="onFileSelected($event)"
-                                                    name="image" formControlName="imagen" onchange="loadFile(event)" class="hide-input"
-                                                    style="opacity: 1;" placeholder="Click aqui">
-                                                <!-- <label for="file" class="upload">{{selectedFileName}}</label> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 col-md-12 col-xl-12">
-                                        <div class="card" style="max-width: 480px; margin: 25px auto;">
-                                            <img [src]="imageUrl" alt="" style="width: 100%;" />
                                         </div>
                                     </div>
                                 </div>

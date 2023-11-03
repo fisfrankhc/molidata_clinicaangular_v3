@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
 import { Router } from '@angular/router';
 import {
@@ -9,7 +9,7 @@ import {
 } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
-
+import { CategoriaService } from 'src/app/shared/services/logistica/categoria/categoria.service';
 interface data {
   value: string;
 }
@@ -19,40 +19,40 @@ interface data {
   templateUrl: './productos-nuevo.component.html',
   styleUrls: ['./productos-nuevo.component.scss'],
 })
-export class ProductosNuevoComponent {
+export class ProductosNuevoComponent implements OnInit {
   public ruta = rutas;
   public selectedValue?: string;
   public selectedValue2?: string;
 
+  constructor(
+    public productoService: ProductoService,
+    public categoriaService: CategoriaService,
+    private router: Router,
+    private fb: FormBuilder,
+    private http: HttpClient
+  ) { }
+  
+  options: any[] = [];
+  ngOnInit(): void {
+    this.categoriaService.getCategoriasAll().subscribe((data: any) => {
+      this.options = data;
+    });
+  }
+
   selectedList1: data[] = [
-    { value: 'Select Department' },
-    { value: 'Orthopedics' },
-    { value: 'Radiology' },
-    { value: 'Dentist' },
+    { value: 'Seleccione' },
+    { value: '1' },
+    { value: '2' },
+    { value: '3' },
   ];
 
   selectedList2: data[] = [
-    { value: 'Select City' },
-    { value: 'Alaska' },
-    { value: 'Los Angeles' },
+    { value: 'Selecciona una categoria' },
+    { value: '1' },
+    { value: '2' },
+    { value: '3' },
+    { value: '4' },
   ];
-
-  selectedList3: data[] = [
-    { value: 'Select Country' },
-    { value: 'Usa' },
-    { value: 'Uk' },
-    { value: 'Italy' },
-  ];
-
-  selectedList4: data[] = [
-    { value: 'Select State' },
-    { value: 'Alaska' },
-    { value: 'California' },
-  ];
-
-  imageUrl: string = '';
-  formData = new FormData();
-  selectedFileName: string = '';
 
   form = this.fb.group({
     codigo: ['', Validators.required],
@@ -60,7 +60,6 @@ export class ProductosNuevoComponent {
     descripcion: ['', Validators.required],
     precio: ['', Validators.required],
     medida: ['', Validators.required],
-    imagen: ['', Validators.required],
     categoria: ['', Validators.required],
   });
 
@@ -68,43 +67,22 @@ export class ProductosNuevoComponent {
     return this.form.controls;
   }
 
-  constructor(
-    public productoService: ProductoService,
-    private router: Router,
-    private fb: FormBuilder,
-    private http: HttpClient
-  ) {}
-
-  archivo!: File;
-
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    this.archivo = event.target.files[0];
-    this.formData.append('imagen', file);
-    this.selectedFileName = file.name;
-    this.imageUrl = window.URL.createObjectURL(file);
-    console.log(file);
-    //return this.http.post('assets/images/', this.formData);
-    //console.log(this.imageUrl);
-  }
-
   registrarProducto() {
     if (this.form.valid) {
-      console.log(this.form.value);
-    }
+      const datos = this.form.value;
 
-    /* if (this.archivo) {
-      this.productoService.uploadImage(this.archivo).subscribe(
-        (response) => {
-          // Manejar la respuesta del servidor
+      this.productoService.postProducto(datos).subscribe({
+        next: (response) => {
+          console.log('Respuesta de la API:', response);
         },
-        (error) => {
-          console.error('Error al subir la imagen:', error);
-        }
-      );
-    } else {
-      console.warn('No se ha seleccionado un archivo.');
+        error: (errorData) => {
+          console.error('Error al enviar la solicitud POST:', errorData);
+        },
+        complete: () => {
+          this.form.reset();
+          this.router.navigate(['/logistica/producto']);
+        },
+      });
     }
-  } */
   }
 }

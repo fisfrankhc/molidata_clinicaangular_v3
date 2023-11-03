@@ -9,7 +9,6 @@ import {
 } from '@angular/forms';
 import { CategoriaService } from 'src/app/shared/services/logistica/categoria/categoria.service';
 import { Router } from '@angular/router';
-import { Categoria } from 'src/app/shared/interfaces/logistica';
 
 @Component({
   selector: 'app-categorias-editar',

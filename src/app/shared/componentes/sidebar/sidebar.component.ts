@@ -5,6 +5,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { SidebarService } from '../../services/sidebar/sidebar.service';
 import { DatanavService } from './datanav.service';
 import { MenuItem, SideBarData } from './sidebar';
+import { OutloginService } from 'src/app/auth/services/outlogin.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -23,7 +24,8 @@ export class SidebarComponent {
   constructor(
     private data: DatanavService,
     private router: Router,
-    private sideBar: SidebarService
+    private sideBar: SidebarService,
+    private outloginService: OutloginService
   ) {
     this.sidebarData = this.data.sideBar;
     router.events.subscribe((event: object) => {
@@ -65,5 +67,9 @@ export class SidebarComponent {
     } else {
       this.sideBar.expandSideBar.next('false');
     }
+  }
+
+  logout() {
+    this.outloginService.cerrarsesion();
   }
 }

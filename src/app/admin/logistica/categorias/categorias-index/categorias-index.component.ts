@@ -39,9 +39,6 @@ export class CategoriasIndexComponent implements OnInit {
   }
 
   private categoriasAll(): void {
-    this.categoriaList = [];
-    this.serialNumberArray = [];
-
     this.categoriaService.getCategoriasAll().subscribe(
       {
         next: (datosCAT: any) => {

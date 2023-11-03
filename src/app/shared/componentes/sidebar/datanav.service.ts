@@ -24,6 +24,26 @@ export class DatanavService {
         },
 
         {
+          menuValue: 'Roles',
+          hasSubRoute: false,
+          showSubRoute: false,
+          base: 'doctor',
+          route: 'roles',
+          img: 'assets/img/icons/menu-icon-02.svg',
+          subMenus: [],
+        },
+
+        {
+          menuValue: 'Sucursal',
+          hasSubRoute: false,
+          showSubRoute: false,
+          base: 'blogs',
+          route: 'sucursal',
+          img: 'assets/img/icons/menu-icon-13.svg',
+          subMenus: [],
+        },
+
+        {
           menuValue: 'Logistica',
           hasSubRoute: true,
           showSubRoute: false,
@@ -41,6 +61,7 @@ export class DatanavService {
             },
           ],
         },
+
         {
           menuValue: 'Farmacia',
           hasSubRoute: true,
@@ -56,16 +77,6 @@ export class DatanavService {
               menuValue: 'Clientes',
               route: 'farmacia/cliente',
             },
-            /*
-            {
-              menuValue: 'Expenses',
-            },
-            {
-              menuValue: 'Taxes',
-            },
-            {
-              menuValue: 'Provident Fund',
-            }, */
           ],
         },
         /* 

@@ -37,6 +37,7 @@
                         </li>
                     </ng-container>
                 </ng-container>
+<!-- 
                 <li class="submenu">
                     <a [ngClass]="{ subdrop: multilevel[0] }" (click)="multilevel[0] = !multilevel[0]"
                         href="javascript:void(0);"><i class="fa fa-share-alt"></i> <span>Multi Level</span> <span
@@ -76,11 +77,12 @@
                         </li>
                     </ul>
                 </li>
+                 -->
             </ul>
             <div class="logout-btn">
-                <a routerLink="routes.login"><span class="menu-side"><img src="assets/img/icons/logout.svg"
+                <a (click)="logout()" style="cursor: pointer;"><span class="menu-side"><img src="assets/img/icons/logout.svg"
                             alt="" /></span>
-                    <span>Logout</span></a>
+                    <span>Cerrar sesión</span></a>
             </div>
         </div>
     </ng-scrollbar>
