@@ -31,8 +31,9 @@
                                         <h3>Clientes</h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
-                                                <input class="form-control" placeholder="Escribe aqu&iacute;" [(ngModel)]="searchDataValue"
-                                                (ngModelChange)="searchData(searchDataValue)">
+                                                <input class="form-control" placeholder="Escribe aqu&iacute;"
+                                                    [(ngModel)]="searchDataValue"
+                                                    (ngModelChange)="searchData(searchDataValue)">
                                                 <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
                                             </div>
                                             <div class="add-group">
@@ -60,7 +61,8 @@
                         <!-- /Table Header -->
 
                         <div class="table-responsive">
-                            <table matSort class="table border-0 custom-table comman-table datatable mb-0" (matSortChange)="sortData($event)">
+                            <table matSort class="table border-0 custom-table comman-table datatable mb-0"
+                                (matSortChange)="sortData($event)">
                                 <thead>
                                     <tr>
                                         <th mat-sort-header="checkbox">
@@ -93,7 +95,11 @@
                                         <td>{{data.cli_direccion}}</td>
                                         <td>{{data.cli_email}}</td>
                                         <td>{{data.cli_telefono}}</td>
-                                        <td>{{data.cli_estado}}</td>
+                                        <!-- <td>{{data.cli_estado}}</td> -->
+                                        <td [ngSwitch]="data.cli_estado">
+                                            <span *ngSwitchCase="1">ACTIVO</span>
+                                            <span *ngSwitchCase="0">INACTIVO</span>
+                                        </td>
                                         <td class="text-end">
                                             <div class="dropdown dropdown-action">
                                                 <a href="javascript:void(0);" class="action-icon dropdown-toggle"

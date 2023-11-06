@@ -35,7 +35,7 @@
                                                     <label>DOCUMENTO DE IDENTIDAD <span
                                                             class="login-danger">*</span></label>
                                                     <input class="form-control" formControlName="documento"
-                                                        (input)="obtenerCliente()" type="text">
+                                                        (input)="obtenerCliente()" type="text" >
                                                 </div>
                                             </div>
                                             <input type="hidden" name="id" formControlName="id">
@@ -43,14 +43,14 @@
                                                 <div class="form-group local-forms">
                                                     <label>NOMBRE COMPLETO <span class="login-danger">*</span></label>
                                                     <textarea class="form-control" formControlName="nombrecliente"
-                                                        rows="3" cols="30"></textarea>
+                                                        rows="3" cols="30" readonly></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 col-xl-4">
                                                 <div class="form-group local-forms">
                                                     <label>EMAIL </label>
                                                     <textarea class="form-control" formControlName="email" rows="3"
-                                                        cols="30"></textarea>
+                                                        cols="30" readonly></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -141,11 +141,11 @@
                                                 </td>
                                                 <td style="max-width: 100px;">
                                                     <input type="text" class="form-control"
-                                                        [value]="producto.cantidadobtenido" style="text-align: center;">
+                                                        [value]="producto.cantidad" style="text-align: center;">
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        [value]="producto.precioobtenido" style="text-align: center;" disabled>
+                                                        [value]="producto.precio" style="text-align: center;" disabled>
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"

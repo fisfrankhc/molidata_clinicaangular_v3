@@ -4,6 +4,7 @@ import { ProductoService } from 'src/app/shared/services/logistica/producto/prod
 import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { pageSelection, Producto } from 'src/app/shared/interfaces/logistica';
+import { CategoriaService } from 'src/app/shared/services/logistica/categoria/categoria.service';
 
 @Component({
   selector: 'app-productos-index',
@@ -32,9 +33,24 @@ export class ProductosIndexComponent {
   public pageSelection: Array<pageSelection> = [];
   public totalPages = 0;
 
-  constructor(public productoService: ProductoService) {}
+  constructor(
+    public productoService: ProductoService,
+    public categoriaService: CategoriaService
+  ) {}
   ngOnInit(): void {
-    this.productosAll();
+    this.categoriasAll();
+  }
+
+  datosCAT: any;
+  categoriasAll(): void {
+    this.categoriaService.getCategoriasAll().subscribe({
+      next: (datosCAT: any) => {
+        this.datosCAT = datosCAT;
+        this.productosAll();
+      },
+      error: () => {},
+      complete: () => {},
+    });
   }
 
   private productosAll(): void {
@@ -47,11 +63,22 @@ export class ProductosIndexComponent {
           this.datosPRO = datosPRO;
           this.totalData = this.datosPRO.length;
 
+          // Mapea los nombres de los clientes a los datos de ventas
+          this.datosPRO = this.datosPRO.map((producto: Producto) => {
+            //PARA CATEGORIAS
+            const categoria = this.datosCAT.find(
+              (cat: any) => cat.cat_id === producto.cat_id
+            );
+            if (categoria) {
+              producto.nombreCategoria = categoria.cat_nombre;
+            }
+            return producto;
+          });
+
           this.datosPRO.map((res: Producto, index: number) => {
             const serialNumber = index + 1;
             if (index >= this.skip && serialNumber <= this.limit) {
               this.productoList.push(res);
-              //console.log(this.productoList.push(res));
               this.serialNumberArray.push(serialNumber);
             }
           });

@@ -19,4 +19,5 @@ export interface Producto {
   med_id: number;
   imagen_nombre: string;
   cat_id: number;
+  nombreCategoria: string; //PARA VISTA
 }

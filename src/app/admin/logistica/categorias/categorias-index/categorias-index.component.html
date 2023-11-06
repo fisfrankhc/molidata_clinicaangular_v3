@@ -87,7 +87,10 @@
                                         <td class="profile-image">{{data.cat_id}}</td>
                                         <td>{{data.cat_nombre}}</td>
                                         <td>{{data.cat_descripcion}}</td>
-                                        <td>{{data.cat_estado}}</td>
+                                        <td [ngSwitch]="data.cat_estado">
+                                            <span *ngSwitchCase="1">ACTIVO</span>
+                                            <span *ngSwitchCase="0">INACTIVO</span>
+                                        </td>
                                         <td class="text-end">
                                             <div class="dropdown dropdown-action">
                                                 <a href="javascript:void(0);" class="action-icon dropdown-toggle"

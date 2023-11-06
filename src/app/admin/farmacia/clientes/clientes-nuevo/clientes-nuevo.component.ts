@@ -42,6 +42,7 @@ export class ClientesNuevoComponent {
   registrarCliente() {
     if (this.form.valid) {
       const datos = this.form.value;
+      console.log(datos);
       this.clientesService.postClientes(datos).subscribe({
         next: (response) => {
           console.log('Respuesta de la API:', response);

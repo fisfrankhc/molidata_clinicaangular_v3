@@ -11,6 +11,20 @@ import { rutas } from 'src/app/shared/routes/rutas';
 
 import { ClientesService } from 'src/app/shared/services/farmacia/clientes/clientes.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
+import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.service';
+import { VentasDetalleService } from 'src/app/shared/services/farmacia/ventas/ventas-detalle.service';
+import { DatePipe } from '@angular/common';
+
+interface Producto {
+  idobtenido: string;
+  codigoobtenido: string;
+  producto: string;
+  nombrepobtenido: string;
+  cantidad: number;
+  precio: number;
+  subtotalagregado: string;
+  venta: number;
+}
 
 @Component({
   selector: 'app-ventas-nuevo',
@@ -19,12 +33,17 @@ import { ProductoService } from 'src/app/shared/services/logistica/producto/prod
 })
 export class VentasNuevoComponent implements OnInit {
   form: FormGroup = new FormGroup({}); // Declaración con valor inicial;
+  usersucursal = localStorage.getItem('usersucursal');
+  userid = localStorage.getItem('userid');
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private clientesService: ClientesService,
-    private productoService: ProductoService
+    private productoService: ProductoService,
+    private ventasService: VentasService,
+    private ventasDetalleService: VentasDetalleService,
+    private datePipe: DatePipe
   ) {}
 
   public ruta = rutas;
@@ -38,13 +57,13 @@ export class VentasNuevoComponent implements OnInit {
         email: [''],
       }),
       productoBuscado: this.fb.group({
-        idbuscado: ['', Validators.required],
-        codigobuscado: ['', Validators.required],
-        nombrebuscado: ['', Validators.required],
-        nombrebproducto: ['', Validators.required],
-        preciobuscado: ['', Validators.required],
-        medidabuscado: ['', Validators.required],
-        cantidadbuscado: ['', Validators.required],
+        idbuscado: [''],
+        codigobuscado: [''],
+        nombrebuscado: [''],
+        nombrebproducto: [''],
+        preciobuscado: [''],
+        medidabuscado: [''],
+        cantidadbuscado: [''],
       }),
       listaCompra: this.fb.array([]), // FormArray para la lista de compra
     });
@@ -55,8 +74,7 @@ export class VentasNuevoComponent implements OnInit {
     this.productoService.getProductosAll().subscribe({
       next: (data: any) => {
         this.datoPRODUCTO = data;
-
-        console.log(this.datoPRODUCTO);
+        //console.log(this.datoPRODUCTO);
       },
       error: (erroData) => {},
       complete: () => {},
@@ -166,21 +184,23 @@ export class VentasNuevoComponent implements OnInit {
       const nuevoProducto = this.fb.group({
         idobtenido: [''],
         codigoobtenido: [''],
-        nombreobtenido: [''],
+        producto: [''],
         nombrepobtenido: [''],
-        cantidadobtenido: [''],
-        precioobtenido: [''],
+        cantidad: [''],
+        precio: [''],
         subtotalagregado: [''],
+        descuento: [0],
       });
 
       // Copia los valores del producto buscado al nuevo producto
       nuevoProducto.patchValue({
         idobtenido: productoBuscado?.get('idbuscado')?.value,
         codigoobtenido: productoBuscado?.get('codigobuscado')?.value,
-        nombreobtenido: productoBuscado?.get('nombrebuscado')?.value,
+        producto: productoBuscado?.get('nombrebuscado')?.value,
         nombrepobtenido: productoBuscado?.get('nombrebproducto')?.value,
-        cantidadobtenido: productoBuscado?.get('cantidadbuscado')?.value,
-        precioobtenido: productoBuscado?.get('preciobuscado')?.value,
+        cantidad: productoBuscado?.get('cantidadbuscado')?.value,
+        precio: productoBuscado?.get('preciobuscado')?.value,
+        descuento: 0,
         subtotalagregado: (
           productoBuscado?.get('preciobuscado')?.value *
           productoBuscado?.get('cantidadbuscado')?.value
@@ -195,9 +215,8 @@ export class VentasNuevoComponent implements OnInit {
 
       this.form.get('productoBuscado')?.reset();
     } else {
-      alert("Se necesita un producto");
+      alert('Se necesita un producto');
     }
-    
   }
 
   eliminarProducto(index: number) {
@@ -207,10 +226,66 @@ export class VentasNuevoComponent implements OnInit {
     this.calcularSubtotal();
   }
 
+  fechaActual = new Date();
+  fechaFormateada = this.datePipe.transform(
+    this.fechaActual,
+    'yyyy/MM/dd HH:mm'
+  );
+  //ID DE VENTA OBTENIDA GUARDADA
+  venta: any;
+
   registrarProducto() {
-    console.log(this.form.value.clienteDetalle);
-    console.log(this.form.value.listaCompra);
-    console.log(this.form.value.productoBuscado);
+    //console.log(this.form.value.clienteDetalle);
+    //console.log(this.form.value.listaCompra);
+    //console.log(this.form.value.productoBuscado);
+
+    const ventaData = {
+      fecha: this.fechaFormateada,
+      cliente: this.form.value.clienteDetalle['id'],
+      proceso: 'PROFORMA',
+      usuario: this.userid,
+      sucursal: this.usersucursal,
+    };
+
+    if (this.form.valid) {
+      //GUARDAMOS EN VENTA
+      this.ventasService.postVentas(ventaData).subscribe({
+        next: (response) => {
+          this.venta = response;
+          //console.log('Este es el Id de venta registrada:', this.venta);
+          // GUARDAMOS EN VENTADETALLE
+          this.form.value.listaCompra.forEach((producto: Producto) => {
+            // Agregamos el ID de venta obtenido al objeto producto
+            producto.venta = this.venta;
+
+            // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+            this.ventasDetalleService.postVentasDetalle(producto).subscribe({
+              next: (response) => {
+                console.log('Entrada registrada con éxito:', response);
+              },
+              error: (errorData) => {
+                console.error(
+                  'Error al enviar la solicitud POST de VENTADETALLE:',
+                  errorData
+                );
+              },
+              complete: () => {
+                //this.router.navigate(['/farmacia/venta']);
+              },
+            });
+          });
+        },
+        error: (errorData) => {
+          console.error(
+            'Error al enviar la solicitud POST de VENTA:',
+            errorData
+          );
+        },
+        complete: () => {
+          this.router.navigate(['/farmacia/venta']);
+        },
+      });
+    }
   }
 
   calcularSubtotal(): number {

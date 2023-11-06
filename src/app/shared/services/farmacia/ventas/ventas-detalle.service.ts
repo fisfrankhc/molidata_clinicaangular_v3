@@ -1,23 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Ventas } from 'src/app/shared/interfaces/farmacia';
 import { Observable } from 'rxjs';
 import { UrlService } from '../../url.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class VentasService {
+export class VentasDetalleService {
   constructor(private http: HttpClient, private urlService: UrlService) {}
 
   private dominioUrl = this.urlService.dominio;
-  private apiUrl = `${this.dominioUrl}/clinico/venta/venta.php`;
+  private apiUrl = `${this.dominioUrl}/clinico/venta/venta-detalle.php`;
 
-  getVentasAll(): Observable<Ventas> {
-    return this.http.get<Ventas>(`${this.apiUrl}`);
+  getVentasDetalleAll(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}`);
   }
 
-  postVentas(datos: any) {
+  postVentasDetalle(datos: any) {
     const headers = new HttpHeaders({
       'Content-Type': 'application/x-www-form-urlencoded',
     });
