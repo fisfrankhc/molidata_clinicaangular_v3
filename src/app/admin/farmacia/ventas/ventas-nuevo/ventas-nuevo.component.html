@@ -174,7 +174,8 @@
                                     </div>
                                     <div class="upload-sign">
                                         <div class="form-group float-end mb-0">
-                                            <button class="btn btn-primary" [disabled]="form.get('clienteDetalle')?.invalid" type="submit" >REGISTRAR VENTA</button>
+                                            <button class="btn btn-warning" [disabled]="form.get('clienteDetalle')?.invalid" type="submit" name="proforma" (click)="ProformaClick()" style="margin: 5px;">PROFORMA</button>
+                                            <button class="btn btn-primary" [disabled]="form.get('clienteDetalle')?.invalid" type="submit" name="confirmarVenta" (click)="ConfirmarVentaClick()" style="margin: 5px;" >CONFIRMAR VENTA</button>
                                         </div>
                                     </div>
                                 </div>

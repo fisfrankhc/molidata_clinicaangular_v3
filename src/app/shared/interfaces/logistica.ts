@@ -21,3 +21,9 @@ export interface Producto {
   cat_id: number;
   nombreCategoria: string; //PARA VISTA
 }
+
+export interface Medida {
+  med_id: number;
+  med_nombre: string;
+  med_simbolo: string;
+}

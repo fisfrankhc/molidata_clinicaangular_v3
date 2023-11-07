@@ -238,14 +238,15 @@ export class VentasNuevoComponent implements OnInit {
     //console.log(this.form.value.clienteDetalle);
     //console.log(this.form.value.listaCompra);
     //console.log(this.form.value.productoBuscado);
-
-    const ventaData = {
-      fecha: this.fechaFormateada,
-      cliente: this.form.value.clienteDetalle['id'],
-      proceso: 'PROFORMA',
-      usuario: this.userid,
-      sucursal: this.usersucursal,
-    };
+/* 
+      const ventaData = {
+        fecha: this.fechaFormateada,
+        cliente: this.form.value.clienteDetalle['id'],
+        proceso: 'PROFORMA',
+        usuario: this.userid,
+        sucursal: this.usersucursal,
+      };
+    
 
     if (this.form.valid) {
       //GUARDAMOS EN VENTA
@@ -272,6 +273,98 @@ export class VentasNuevoComponent implements OnInit {
               complete: () => {
                 //this.router.navigate(['/farmacia/venta']);
               },
+            });
+          });
+        },
+        error: (errorData) => {
+          console.error(
+            'Error al enviar la solicitud POST de VENTA:',
+            errorData
+          );
+        },
+        complete: () => {
+          this.router.navigate(['/farmacia/venta']);
+        },
+      });
+    }
+     */
+  }
+
+  ProformaClick() {
+    const ventaData = {
+      fecha: this.fechaFormateada,
+      cliente: this.form.value.clienteDetalle['id'],
+      proceso: 'PROFORMA',
+      usuario: this.userid,
+      sucursal: this.usersucursal,
+    };
+    if (this.form.valid) {
+      this.ventasService.postVentas(ventaData).subscribe({
+        next: (response) => {
+          this.venta = response;
+
+          this.form.value.listaCompra.forEach((producto: Producto) => {
+            // Agregamos el ID de venta obtenido al objeto producto
+            producto.venta = this.venta;
+
+            // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+            this.ventasDetalleService.postVentasDetalle(producto).subscribe({
+              next: (response) => {
+                console.log('Entrada registrada con éxito:', response);
+              },
+              error: (errorData) => {
+                console.error(
+                  'Error al enviar la solicitud POST de VENTADETALLE:',
+                  errorData
+                );
+              },
+              complete: () => {
+              },
+            });
+          });
+        },
+        error: (errorData) => {
+          console.error(
+            'Error al enviar la solicitud POST de VENTA:',
+            errorData
+          );
+        },
+        complete: () => {
+          this.router.navigate(['/farmacia/venta']);
+        },
+      });
+    }
+  }
+
+  ConfirmarVentaClick() {
+    const ventaData = {
+      fecha: this.fechaFormateada,
+      cliente: this.form.value.clienteDetalle['id'],
+      proceso: 'CONFIRMADO',
+      usuario: this.userid,
+      sucursal: this.usersucursal,
+    };
+    if (this.form.valid) {
+      this.ventasService.postVentas(ventaData).subscribe({
+        next: (response) => {
+          this.venta = response;
+
+          this.form.value.listaCompra.forEach((producto: Producto) => {
+            // Agregamos el ID de venta obtenido al objeto producto
+            producto.venta = this.venta;
+
+            // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+            this.ventasDetalleService.postVentasDetalle(producto).subscribe({
+              next: (response) => {
+                console.log('Entrada registrada con éxito:', response);
+              },
+              error: (errorData) => {
+                console.error(
+                  'Error al enviar la solicitud POST de VENTADETALLE:',
+                  errorData
+                );
+              },
+              complete: () => {},
             });
           });
         },

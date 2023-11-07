@@ -77,6 +77,10 @@ export class DatanavService {
               menuValue: 'Clientes',
               route: 'farmacia/cliente',
             },
+            {
+              menuValue: 'caja',
+              route: 'farmacia/caja',
+            },
           ],
         },
         /* 

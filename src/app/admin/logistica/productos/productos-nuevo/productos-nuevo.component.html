@@ -82,8 +82,8 @@
                                                 <label>MEDIDA <span class="login-danger">*</span></label>
                                                 <mat-select [(ngModel)]="selectedValue" formControlName="medida"
                                                     class="form-control select" placeholder="Seleccione">
-                                                    <mat-option *ngFor="let data of selectedList1" [value]="data.value">
-                                                        {{data.value}}
+                                                    <mat-option *ngFor="let option of medidas" [value]="option.med_id">
+                                                        {{option.med_nombre}}
                                                     </mat-option>
                                                 </mat-select>
                                             </div>
@@ -93,7 +93,7 @@
                                                 <label>CATEGORIA <span class="login-danger">*</span></label>
                                                 <mat-select formControlName="categoria"
                                                     class="form-control select" placeholder="Seleccione una categoria">
-                                                    <mat-option *ngFor="let option of options" [value]="option.cat_id">
+                                                    <mat-option *ngFor="let option of categorias" [value]="option.cat_id">
                                                         {{option.cat_nombre}}
                                                     </mat-option>
                                                 </mat-select>

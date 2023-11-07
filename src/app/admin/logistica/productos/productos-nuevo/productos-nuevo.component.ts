@@ -10,6 +10,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { CategoriaService } from 'src/app/shared/services/logistica/categoria/categoria.service';
+import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 interface data {
   value: string;
 }
@@ -27,32 +28,22 @@ export class ProductosNuevoComponent implements OnInit {
   constructor(
     public productoService: ProductoService,
     public categoriaService: CategoriaService,
+    public medidaService: MedidaService,
     private router: Router,
     private fb: FormBuilder,
     private http: HttpClient
-  ) { }
-  
-  options: any[] = [];
+  ) {}
+
+  categorias: any[] = [];
+  medidas: any[] = [];
   ngOnInit(): void {
     this.categoriaService.getCategoriasAll().subscribe((data: any) => {
-      this.options = data;
+      this.categorias = data;
+    });
+    this.medidaService.getMedidasAll().subscribe((data: any) => {
+      this.medidas = data
     });
   }
-
-  selectedList1: data[] = [
-    { value: 'Seleccione' },
-    { value: '1' },
-    { value: '2' },
-    { value: '3' },
-  ];
-
-  selectedList2: data[] = [
-    { value: 'Selecciona una categoria' },
-    { value: '1' },
-    { value: '2' },
-    { value: '3' },
-    { value: '4' },
-  ];
 
   form = this.fb.group({
     codigo: ['', Validators.required],

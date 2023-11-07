@@ -24,4 +24,16 @@ export class VentasService {
     const params = new HttpParams({ fromObject: datos });
     return this.http.post<any>(this.apiUrl, params.toString(), { headers });
   }
+
+  getVenta(id: number): Observable<Ventas> {
+    return this.http.get<Ventas>(`${this.apiUrl}?id=${id}`);
+  }
+
+  updatedVenta(datos: any) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.put(this.apiUrl, JSON.stringify(datos), { headers });
+  }
 }

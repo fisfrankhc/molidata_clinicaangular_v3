@@ -49,7 +49,7 @@ export class RolesEditarComponent implements OnInit {
           ?.setValue(this.datoRol[0]['rol_descripcion']);
       },
       error: (errorData) => {
-        console.error('Error al obtener los datos del usuario: ', errorData);
+        console.error('Error al obtener los datos del rol: ', errorData);
       },
       complete: () => {
         //console.log('DATOS OBTENIDOS EXITOSAMENTE');
