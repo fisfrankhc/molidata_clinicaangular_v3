@@ -60,6 +60,10 @@ export class rutas {
   public static get farmacia_caja(): string {
     return this.baseUrl + '/farmacia/caja';
   }
+
+  public static get farmacia_reportecaja(): string {
+    return this.baseUrl + '/farmacia/reportecaja';
+  }
 }
   
   

@@ -19,7 +19,7 @@ export class CategoriasIndexComponent implements OnInit {
   dataSource!: MatTableDataSource<Categoria>;
 
   public showFilter = false;
-  public searchDataValue = '';
+  public searchDataValue: string = '';
   public lastIndex = 0;
   public pageSize = 10;
   public totalData = 0;
@@ -39,12 +39,14 @@ export class CategoriasIndexComponent implements OnInit {
   }
 
   private categoriasAll(): void {
+    this.categoriaList = [];
+    this.serialNumberArray = [];
     this.categoriaService.getCategoriasAll().subscribe(
       {
         next: (datosCAT: any) => {
           this.datosCAT = datosCAT;
           this.totalData = this.datosCAT.length;
-          this.datosCAT.map((res: Categoria, index: number) => {
+          datosCAT.map((res: Categoria, index: number) => {
             const serialNumber = index + 1;
             if (index >= this.skip && serialNumber <= this.limit) {
               this.categoriaList.push(res);
@@ -83,7 +85,8 @@ export class CategoriasIndexComponent implements OnInit {
     );
   }
 
-  public searchData(value: any): void {
+  public searchData(value: string): void {
+    console.log('searchDataValue:', value);
     this.dataSource.filter = value.trim().toLowerCase();
     this.categoriaList = this.dataSource.filteredData;
   }
@@ -110,14 +113,14 @@ export class CategoriasIndexComponent implements OnInit {
       this.pageIndex = this.currentPage - 1;
       this.limit += this.pageSize;
       this.skip = this.pageSize * this.pageIndex;
-      this.categoriasAll();
     } else if (event == 'previous') {
       this.currentPage--;
       this.pageIndex = this.currentPage - 1;
       this.limit -= this.pageSize;
       this.skip = this.pageSize * this.pageIndex;
-      this.categoriasAll();
     }
+    this.categoriasAll();
+    this.dataSource = new MatTableDataSource<Categoria>(this.categoriaList); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {

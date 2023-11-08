@@ -5,6 +5,7 @@ import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { pageSelection, Producto } from 'src/app/shared/interfaces/logistica';
 import { CategoriaService } from 'src/app/shared/services/logistica/categoria/categoria.service';
+import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 
 @Component({
   selector: 'app-productos-index',
@@ -35,10 +36,12 @@ export class ProductosIndexComponent {
 
   constructor(
     public productoService: ProductoService,
-    public categoriaService: CategoriaService
+    public categoriaService: CategoriaService,
+    public medidaService: MedidaService
   ) {}
   ngOnInit(): void {
     this.categoriasAll();
+    this.medidasAll();
   }
 
   datosCAT: any;
@@ -53,7 +56,19 @@ export class ProductosIndexComponent {
     });
   }
 
+  datosMED: any;
+  medidasAll(): void {
+    this.medidaService.getMedidasAll().subscribe({
+      next: (datosMED: any) => {
+        this.datosMED = datosMED;
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
+
   private productosAll(): void {
+    
     this.productoList = [];
     this.serialNumberArray = [];
 
@@ -71,6 +86,13 @@ export class ProductosIndexComponent {
             );
             if (categoria) {
               producto.nombreCategoria = categoria.cat_nombre;
+            }
+            //PARA MEDIDAS
+            const medidas = this.datosMED.find(
+              (med: any) => med.med_id === producto.med_id
+            );
+            if (medidas) {
+              producto.nombreMedida = medidas.med_nombre;
             }
             return producto;
           });

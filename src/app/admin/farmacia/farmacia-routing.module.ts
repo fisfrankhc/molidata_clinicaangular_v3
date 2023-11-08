@@ -14,13 +14,19 @@ const routes: Routes = [
   },
   {
     path: 'caja',
+    loadChildren: () => import('./caja/caja.module').then((m) => m.CajaModule),
+  },
+  {
+    path: 'reportecaja',
     loadChildren: () =>
-      import('./caja/caja.module').then((m) => m.CajaModule),
-  }
+      import('./reporte-caja/reporte-caja.module').then(
+        (m) => m.ReporteCajaModule
+      ),
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class FarmaciaRoutingModule { }
+export class FarmaciaRoutingModule {}

@@ -36,3 +36,17 @@ export interface Clientes {
   cli_telefono?: string;
   cli_estado: string;
 }
+
+export interface Operacion {
+  ope_id: number;
+  user_id: number;
+  fecha_pago: Date;
+  ope_tipo: string;
+  monto_pago: number;
+  motivo_pago: string;
+  motivo_codigo: number;
+  descripcion_pago: string | null;
+  medio_pago: string;
+  medio_detalle: string | null;
+  ope_estado: number
+}

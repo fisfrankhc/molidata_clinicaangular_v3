@@ -12,15 +12,18 @@ import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.se
 import { VentasItemService } from 'src/app/shared/services/farmacia/ventas/ventas-item.service';
 import { ClientesService } from 'src/app/shared/services/farmacia/clientes/clientes.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
+import { MediosPagoService } from '../../../../shared/services/farmacia/caja/medios-pago.service';
+import { OperacionService } from 'src/app/shared/services/farmacia/caja/operacion.service';
+import { DatePipe } from '@angular/common';
 
 import { VentasDetalle } from 'src/app/shared/interfaces/farmacia';
 
 @Component({
-  selector: 'app-ventas-ver',
-  templateUrl: './ventas-ver.component.html',
-  styleUrls: ['./ventas-ver.component.scss'],
+  selector: 'app-caja-ver',
+  templateUrl: './caja-ver.component.html',
+  styleUrls: ['./caja-ver.component.scss'],
 })
-export class VentasVerComponent implements OnInit {
+export class CajaVerComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -28,7 +31,10 @@ export class VentasVerComponent implements OnInit {
     public ventasService: VentasService,
     public ventasItemService: VentasItemService,
     public clientesService: ClientesService,
-    public productoService: ProductoService
+    public productoService: ProductoService,
+    public mediosPagoService: MediosPagoService,
+    public operacionService: OperacionService,
+    private datePipe: DatePipe
   ) {}
   ventaId: number | null = null;
   public ruta = rutas;
@@ -42,6 +48,10 @@ export class VentasVerComponent implements OnInit {
     });
     this.clientesAll();
     this.productosAll();
+
+    this.mediosPagoService.getMediosPagoAll().subscribe((data: any) => {
+      this.mediosPago = data;
+    });
   }
 
   form = this.fb.group({
@@ -52,6 +62,9 @@ export class VentasVerComponent implements OnInit {
       email: [''],
     }),
     listaCompra: this.fb.array([]), // FormArray para la lista de compra
+    ventaMedioPago: this.fb.group({
+      medio_pago: ['', Validators.required],
+    }),
   });
 
   datosCLI: any;
@@ -167,16 +180,46 @@ export class VentasVerComponent implements OnInit {
     return subtotalTotal;
   }
 
-  actualizarVenta() {
+  public selectedValue?: string;
+  mediosPago: any[] = [];
+  userid = localStorage.getItem('userid');
+  fechaActual = new Date();
+  fechaFormateada = this.datePipe.transform(
+    this.fechaActual,
+    'yyyy/MM/dd HH:mm'
+  );
+  pagarVenta() {
     if (this.form.valid) {
       //console.log(this.form.value);
       const ventaData = {
         id: this.ventaId,
-        proceso: 'CONFIRMADO',
+        proceso: 'PAGADO',
       };
+
+      const operacionData = {
+        usuario: this.userid, //user_id
+        fecha: this.fechaFormateada, //fecha_pago
+        tipo: 'INGRESO', //ope_tipo
+        monto: this.calcularSubtotalTotal(), //monto_pago
+        motivo: 'VENTA', // motivo_pago
+        motivoCodigo: this.ventaId, // motivo_codigo: codigo de la venta, su id
+        descripcion: '', // descripcion_pago: Cuando es egreso, se decribe la operacion
+        medio: this.form.get('ventaMedioPago')?.value.medio_pago, //medio_pago
+        medioDetalle: '', // medio_detalle: Cuando no es efectivo, se describe
+      };
+
       this.ventasService.updatedVenta(ventaData).subscribe({
         next: (response) => {
           console.log(response);
+
+                this.operacionService.postOperacion(operacionData).subscribe({
+                  next: (response2) => {console.log("Guardado con exito:" + response2)},
+                  error: (errorData) => {
+                    console.log("Error al guardar la Operacion")
+                    console.log(errorData);
+                  },
+                  complete: () => {},
+                });
         },
         error: (errorData) => {
           console.log(errorData);
@@ -185,6 +228,10 @@ export class VentasVerComponent implements OnInit {
           this.router.navigate(['/farmacia/caja']);
         },
       });
+
+      /* console.log(this.form.value);
+      console.log(ventaData);
+      console.log(operacionData); */
     }
   }
 }

@@ -14,6 +14,8 @@ import { ProductoService } from 'src/app/shared/services/logistica/producto/prod
 import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.service';
 import { VentasDetalleService } from 'src/app/shared/services/farmacia/ventas/ventas-detalle.service';
 import { DatePipe } from '@angular/common';
+import { Observable } from 'rxjs';
+import { MatAutocomplete } from '@angular/material/autocomplete';
 
 interface Producto {
   idobtenido: string;
@@ -48,6 +50,7 @@ export class VentasNuevoComponent implements OnInit {
 
   public ruta = rutas;
   datoPRODUCTO: any[] = [];
+
   ngOnInit(): void {
     const initialForm = this.fb.group({
       clienteDetalle: this.fb.group({
@@ -76,32 +79,12 @@ export class VentasNuevoComponent implements OnInit {
         this.datoPRODUCTO = data;
         //console.log(this.datoPRODUCTO);
       },
-      error: (erroData) => {},
+      error: (_erroData) => {},
       complete: () => {},
     });
   }
 
-  /*
-  form = this.fb.group({
-    clienteDetalle: this.fb.group({
-      id: [''],
-      documento: [''],
-      nombrecliente: [''],
-      email: [''],
-    }),
-    productoBuscado: this.fb.group({
-      idbuscado: [''],
-      codigobuscado: [''],
-      nombrebuscado: [''],
-      preciobuscado: [''],
-      medidabuscado: [''],
-      cantidadbuscado: [''],
-    }),
-    listaCompra: this.fb.array([]), // FormArray para la lista de compra
-  });
-  */
   datoCliente: any[] = [];
-
   //PRIMER FORMGROUP
   obtenerCliente() {
     const documento = this.form.get('clienteDetalle.documento')?.value;
@@ -135,7 +118,7 @@ export class VentasNuevoComponent implements OnInit {
             this.form.get('clienteDetalle.email')?.patchValue('-');
           }
         },
-        error: (errorData) => {},
+        error: (_errorData) => {},
         complete: () => {},
       });
     } else {
@@ -150,6 +133,7 @@ export class VentasNuevoComponent implements OnInit {
     const productoSeleccionado = this.datoPRODUCTO.find(
       (producto) => producto.prod_id == selectedProduct
     );
+    console.log(productoSeleccionado);
     if (productoSeleccionado) {
       this.form.get('productoBuscado')?.patchValue({
         idbuscado: productoSeleccionado.prod_id,
@@ -234,62 +218,6 @@ export class VentasNuevoComponent implements OnInit {
   //ID DE VENTA OBTENIDA GUARDADA
   venta: any;
 
-  registrarProducto() {
-    //console.log(this.form.value.clienteDetalle);
-    //console.log(this.form.value.listaCompra);
-    //console.log(this.form.value.productoBuscado);
-/* 
-      const ventaData = {
-        fecha: this.fechaFormateada,
-        cliente: this.form.value.clienteDetalle['id'],
-        proceso: 'PROFORMA',
-        usuario: this.userid,
-        sucursal: this.usersucursal,
-      };
-    
-
-    if (this.form.valid) {
-      //GUARDAMOS EN VENTA
-      this.ventasService.postVentas(ventaData).subscribe({
-        next: (response) => {
-          this.venta = response;
-          //console.log('Este es el Id de venta registrada:', this.venta);
-          // GUARDAMOS EN VENTADETALLE
-          this.form.value.listaCompra.forEach((producto: Producto) => {
-            // Agregamos el ID de venta obtenido al objeto producto
-            producto.venta = this.venta;
-
-            // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
-            this.ventasDetalleService.postVentasDetalle(producto).subscribe({
-              next: (response) => {
-                console.log('Entrada registrada con éxito:', response);
-              },
-              error: (errorData) => {
-                console.error(
-                  'Error al enviar la solicitud POST de VENTADETALLE:',
-                  errorData
-                );
-              },
-              complete: () => {
-                //this.router.navigate(['/farmacia/venta']);
-              },
-            });
-          });
-        },
-        error: (errorData) => {
-          console.error(
-            'Error al enviar la solicitud POST de VENTA:',
-            errorData
-          );
-        },
-        complete: () => {
-          this.router.navigate(['/farmacia/venta']);
-        },
-      });
-    }
-     */
-  }
-
   ProformaClick() {
     const ventaData = {
       fecha: this.fechaFormateada,
@@ -318,8 +246,7 @@ export class VentasNuevoComponent implements OnInit {
                   errorData
                 );
               },
-              complete: () => {
-              },
+              complete: () => {},
             });
           });
         },
@@ -375,7 +302,7 @@ export class VentasNuevoComponent implements OnInit {
           );
         },
         complete: () => {
-          this.router.navigate(['/farmacia/venta']);
+          this.router.navigate(['/farmacia/caja']);
         },
       });
     }

@@ -81,7 +81,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of datosPRO">
+                                    <tr *ngFor="let data of productoList">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="something">
@@ -92,7 +92,7 @@
                                         <td>{{data.prod_nombre}}</td>
                                         <td>{{data.prod_descripcion}}</td>
                                         <td>{{data.precio_venta}}</td>
-                                        <td>{{data.med_id}}</td>
+                                        <td>{{data.nombreMedida}}</td>
                                         <!-- <td>{{data.cat_id}}</td> -->
                                         <td>{{data.nombreCategoria}}</td>
                                         <td class="text-end">

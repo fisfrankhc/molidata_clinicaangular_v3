@@ -36,6 +36,8 @@ export class RolesIndexComponent implements OnInit {
   datosRoles: Roles[] = [];
 
   private rolesAll(): void {
+    this.rolesList = [];
+    this.serialNumberArray = [];
     this.rolesService.getRolesAll().subscribe({
       next: (datosRoles: any) => {
         this.datosRoles = datosRoles;

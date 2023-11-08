@@ -37,6 +37,8 @@ export class SucursalIndexComponent implements OnInit {
   }
 
   private sucursalAll(): void {
+    this.sucursalList = [];
+    this.serialNumberArray = [];
     this.sucursalService.getSucursalAll().subscribe({
       next: (datosSUCURSAL: any) => {
         this.datosSUCURSAL = datosSUCURSAL;

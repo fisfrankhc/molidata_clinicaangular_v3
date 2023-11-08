@@ -39,6 +39,9 @@ export class ClientesIndexComponent implements OnInit {
   }
 
   private clientesAll(): void {
+    this.clientesList = [];
+    this.serialNumberArray = [];
+
     this.clientesService.getClientesAll().subscribe({
       next: (datosCLIENTE: any) => {
         this.datosCLIENTE = datosCLIENTE;

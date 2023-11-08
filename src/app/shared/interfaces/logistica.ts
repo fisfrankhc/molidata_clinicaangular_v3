@@ -20,6 +20,7 @@ export interface Producto {
   imagen_nombre: string;
   cat_id: number;
   nombreCategoria: string; //PARA VISTA
+  nombreMedida: string; //PARA VISTA
 }
 
 export interface Medida {

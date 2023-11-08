@@ -66,7 +66,9 @@ export class VentasIndexComponent implements OnInit {
     });
   }
 
-  ventasAll(): void {
+  private ventasAll(): void {
+    this.ventasList = [];
+    this.serialNumberArray = [];
     this.ventasService.getVentasAll().subscribe({
       next: (datosVENTA: any) => {
         this.datosVENTA = datosVENTA;
@@ -91,7 +93,7 @@ export class VentasIndexComponent implements OnInit {
           return venta;
         });
 
-        this.datosVENTA.map((res: Ventas, index: number) => {
+        datosVENTA.map((res: Ventas, index: number) => {
           const serialNumber = index + 1;
           if (index >= this.skip && serialNumber <= this.limit) {
             this.ventasList.push(res);
@@ -109,7 +111,7 @@ export class VentasIndexComponent implements OnInit {
     });
   }
 
-  public searchData(value: any): void {
+  public searchData(value: string): void {
     this.dataSource.filter = value.trim().toLowerCase();
     this.ventasList = this.dataSource.filteredData;
   }
@@ -136,14 +138,14 @@ export class VentasIndexComponent implements OnInit {
       this.pageIndex = this.currentPage - 1;
       this.limit += this.pageSize;
       this.skip = this.pageSize * this.pageIndex;
-      this.ventasAll();
     } else if (event == 'previous') {
       this.currentPage--;
       this.pageIndex = this.currentPage - 1;
       this.limit -= this.pageSize;
       this.skip = this.pageSize * this.pageIndex;
-      this.ventasAll();
     }
+    this.ventasAll();
+    this.dataSource = new MatTableDataSource<Ventas>(this.ventasList); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {

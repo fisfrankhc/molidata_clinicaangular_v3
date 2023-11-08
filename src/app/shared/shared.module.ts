@@ -6,6 +6,7 @@ import { MaterialModule } from './material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxBootstrapModule } from './ngx-bootstrap/ngx-bootstrap.module';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @NgModule({
   declarations: [],
@@ -17,6 +18,7 @@ import { NgxBootstrapModule } from './ngx-bootstrap/ngx-bootstrap.module';
     HttpClientModule,
     NgxBootstrapModule,
     MatSortModule,
+    MatAutocompleteModule,
   ],
   exports: [
     MaterialModule,
@@ -24,6 +26,7 @@ import { NgxBootstrapModule } from './ngx-bootstrap/ngx-bootstrap.module';
     ReactiveFormsModule,
     NgxBootstrapModule,
     MatSortModule,
+    MatAutocompleteModule,
   ],
 })
 export class SharedModule {}

@@ -8,7 +8,7 @@
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a>FARMACIA </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.farmacia_venta">VENTAS </a></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.farmacia_reportecaja">Reporte de Caja </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item active">Lista</li>
                     </ul>
@@ -28,18 +28,18 @@
                             <div class="row align-items-center">
                                 <div class="col">
                                     <div class="doctor-table-blk">
-                                        <h3>Ventas de Farmacia</h3>
+                                        <h3>CAJA | Reporte de Caja</h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
-                                                <input class="form-control" placeholder="Escribe aqu&iacute;" [(ngModel)]="searchDataValue"
-                                                    (ngModelChange)="searchData(searchDataValue)"
-                                                    >
+                                                <input class="form-control" placeholder="Escribe aqu&iacute;"
+                                                    [(ngModel)]="searchDataValue"
+                                                    (ngModelChange)="searchData(searchDataValue)">
                                                 <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
                                             </div>
                                             <div class="add-group">
-                                                <a [routerLink]="ruta.farmacia_venta_nuevo"
+                                                <!-- <a [routerLink]="ruta.farmacia_venta_nuevo"
                                                     class="btn btn-primary add-pluss ms-2"><img
-                                                        src="assets/img/icons/plus.svg" alt=""></a>
+                                                        src="assets/img/icons/plus.svg" alt=""></a> -->
                                                 <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"><img
                                                         src="assets/img/icons/re-fresh.svg" alt=""></a>
                                             </div>
@@ -53,7 +53,7 @@
                                             alt=""></a>
                                     <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-03.svg"
                                             alt=""></a>
-                                    <a href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""></a>
+                                    <a (click)="exportarAExcel()" href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""></a>
 
                                 </div>
                             </div>
@@ -61,8 +61,7 @@
                         <!-- /Table Header -->
 
                         <div class="table-responsive">
-                            <table matSort (matSortChange)="sortData($event)"
-                                class="table border-0 custom-table comman-table datatable mb-0">
+                            <table matSort (matSortChange)="sortData($event)" class="table border-0 custom-table comman-table datatable mb-0">
                                 <thead>
                                     <tr>
                                         <th mat-sort-header="checkbox">
@@ -70,42 +69,40 @@
                                                 <input class="form-check-input" type="checkbox" value="something">
                                             </div>
                                         </th>
-                                        <th mat-sort-header="venta_id">ID</th>
-                                        <th mat-sort-header="venta_fecha">FECHA</th>
-                                        <th mat-sort-header="cliente_id">CLIENTE</th>
-                                        <th mat-sort-header="venta_proceso">PROCESO DE VENTA</th>
-                                        <th mat-sort-header="usuario_id">USUARIO</th>
-                                        <th mat-sort-header="sucursal_id">SUCURSAL</th>
-                                        <th mat-sort-header="venta_estado">ESTADO</th>
+                                        <th mat-sort-header="ope_id">ID</th>
+                                        <th mat-sort-header="user_id">USUARIO</th>
+                                        <th mat-sort-header="fecha_pago">FECHA P.</th>
+                                        <th mat-sort-header="ope_tipo">OPERACI&Oacute;N</th>
+                                        <th mat-sort-header="monto_pago">MONTO</th>
+                                        <th mat-sort-header="motivo_pago">MOTIVO</th>
+                                        <th mat-sort-header="motivo_codigo">VENTAID</th>
+                                        <th mat-sort-header="medio_pago">MEDIO PAGO</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of ventasList">
+                                    <tr *ngFor="let data of operacionList">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td>{{ data.venta_id }}</td>
-                                        <td>{{ data.venta_fecha | date: 'dd/MM/yyyy' }}</td>
-                                        <!-- <td>{{ data.cliente_id }}</td> -->
-                                        <td>{{ data.nombreCliente }}</td>
-                                        <td>{{ data.venta_proceso }}</td>
-                                        <td>{{ data.usuario_id }}</td>
-                                        <!-- <td>{{ data.sucursal_id }}</td> -->
-                                        <td>{{ data.nombreSucursal }}</td>
-                                        <td [ngSwitch]="data.venta_estado">
-                                            <span *ngSwitchCase="1">ACTIVO</span>
-                                            <span *ngSwitchCase="0">INACTIVO</span>
-                                        </td>
+                                        <td>{{ data.ope_id }}</td>
+                                        <td>{{ data.user_id }}</td>
+                                        <td>{{ data.fecha_pago | date: 'dd/MM/yyyy' }}</td>
+                                        <td>{{ data.ope_tipo }}</td>
+                                        <td>{{ data.monto_pago }}</td>
+                                        <td>{{ data.motivo_pago }}</td>
+                                        <td>{{ data.motivo_codigo }}</td>
+                                        <td>{{ data.medio_pago }}</td>
                                         <td class="text-end">
                                             <div class="dropdown dropdown-action">
                                                 <a href="javascript:void(0);" class="action-icon dropdown-toggle"
                                                     data-bs-toggle="dropdown" aria-expanded="false"><i
                                                         class="fa fa-ellipsis-v"></i></a>
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item" [routerLink]="['./ver', data.venta_id]"><i class="fa-solid fa-pen-to-square m-r-5"></i>
+                                                    <a class="dropdown-item" [routerLink]="['./ver', data.ope_id]"><i
+                                                            class="fa-solid fa-pen-to-square m-r-5"></i>
                                                         VER</a>
                                                     <a class="dropdown-item" href="javascript:void(0);"
                                                         data-bs-toggle="modal" data-bs-target="#delete_patient"><i
@@ -181,7 +178,7 @@
                                           disabled:
                                             currentPage ===
                                               pageNumberArray[pageNumberArray.length - 1] ||
-                                              ventasList.length === 0
+                                              operacionList.length === 0
                                         }">
                                                 <a (click)="getMoreData('next')" class="page-link"
                                                     href="javascript:void(0);">Next

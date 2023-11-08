@@ -66,6 +66,9 @@ export class CajaIndexComponent implements OnInit {
   }
 
   ventasConfirmadasAll(): void {
+    this.ventasList = [];
+    this.serialNumberArray = [];
+
     this.ventasConfirmadasService.getVentaConfirmada(1).subscribe({
       next: (datosVENTA: any) => {
         this.datosVENTA = datosVENTA;
