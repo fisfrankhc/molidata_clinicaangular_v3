@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ElementRef, ViewChild, HostListener } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -15,7 +16,8 @@ import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.se
 import { VentasDetalleService } from 'src/app/shared/services/farmacia/ventas/ventas-detalle.service';
 import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
-import { MatAutocomplete } from '@angular/material/autocomplete';
+
+import { map, startWith } from 'rxjs/operators';
 
 interface Producto {
   idobtenido: string;
@@ -77,11 +79,12 @@ export class VentasNuevoComponent implements OnInit {
     this.productoService.getProductosAll().subscribe({
       next: (data: any) => {
         this.datoPRODUCTO = data;
-        //console.log(this.datoPRODUCTO);
       },
       error: (_erroData) => {},
       complete: () => {},
     });
+
+    this.filteresOption();
   }
 
   datoCliente: any[] = [];
@@ -128,10 +131,47 @@ export class VentasNuevoComponent implements OnInit {
     }
   }
 
+  filteredOptions!:
+    | Observable<{ id: string; nombre: string; descripcion: string }[]>
+    | undefined;
+  filteresOption() {
+    this.filteredOptions = this.form
+      .get('productoBuscado.nombrebproducto')
+      ?.valueChanges.pipe(
+        startWith(''),
+        map((value) => this._filter(value as string))
+      ) as
+      | Observable<{ id: string; nombre: string; descripcion: string }[]>
+      | undefined;
+  }
+  private _filter(
+    value: string | null
+  ): { id: string; nombre: string; descripcion: string }[] {
+    if (!value) {
+      return this.datoPRODUCTO.map((option) => ({
+        id: option.prod_id,
+        nombre: option.prod_nombre,
+        descripcion: option.prod_descripcion,
+      }));
+    }
+
+    const filterValue = value.toLowerCase();
+    return this.datoPRODUCTO
+      .filter((option) =>
+        option.prod_nombre.toLowerCase().includes(filterValue)
+      )
+      .map((option) => ({
+        id: option.prod_id,
+        nombre: option.prod_nombre,
+        descripcion: option.prod_descripcion,
+      }));
+  }
   //PARA EL 2DO FORMGROUP
-  onProductSelected(selectedProduct: any) {
+  onProductSelected(event: any) {
+    const selectedProduct = event.option.value;
+    console.log('Este el valor de selectedProduct: ' + selectedProduct);
     const productoSeleccionado = this.datoPRODUCTO.find(
-      (producto) => producto.prod_id == selectedProduct
+      (producto) => producto.prod_nombre == selectedProduct
     );
     console.log(productoSeleccionado);
     if (productoSeleccionado) {
@@ -325,5 +365,19 @@ export class VentasNuevoComponent implements OnInit {
   calcularTotal(): number {
     // Puedes agregar impuestos u otros costos si es necesario
     return this.calcularSubtotal(); // Por ahora, el total es igual al subtotal
+  }
+
+  @ViewChild('addToListLink') addToListLink!: ElementRef;
+  // Escucha el evento keydown en toda la página.
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    // Verificar si la tecla si la tecla 'Ctrl' y la tecla 'A' y está presionada.
+    if (event.key === 'a' && (event.ctrlKey || event.metaKey)) {
+      // Evita el comportamiento predeterminado del navegador para la combinación Ctrl + A.
+      event.preventDefault();
+
+      // Llama a la función agregarALista().
+      this.agregarALista();
+    }
   }
 }

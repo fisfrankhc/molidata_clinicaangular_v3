@@ -1,12 +1,15 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 
 import { MatSortModule } from '@angular/material/sort';
 import { MaterialModule } from './material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { NgxBootstrapModule } from './ngx-bootstrap/ngx-bootstrap.module';
+
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [],
@@ -27,6 +30,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     NgxBootstrapModule,
     MatSortModule,
     MatAutocompleteModule,
+    MatFormFieldModule,
+    MatInputModule,
+    AsyncPipe,
   ],
 })
 export class SharedModule {}
