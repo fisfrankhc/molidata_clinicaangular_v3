@@ -11,13 +11,12 @@ const routes: Routes = [
   },
   {
     path: 'nuevo',
-    component: VentasNuevoComponent
+    component: VentasNuevoComponent,
   },
   {
     path: 'ver/:venta_id',
     component: VentasVerComponent,
-  }
-
+  },
 ];
 
 @NgModule({

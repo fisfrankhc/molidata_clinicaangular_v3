@@ -26,7 +26,7 @@
                         <!-- Table Header -->
                         <div class="page-table-header mb-2">
                             <div class="row align-items-center">
-                                <div class="col">
+                                <div class="col-5">
                                     <div class="doctor-table-blk">
                                         <h3>CAJA | Reporte de Caja</h3>
                                         <div class="doctor-search-blk">
@@ -46,7 +46,32 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-auto text-end float-end ms-auto download-grp">
+                                <div class="col-5">
+                                    <div class="row" style="display: flex;flex-wrap: wrap; align-items: center;">
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                <label>De </label>
+                                                <input class="form-control datetimepicker" type="text" matInput [matDatepicker]="picker1">
+                                                <mat-datepicker #picker1></mat-datepicker>
+                                                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                <label>Hasta </label>
+                                                <input class="form-control datetimepicker" type="text" matInput [matDatepicker]="picker">
+                                                <mat-datepicker #picker></mat-datepicker>
+                                                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="doctor-submit">
+                                                <button type="submit" class="btn btn-primary submit-list-form me-2">Buscar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2 text-end float-end ms-auto download-grp">
                                     <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-01.svg"
                                             alt=""></a>
                                     <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-02.svg"

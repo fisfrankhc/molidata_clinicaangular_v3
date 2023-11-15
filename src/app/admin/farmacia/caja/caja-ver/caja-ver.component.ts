@@ -225,7 +225,7 @@ export class CajaVerComponent implements OnInit {
           console.log(errorData);
         },
         complete: () => {
-          this.router.navigate(['/farmacia/caja']);
+          this.router.navigate([`/farmacia/caja/venta-pagada/${this.ventaId}`]);
         },
       });
 

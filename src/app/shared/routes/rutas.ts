@@ -33,6 +33,13 @@ export class rutas {
     return this.baseUrl + '/logistica/categoria/editar';
   }
 
+  public static get logistica_compra(): string {
+    return this.baseUrl + '/logistica/compra';
+  }
+  public static get logistica_compra_nuevo(): string {
+    return this.baseUrl + '/logistica/compra/nuevo';
+  }
+
   public static get logistica_producto(): string {
     return this.baseUrl + '/logistica/producto';
   }
@@ -41,6 +48,13 @@ export class rutas {
   }
   public static get logistica_producto_editar(): string {
     return this.baseUrl + '/logistica/producto/editar';
+  }
+
+  public static get logistica_proveedor(): string {
+    return this.baseUrl + '/logistica/proveedores';
+  }
+  public static get logistica_proveedor_nuevo(): string {
+    return this.baseUrl + '/logistica/proveedores/nuevo';
   }
 
   public static get farmacia_venta(): string {

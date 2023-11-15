@@ -24,6 +24,7 @@ export interface VentasDetalle {
   descuento: number;
   nombreProducto: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   codigoProducto: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
+  medidaProducto: string; //AGREGADO PARA IMPRIMIR EN OTRAS VISTAS
 }
 
 export interface Clientes {

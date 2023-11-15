@@ -154,9 +154,13 @@ $preclinic-angular-theme: mat.define-light-theme((color: (primary: $preclinic-an
 
 .mat-mdc-option:hover:not(.mdc-list-item--disabled),
 .mat-mdc-option:focus:not(.mdc-list-item--disabled),
-.mat-mdc-option.mat-mdc-option-active,
+.mat-mdc-option.mat-mdc-option-active {
+  //background-color: $background-color_11;
+  background-color: rgb(46, 55, 164) !important;
+}
+
 .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
-  background-color: $background-color_11;
+  background-color: #c6caff !important;
 }
 
 .mat-mdc-option-active .mdc-list-item__primary-text,

@@ -8,9 +8,28 @@ const routes: Routes = [
       import('./categorias/categorias.module').then((m) => m.CategoriasModule),
   },
   {
+    path: 'compra',
+    loadChildren: () =>
+      import('./compras/compras.module').then((m) => m.ComprasModule),
+  },
+  {
     path: 'producto',
     loadChildren: () =>
       import('./productos/productos.module').then((m) => m.ProductosModule),
+  },
+  {
+    path: 'proveedores',
+    loadChildren: () =>
+      import('./proveedores/proveedores.module').then(
+        (m) => m.ProveedoresModule
+      ),
+  },
+  {
+    path: 'stock',
+    loadChildren: () =>
+      import('./stock/stock.module').then(
+        (m) => m.StockModule
+      ),
   },
 ];
 

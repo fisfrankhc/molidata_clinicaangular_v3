@@ -1,0 +1,10 @@
+.text-truncate {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-desbordamiento {
+    overflow-x: auto;
+}

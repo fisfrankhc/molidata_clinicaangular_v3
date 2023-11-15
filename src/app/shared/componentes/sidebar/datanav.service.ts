@@ -56,8 +56,20 @@ export class DatanavService {
               route: 'logistica/categoria',
             },
             {
+              menuValue: 'Compras',
+              route: 'logistica/compra',
+            },
+            {
               menuValue: 'Productos',
               route: 'logistica/producto',
+            },
+            {
+              menuValue: 'Proveedores',
+              route: 'logistica/proveedores',
+            },
+            {
+              menuValue: 'Stock',
+              route: 'logistica/stock',
             },
           ],
         },
