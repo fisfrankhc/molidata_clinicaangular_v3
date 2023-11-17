@@ -26,9 +26,9 @@
                         <!-- Table Header -->
                         <div class="page-table-header mb-2">
                             <div class="row align-items-center">
-                                <div class="col">
+                                <div class="col-12 col-md-6 col-xl-7">
                                     <div class="doctor-table-blk">
-                                        <h3>Lista de Stock</h3>
+                                        <h3>Stock</h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
                                                 <input class="form-control" placeholder="Escribe aqui"
@@ -37,24 +37,36 @@
                                                 <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
                                             </div>
                                             <div class="add-group">
-                                                <a [routerLink]="ruta.logistica_proveedor_nuevo"
+<!--                                                 <a [routerLink]="ruta.logistica_proveedor_nuevo"
                                                     class="btn btn-primary add-pluss ms-2"><img
-                                                        src="assets/img/icons/plus.svg" alt=""></a>
-                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"><img
+                                                        src="assets/img/icons/plus.svg" alt=""></a> -->
+                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2" (click)="actualizarStock()"><img
                                                         src="assets/img/icons/re-fresh.svg" alt=""></a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-auto text-end float-end ms-auto download-grp">
-                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-01.svg"
-                                            alt=""></a>
-                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-02.svg"
-                                            alt=""></a>
-                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-03.svg"
-                                            alt=""></a>
-                                    <a href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""></a>
-
+                                <div class="col-12 col-md-6 col-xl-5" style="padding: 5px;     margin-top: 10px;">
+                                    <form [formGroup]="form">
+                                        <div class="row">
+                                            <div class="col-12 col-md-6 offset-md-2 col-xl-6">
+                                                <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                    <label>SUCURSAL </label>
+                                                <mat-select formControlName="sucursalid" class="form-control select" placeholder="Seleccione una sucursal">
+                                                    <mat-option *ngFor="let option of datosSUC" [value]="option.suc_id">
+                                                        {{option.suc_nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-2">
+                                                <div class="doctor-submit">
+                                                    <a type="submit" (click)="verSucursal()"
+                                                        class="btn btn-primary submit-list-form me-2">BUSCAR</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -70,27 +82,26 @@
                                                 <input class="form-check-input" type="checkbox" value="something">
                                             </div>
                                         </th>
-                                        <th mat-sort-header="stock_id">ID</th>
-                                        <th mat-sort-header="almacen_id">ALMACEN</th>
+                                        <th mat-sort-header="#">#</th>
+                                        <th mat-sort-header="almacen_id">CODIGO</th>
                                         <th mat-sort-header="producto_id">PRODUCTO</th>
-                                        <th mat-sort-header="cantidad">CANTIDAD</th>
+                                        <th mat-sort-header="cantidad">STOCK</th>
                                         <th mat-sort-header="unidad_medida">UNIDAD MEDIDA</th>
-                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of stockList">
+                                    <tr *ngFor="let data of stockList; let i = index">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td class="profile-image">{{data.stock_id}}</td>
-                                        <td>{{data.almacen_id}}</td>
-                                        <td>{{data.producto_id}}</td>
+                                        <td class="profile-image">{{ i+1 }}</td>
+                                        <td>{{data.codigoProducto}}</td>
+                                        <td>{{data.nombreProducto}}</td>
                                         <td>{{data.cantidad}}</td>
-                                        <td>{{data.unidad_medida}}</td>
-                                        <td class="text-end">
+                                        <td>{{data.nombreMedida}}</td>
+<!--                                         <td class="text-end">
                                             <div class="dropdown dropdown-action">
                                                 <a href="javascript:void(0);" class="action-icon dropdown-toggle"
                                                     data-bs-toggle="dropdown" aria-expanded="false"><i
@@ -99,12 +110,9 @@
                                                     <a class="dropdown-item"
                                                         [routerLink]="['./editar', data.stock_id]"><i
                                                             class="fa-solid fa-pen-to-square m-r-5"></i> EDITAR</a>
-                                                    <a class="dropdown-item" href="javascript:void(0);"
-                                                        data-bs-toggle="modal" data-bs-target="#delete_patient"><i
-                                                            class="fa fa-trash-alt m-r-5"></i> Eliminar</a>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </table>

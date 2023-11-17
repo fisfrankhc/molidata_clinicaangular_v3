@@ -99,6 +99,23 @@ export class DatanavService {
             },
           ],
         },
+        {
+          menuValue: 'Almacen',
+          hasSubRoute: true,
+          showSubRoute: false,
+          base: 'invoice',
+          img: 'assets/img/icons/menu-icon-15.svg',
+          subMenus: [
+            {
+              menuValue: 'Stock Sucursal',
+              route: 'almacen/stock-sucursal',
+            },
+            {
+              menuValue: 'Movimientos de Almacen',
+              route: 'almacen/movimientos-almacen',
+            },
+          ],
+        },
         /* 
         {
           menuValue: 'Doctors',

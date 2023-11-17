@@ -11,6 +11,7 @@ export class GeneralService {
   private dominioUrl = this.urlService.dominio;
 
   private apiUrl = `${this.dominioUrl}/clinico/empresa/empresa.php`;
+  private apiUrl2 = `${this.dominioUrl}/clinico/general/usuario.php`;
 
   getDatosEmpresa(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}`);

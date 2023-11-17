@@ -11,6 +11,9 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
 @NgModule({
   declarations: [],
   imports: [
@@ -32,6 +35,9 @@ import { MatInputModule } from '@angular/material/input';
     MatAutocompleteModule,
     MatFormFieldModule,
     MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatIconModule,
     AsyncPipe,
   ],
 })

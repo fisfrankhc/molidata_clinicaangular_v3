@@ -13,14 +13,14 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-
 @Component({
-  selector: 'app-stock-index',
-  templateUrl: './stock-index.component.html',
-  styleUrls: ['./stock-index.component.scss'],
+  selector: 'app-stock-sucursal-index',
+  templateUrl: './stock-sucursal-index.component.html',
+  styleUrls: ['./stock-sucursal-index.component.scss'],
 })
-export class StockIndexComponent implements OnInit {
+export class StockSucursalIndexComponent implements OnInit {
   public ruta = rutas;
+  usersucursal = localStorage.getItem('usersucursal');
   datosSTOCK: Stock[] = [];
 
   public stockList: Array<Stock> = [];
@@ -52,15 +52,21 @@ export class StockIndexComponent implements OnInit {
     this.productosAll();
     this.sucursalAll();
     this.medidasAll();
-    this.form.patchValue({ sucursalid: '1' }); // Establecer valor predeterminado de la sucursal a 1
-    this.verSucursal(); // Llamarfunción verSucursal para filtrar los datos/dfecto de la sucursal 1
+    //this.form.patchValue({ sucursalid: '1' }); Establecer valor predeterminado de la sucursal a 1
   }
 
   datosSUC: any;
+  nombreSucursal!: string;
   sucursalAll() {
     this.sucursalService.getSucursalAll().subscribe({
       next: (datosSUC: any) => {
         this.datosSUC = datosSUC;
+
+        // Realiza la lógica para obtener el nombre de la sucursal aquí
+        const sucursalEncontrada = this.datosSUC.find(
+          (sucursal: any) => sucursal.suc_id === this.usersucursal
+        );
+        this.nombreSucursal = sucursalEncontrada ? sucursalEncontrada.suc_nombre : '';
       },
       error: (errorData) => {},
       complete: () => {},
@@ -95,6 +101,7 @@ export class StockIndexComponent implements OnInit {
   private stockAll(): void {
     this.stockList = [];
     this.serialNumberArray = [];
+    const sucursalId = this.form.value.sucursalid;
     this.stockService.getStockAll().subscribe({
       next: (datosSTOCK: any) => {
         this.datosSTOCK = datosSTOCK;
@@ -132,6 +139,13 @@ export class StockIndexComponent implements OnInit {
         console.error(errorData);
       },
       complete: () => {
+        //console.log(this.usersucursal);
+        /* this.stockList = this.datosSTOCK.filter(
+          (data) => data.almacen_id === sucursalId
+        ); */
+        this.stockList = this.datosSTOCK.filter(
+          (data) => data.almacen_id === this.usersucursal
+        );
         this.dataSource = new MatTableDataSource<Stock>(this.stockList);
         this.calculateTotalPages(this.totalData, this.pageSize);
       },
@@ -207,23 +221,6 @@ export class StockIndexComponent implements OnInit {
       const skip = limit - pageSize;
       this.pageNumberArray.push(i);
       this.pageSelection.push({ skip: skip, limit: limit });
-    }
-  }
-
-  verSucursal() {
-    const sucursalId = this.form.value.sucursalid;
-
-    // Verificar si sucursalId tiene un valor antes de comparar
-    if (sucursalId !== null && sucursalId !== undefined) {
-      // Filtrar los datos según la sucursal seleccionada
-      this.stockList = this.datosSTOCK.filter(
-        (data) => data.almacen_id === sucursalId
-      );
-
-      // Actualizar la tabla y recalcular las páginas
-      this.dataSource = new MatTableDataSource<Stock>(this.stockList);
-      //this.dataSource.data = this.stockList;
-      this.calculateTotalPages(this.stockList.length, this.pageSize);
     }
   }
 

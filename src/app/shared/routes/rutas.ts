@@ -78,6 +78,17 @@ export class rutas {
   public static get farmacia_reportecaja(): string {
     return this.baseUrl + '/farmacia/reportecaja';
   }
+
+  public static get almacen_stock_sucursal(): string {
+    return this.baseUrl + '/almacen/stock-sucursal';
+  }
+
+  public static get almacen_movimientosalmacen(): string {
+    return this.baseUrl + '/almacen/movimientos-almacen';
+  }
+  public static get almacen_movimientosalmacen_nuevo(): string {
+    return this.baseUrl + '/almacen/movimientos-almacen/nuevo';
+  }
 }
   
   

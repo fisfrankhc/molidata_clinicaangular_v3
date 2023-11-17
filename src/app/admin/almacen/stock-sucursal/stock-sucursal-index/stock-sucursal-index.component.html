@@ -6,9 +6,10 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a>LOGISTICA </a></li>
+                        <li class="breadcrumb-item"><a>ALMAC&Eacute;N </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.logistica_compra">COMPRAS </a></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.almacen_stock_sucursal">STOCK SUCURSAL</a>
+                        </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item active">Lista</li>
                     </ul>
@@ -26,35 +27,27 @@
                         <!-- Table Header -->
                         <div class="page-table-header mb-2">
                             <div class="row align-items-center">
-                                <div class="col">
+                                <div class="col-12 col-md-6 col-xl-7">
                                     <div class="doctor-table-blk">
-                                        <h3>M&oacute;dulo de Compras</h3>
+                                        <h3>STOCK: &nbsp; &nbsp; Sucursal < <span style="font-size: 14px;">{{
+                                                nombreSucursal }}</span> > </h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
-                                                <input class="form-control" placeholder="Escribe aqu&iacute;"
+                                                <input class="form-control" placeholder="Escribe aqui"
                                                     [(ngModel)]="searchDataValue"
                                                     (ngModelChange)="searchData(searchDataValue)">
                                                 <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
                                             </div>
                                             <div class="add-group">
-                                                <a [routerLink]="ruta.logistica_compra_nuevo"
+                                                <!--                                                 <a [routerLink]="ruta.logistica_proveedor_nuevo"
                                                     class="btn btn-primary add-pluss ms-2"><img
-                                                        src="assets/img/icons/plus.svg" alt=""></a>
-                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"><img
-                                                        src="assets/img/icons/re-fresh.svg" alt=""></a>
+                                                        src="assets/img/icons/plus.svg" alt=""></a> -->
+                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"
+                                                    (click)="actualizarStock()"><img src="assets/img/icons/re-fresh.svg"
+                                                        alt=""></a>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-auto text-end float-end ms-auto download-grp">
-                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-01.svg"
-                                            alt=""></a>
-                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-02.svg"
-                                            alt=""></a>
-                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-03.svg"
-                                            alt=""></a>
-                                    <a href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""></a>
-
                                 </div>
                             </div>
                         </div>
@@ -70,52 +63,40 @@
                                                 <input class="form-check-input" type="checkbox" value="something">
                                             </div>
                                         </th>
-                                        <th mat-sort-header="compra_id">#</th>
-                                        <th mat-sort-header="proveedor_id">PROVEEDOR</th>
-                                        <th mat-sort-header="compra_fecha">FECHA COMPRA</th>
-                                        <th mat-sort-header="tipo_pago">FORMA DE PAGO</th>
-                                        <th mat-sort-header="proceso">PROCESO</th>
-                                        <th mat-sort-header="destino_id">DESTINO</th>
-                                        <th mat-sort-header="estado">ESTADO</th>
-                                        <th></th>
+                                        <th mat-sort-header="#">#</th>
+                                        <th mat-sort-header="almacen_id">CODIGO</th>
+                                        <th mat-sort-header="producto_id">PRODUCTO</th>
+                                        <th mat-sort-header="cantidad">STOCK</th>
+                                        <th mat-sort-header="unidad_medida">UNIDAD MEDIDA</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of comprasList">
+                                    <tr *ngFor="let data of stockList; let i = index">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
-                                        </td> 
-                                        <td>{{ data.compra_id }}</td>
-                                        <td>{{ data.nombreProveedor }}</td>
-                                        <td>{{ data.compra_fecha | date: 'dd/MM/yyyy' }}</td>
-                                        <td>{{ data.tipo_pago }}</td>
-                                        <td>{{ data.proceso }}</td>
-                                        <td>{{ data.destino_id }}</td>
-                                        <td [ngSwitch]="data.estado">
-                                            <span *ngSwitchCase="1">ACTIVO</span>
-                                            <span *ngSwitchCase="0">INACTIVO</span>
                                         </td>
-                                        <td class="text-end">
+                                        <td class="profile-image">{{ i+1 }}</td>
+                                        <td>{{data.codigoProducto}}</td>
+                                        <td>{{data.nombreProducto}}</td>
+                                        <td>{{data.cantidad}}</td>
+                                        <td>{{data.nombreMedida}}</td>
+                                        <!--                                         <td class="text-end">
                                             <div class="dropdown dropdown-action">
                                                 <a href="javascript:void(0);" class="action-icon dropdown-toggle"
                                                     data-bs-toggle="dropdown" aria-expanded="false"><i
                                                         class="fa fa-ellipsis-v"></i></a>
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item" [routerLink]="['./ver', data.compra_id]"><i
-                                                            class="fa-solid fa-pen-to-square m-r-5"></i>
-                                                        VER</a>
-                                                    <a class="dropdown-item" href="javascript:void(0);"
-                                                        data-bs-toggle="modal" data-bs-target="#delete_patient"><i
-                                                            class="fa fa-trash-alt m-r-5"></i> Delete</a>
+                                                    <a class="dropdown-item"
+                                                        [routerLink]="['./editar', data.stock_id]"><i
+                                                            class="fa-solid fa-pen-to-square m-r-5"></i> EDITAR</a>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </table>
-
                             <div class="table_footer">
                                 <div class="col-sm-12 col-md-5">
                                     <div class="dataTables_info">
@@ -180,7 +161,7 @@
                                           disabled:
                                             currentPage ===
                                               pageNumberArray[pageNumberArray.length - 1] ||
-                                              comprasList.length === 0
+                                              stockList.length === 0
                                         }">
                                                 <a (click)="getMoreData('next')" class="page-link"
                                                     href="javascript:void(0);">Next

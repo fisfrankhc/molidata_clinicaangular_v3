@@ -73,8 +73,11 @@ export interface CompraDetalle {
 }
 export interface Stock {
   stock_id: number;
-  almacen_id: number;
+  almacen_id: string;
   producto_id: number;
   cantidad: number;
   unidad_medida: number;
+  codigoProducto: string; // PARA VISTA
+  nombreProducto: string; //PARA VISTA
+  nombreMedida: string; //PARA VISTA
 }
