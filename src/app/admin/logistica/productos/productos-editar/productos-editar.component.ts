@@ -9,6 +9,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { rutas } from 'src/app/shared/routes/rutas';
 import { CategoriaService } from 'src/app/shared/services/logistica/categoria/categoria.service';
+import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 interface data {
   value: string;
 }
@@ -28,11 +29,13 @@ export class ProductosEditarComponent implements OnInit {
     private route: ActivatedRoute,
     public productoService: ProductoService,
     public categoriaService: CategoriaService,
+    public medidaService: MedidaService,
     private router: Router,
     private fb: FormBuilder
   ) {}
 
-  options: any[] = [];
+  categoriasData: any[] = [];
+  medidasData: any[] = [];
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       const catIdParam = params.get('prod_id');
@@ -42,23 +45,31 @@ export class ProductosEditarComponent implements OnInit {
     });
     this.productoDetalle(this.prodId);
 
+    this.medidaService.getMedidasAll().subscribe((data: any) => {
+      this.medidasData = data;
+    });
+
     this.categoriaService.getCategoriasAll().subscribe((data: any) => {
-      this.options = data;
+      this.categoriasData = data;
     });
   }
 
   datoProducto: any;
   productoDetalle(prodId: any) {
-    console.log(prodId);
+    //console.log(prodId);
     this.productoService.getProducto(prodId).subscribe({
       next: (data) => {
         this.datoProducto = data;
         //console.log(this.datoCategoria);
         this.form.get('id')?.setValue(this.datoProducto[0]['prod_id']);
+        this.form.get('codigo')?.setValue(this.datoProducto[0]['prod_codigo']);
         this.form.get('nombre')?.setValue(this.datoProducto[0]['prod_nombre']);
         this.form
           .get('descripcion')
           ?.setValue(this.datoProducto[0]['prod_descripcion']);
+        this.form.get('precio')?.setValue(this.datoProducto[0]['precio_venta']);
+        this.form.get('medida')?.setValue(this.datoProducto[0]['med_id']);
+        this.form.get('categoria')?.setValue(this.datoProducto[0]['cat_id']);
       },
       error: (errorData) => {
         console.error('Error al obtener los datos del usuario: ', errorData);
@@ -81,20 +92,22 @@ export class ProductosEditarComponent implements OnInit {
     return this.form.controls;
   }
 
-  selectedList1: data[] = [
-    { value: 'Seleccione' },
-    { value: '1' },
-    { value: '2' },
-    { value: '3' },
-  ];
-
-  selectedList2: data[] = [
-    { value: 'Selecciona una categoria' },
-    { value: '1' },
-    { value: '2' },
-    { value: '3' },
-    { value: '4' },
-  ];
-
-  editarProducto() {}
+  actualizarProducto() {
+        if (this.form.valid) {
+          const datos = this.form.value;
+          console.log(datos);
+          this.productoService.updatedProducto(datos).subscribe({
+            next: (response) => {
+              console.log('Respuesta de la API:', response);
+            },
+            error: (errorData) => {
+              console.error('Error al enviar la solicitud POST:', errorData);
+            },
+            complete: () => {
+              this.form.reset();
+              this.router.navigate(['/logistica/producto']);
+            },
+          });
+        }
+  }
 }

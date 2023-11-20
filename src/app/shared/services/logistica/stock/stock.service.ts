@@ -16,4 +16,20 @@ export class StockService {
   getStockAll(): Observable<Stock> {
     return this.http.get<Stock>(`${this.apiUrl}`);
   }
+
+  postStock(datos: any) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+    const params = new HttpParams({ fromObject: datos });
+    return this.http.post<any>(this.apiUrl, params.toString(), { headers });
+  }
+
+  updatedStock(datos: any) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.put(this.apiUrl, JSON.stringify(datos), { headers });
+  }
 }

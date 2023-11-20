@@ -21,7 +21,7 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <form [formGroup]="form" (ngSubmit)="editarProducto()">
+                        <form [formGroup]="form" (ngSubmit)="actualizarProducto()">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-heading">
@@ -32,15 +32,7 @@
                                     <div class="col-12 col-md-6 col-xl-6">
                                         <div class="form-group local-forms">
                                             <label>C&Oacute;DIGO <span class="login-danger">*</span></label>
-                                            <input class="form-control" formControlName="codigo" type="text" [ngClass]="{
-                        'is-invalid': f['codigo'].touched && f['codigo'].invalid
-                      }">
-                                            <div *ngIf="f['codigo'].touched && f['codigo'].invalid"
-                                                class="invalid-feedback">
-                                                <div *ngIf="f['codigo'].errors && f['codigo'].errors['required']">
-                                                    Es necesario que asigne un codigo.
-                                                </div>
-                                            </div>
+                                            <input class="form-control" formControlName="codigo" type="text" style="background-color: #e3e3e3;" readonly>
                                         </div>
 
                                     </div>
@@ -82,8 +74,8 @@
                                                 <label>MEDIDA <span class="login-danger">*</span></label>
                                                 <mat-select [(ngModel)]="selectedValue" formControlName="medida"
                                                     class="form-control select" placeholder="Seleccione">
-                                                    <mat-option *ngFor="let data of selectedList1" [value]="data.value">
-                                                        {{data.value}}
+                                                    <mat-option *ngFor="let data of medidasData" [value]="data.med_id">
+                                                        {{data.med_nombre}}
                                                     </mat-option>
                                                 </mat-select>
                                             </div>
@@ -93,7 +85,7 @@
                                                 <label>CATEGORIA <span class="login-danger">*</span></label>
                                                 <mat-select formControlName="categoria" class="form-control select"
                                                     placeholder="Seleccione una categoria">
-                                                    <mat-option *ngFor="let option of options" [value]="option.cat_id">
+                                                    <mat-option *ngFor="let option of categoriasData" [value]="option.cat_id">
                                                         {{option.cat_nombre}}
                                                     </mat-option>
                                                 </mat-select>
@@ -106,7 +98,7 @@
                                 <div class="col-12">
                                     <div class="doctor-submit text-end">
                                         <button class="btn btn-primary submit-form me-2"
-                                            [disabled]="form.invalid">REGISTRAR
+                                            [disabled]="form.invalid">ACTUALIZAR
                                             PRODUCTO</button>
                                         <a class="btn btn-primary cancel-form"
                                             [routerLink]="ruta.logistica_producto">Cancelar</a>

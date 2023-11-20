@@ -2,14 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Categoria } from '../../../interfaces/logistica';
 import { Observable } from 'rxjs';
+import { UrlService } from '../../url.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoriaService {
-  private apiUrl = 'https://gifmigente.com/clinico/producto/categoria.php';
+  constructor(private http: HttpClient, private urlService: UrlService) {}
 
-  constructor(private http: HttpClient) {}
+  private dominioUrl = this.urlService.dominio;
+  private apiUrl = `${this.dominioUrl}/clinico/producto/categoria.php`;
 
   getCategoriasAll(): Observable<Categoria> {
     return this.http.get<Categoria>(`${this.apiUrl}`);

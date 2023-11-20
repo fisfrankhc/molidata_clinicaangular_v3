@@ -16,4 +16,8 @@ export class GeneralService {
   getDatosEmpresa(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}`);
   }
+
+  getUsuariosAll(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl2}`);
+  }
 }

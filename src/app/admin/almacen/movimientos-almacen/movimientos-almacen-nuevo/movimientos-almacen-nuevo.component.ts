@@ -19,7 +19,6 @@ import { StockService } from 'src/app/shared/services/logistica/stock/stock.serv
 import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
 
-
 import { map, startWith } from 'rxjs/operators';
 
 interface Producto {
@@ -35,6 +34,7 @@ interface Producto {
   //precio: number; //*
   subtotalagregado: string;
   movimiento: number; //*
+  condicion: string | null;
 }
 interface data {
   value: string;
@@ -104,7 +104,27 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
     this.medidasAll();
     this.filteresOption();
     this.sucursalAll();
-    //this.stockAll();
+
+    // Agregar suscriptor para el evento valueChanges del campo nombrebproducto en caso este vacio
+    this.form
+      .get('productoBuscado.nombrebproducto')
+      ?.valueChanges.subscribe((value) => {
+        if (!value || value.trim() === '') {
+          // Si el valor es vacío, resetear los campos del grupo productoBuscado
+          this.form.get('productoBuscado')?.patchValue({
+            idbuscado: '',
+            codigobuscado: '',
+            nombrebuscado: '',
+            preciobuscado: '',
+            medidabuscado: '',
+            medidanombrebuscado: '',
+            cantidadbuscado: '',
+            fecha_buscado: '',
+            lote_buscado: '',
+            peso_buscado: '',
+          });
+        }
+      });
   }
 
   datosMED: any;
@@ -142,16 +162,7 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
     });
   }
 
-  datosSTOCK: any; /*
-  stockAll(): void {
-    this.stockService.getStockAll().subscribe({
-      next: (datosSTOCK: any) => {
-        this.datosSTOCK = datosSTOCK;
-      },
-      error: () => {},
-      complete: () => {},
-    });
-  } */
+  datosSTOCK: any;
 
   filteredOptions!:
     | Observable<{ id: string; nombre: string; descripcion: string }[]>
@@ -317,37 +328,17 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
       observaciones: '',
     };
     //this.movimiento = 1;
-    if (this.form.valid) {
-      /*       this.form.value.listaMovimiento.forEach((producto: Producto) => {
-        producto.movimiento = this.movimiento;
-        console.log(producto);
-        this.stockService.getStockAll().subscribe({
-          next: (datosSTOCK: any) => {
-            this.datosSTOCK = datosSTOCK;
 
-            // Lógica para obtener el producto de ese stock
-            const sucursalFind = this.datosSTOCK.find(
-              (stock: any) =>
-                stock.almacen_id === this.usersucursal &&
-                stock.producto_id === producto.producto
-            );
-            console.log(movimientoData.tipo);
-            if (sucursalFind) {
-              if (movimientoData.tipo === 'INGRESO') {
-                sucursalFind.cantidad =
-                  Number(sucursalFind.cantidad) + Number(producto.cantidad);
-                console.log(sucursalFind);
-              } else {
-                sucursalFind.cantidad =
-                  Number(sucursalFind.cantidad) + Number(producto.cantidad);
-                console.log(sucursalFind);
-              }
-            }
-          },
-          error: () => {},
-          complete: () => {},
-        });
-      }); */
+    const cantidadesPorId: {
+      [id: string]: {
+        almacen: number;
+        producto: number;
+        cantidad: number;
+        medida: string;
+      };
+    } = {};
+
+    if (this.form.valid) {
       this.movimientosAlmacenService.postMovimientos(movimientoData).subscribe({
         next: (response) => {
           this.movimiento = response;
@@ -355,6 +346,7 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
           this.form.value.listaMovimiento.forEach((producto: Producto) => {
             producto.movimiento = this.movimiento;
 
+            //PARA ALMACENAR LOS PRODUCTOS
             this.movimientosAlmacenDetalleService
               .postMovimientosDetalle(producto)
               .subscribe({
@@ -369,6 +361,110 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                 },
                 complete: () => {},
               });
+
+            //PARA SUMAR LAS CANTIDADES DE LOS PRODUCTOS
+            const idobtenido = producto.idobtenido;
+            const cantidad = +producto.cantidad;
+            cantidadesPorId[idobtenido] = cantidadesPorId[idobtenido] || {
+              almacen: this.usersucursal,
+              producto: producto.producto,
+              cantidad: 0,
+              medida: producto.medida,
+            };
+            cantidadesPorId[idobtenido].cantidad += cantidad;
+          });
+
+          Object.keys(cantidadesPorId).forEach((id) => {
+            //console.log(`Suma de cantidades de idobtenido ${id}: ${cantidadesPorId[id]}`);
+            //console.log(cantidadesPorId[id].producto);
+            //console.log(cantidadesPorId[id]);
+
+            this.stockService.getStockAll().subscribe({
+              next: (datosSTOCK: any) => {
+                this.datosSTOCK = datosSTOCK;
+
+                const sucursalFindUpdate = this.datosSTOCK.find(
+                  (stock: any) =>
+                    stock.almacen_id === this.usersucursal &&
+                    stock.producto_id === cantidadesPorId[id].producto
+                );
+                if (movimientoData.tipo === 'INGRESO') {
+                  if (sucursalFindUpdate) {
+                    sucursalFindUpdate.cantidad =
+                      Number(sucursalFindUpdate.cantidad) +
+                      Number(cantidadesPorId[id].cantidad);
+                    //console.log(sucursalFindUpdate);
+                    const stockActualizar = {
+                      id: sucursalFindUpdate.stock_id,
+                      almacen: cantidadesPorId[id].almacen,
+                      producto: cantidadesPorId[id].producto,
+                      cantidad: sucursalFindUpdate.cantidad,
+                      medida: cantidadesPorId[id].medida,
+                      condicion: 'ACTUALIZAR',
+                    };
+                    //console.log(stockActualizar);
+                    this.stockService.updatedStock(stockActualizar).subscribe({
+                      next: (response) => {
+                        console.log("Respuesta de UpdatedPost interno: "+ response);
+                      },
+                      error: (errorData) => {
+                        console.error(errorData);
+                      },
+                      complete: () => {},
+                    });
+                  } else {
+                    //REGISTRAMOS
+                    const stockPostNew = {
+                      almacen: cantidadesPorId[id].almacen,
+                      producto: cantidadesPorId[id].producto,
+                      cantidad: cantidadesPorId[id].cantidad,
+                      medida: cantidadesPorId[id].medida,
+                      condicion: 'REGISTRAR',
+                    };
+
+                    this.stockService.postStock(stockPostNew).subscribe({
+                      next: (response) => {
+                        console.log("Respuesta de PostStock interno: " + response);
+                      },
+                      error: (errorData) => {
+                        console.error(errorData);
+                      },
+                      complete: () => {},
+                    });
+                  }
+                }
+                else if (movimientoData.tipo === 'SALIDA') {
+                  if (sucursalFindUpdate) {
+                    sucursalFindUpdate.cantidad =
+                      Number(sucursalFindUpdate.cantidad) -
+                      Number(cantidadesPorId[id].cantidad);
+                    //console.log(sucursalFindUpdate);
+                    const stockActualizarVenta = {
+                      id: sucursalFindUpdate.stock_id,
+                      almacen: cantidadesPorId[id].almacen,
+                      producto: cantidadesPorId[id].producto,
+                      cantidad: sucursalFindUpdate.cantidad,
+                      medida: cantidadesPorId[id].medida,
+                      condicion: 'ACTUALIZAR',
+                    };
+                    //console.log(stockActualizarVenta);
+                    this.stockService.updatedStock(stockActualizarVenta).subscribe({
+                      next: (response) => {
+                        console.log(
+                          'Respuesta de UpdatedPost interno 2: ' + response
+                        );
+                      },
+                      error: (errorData) => {
+                        console.error(errorData);
+                      },
+                      complete: () => {},
+                    });
+                  }
+                }
+              },
+              error: () => {},
+              complete: () => {},
+            });
           });
         },
         error: (errorData) => {
@@ -378,7 +474,6 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
           this.router.navigate(['/almacen/movimientos-almacen']);
         },
       });
-      //console.log(this.form.value)
     }
   }
 

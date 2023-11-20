@@ -4,6 +4,7 @@ import { pageSelection, Movimientos } from 'src/app/shared/interfaces/almacen';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 import { MovimientosAlmacenService } from '../../../../shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
+import { GeneralService } from 'src/app/shared/services/general.service';
 
 @Component({
   selector: 'app-movimientos-almacen-index',
@@ -32,10 +33,25 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
   public pageSelection: Array<pageSelection> = [];
   public totalPages = 0;
 
-  constructor(public movimientosAlmacenService: MovimientosAlmacenService) {}
+  constructor(
+    public movimientosAlmacenService: MovimientosAlmacenService,
+    public generalService: GeneralService
+  ) {}
 
   ngOnInit(): void {
-    this.ingresosAll();
+    this.userAll();
+  }
+
+  datosUSUARIOS: any;
+  userAll(): void {
+    this.generalService.getUsuariosAll().subscribe({
+      next: (datosUSUARIOS: any) => {
+        this.datosUSUARIOS = datosUSUARIOS;
+        this.ingresosAll();
+      },
+      error: () => {},
+      complete: () => {},
+    });
   }
 
   private ingresosAll(): void {
@@ -45,7 +61,7 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
       next: (datosINGRESO: any) => {
         this.datosINGRESO = datosINGRESO;
         this.totalData = this.datosINGRESO.length;
-      /*
+        /*
           if (datosINGRESO.includes('no hay resultados')) {
           this.totalData = 0;
           }
@@ -53,6 +69,19 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
         if (datosINGRESO === 'no hay resultados') {
           this.totalData = 0;
         }
+
+        // Mapea los nombres de datos de ventas
+        this.datosINGRESO = this.datosINGRESO.map((movimiento: Movimientos) => {
+          //PARA PROVEEDOR
+          const usuario = this.datosUSUARIOS.find(
+            (user: any) => user.user_id === movimiento.usuario_id
+          );
+          if (usuario) {
+            movimiento.nombreUsuario = usuario.user_name;
+          }
+
+          return usuario;
+        });
 
         datosINGRESO.map((res: Movimientos, index: number) => {
           const serialNumber = index + 1;
