@@ -16,12 +16,14 @@ export interface Ventas {
 }
 
 export interface VentasDetalle {
+  cantidadStockSucursal: string;
   det_id: number;
   venta_id: number;
   prod_id: number;
   cantidad_venta: number;
   precio_venta: number;
   descuento: number;
+  medidaid: number;
   nombreProducto: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   codigoProducto: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   medidaProducto: string; //AGREGADO PARA IMPRIMIR EN OTRAS VISTAS

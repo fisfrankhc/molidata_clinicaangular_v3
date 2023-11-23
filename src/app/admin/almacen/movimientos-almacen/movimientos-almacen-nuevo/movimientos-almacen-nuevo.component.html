@@ -197,7 +197,7 @@
                                                 <th>FECHA V.</th>
                                                 <th>LOTE</th>
                                                 <th>PESO (Kg)</th>
-                                                <th>SUBTOTAL</th>
+                                                <!-- <th>SUBTOTAL</th> -->
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -249,12 +249,12 @@
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td>
+<!--                                                 <td>
                                                     <input type="text" class="form-control"
                                                         [value]="producto.subtotalagregado"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
-                                                </td>
+                                                </td> -->
                                                 <td class="add-remove text-end">
                                                     <a class="remove-btn" (click)="eliminarProducto(i)"><i
                                                             class="fa fa-trash-alt"></i></a>
@@ -264,8 +264,10 @@
                                     </table>
                                 </div>
                             </div>
+
                             <div class="row">
                                 <div class="offset-lg-6 col-md-6">
+                                   <!--  
                                     <div class="invoice-total-card">
                                         <h3 class="invoice-total-title">Resumen</h3>
                                         <div class="invoice-total-box">
@@ -278,6 +280,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                     -->
                                     <div class="upload-sign">
                                         <div class="form-group float-end mb-0">
                                             <button class="btn btn-primary" type="submit" [disabled]="form.invalid"
@@ -288,6 +291,7 @@
                                     </div>
                                 </div>
                             </div>
+                            
                         </form>
                     </div>
                 </div>

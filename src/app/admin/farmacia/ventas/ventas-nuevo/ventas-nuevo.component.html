@@ -26,7 +26,7 @@
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="form-heading">
-                                                <h4>Cliente despachado</h4>
+                                                <h4>Cliente interesado</h4>
                                             </div>
                                         </div>
                                         <div class="row">
@@ -74,24 +74,24 @@
                                             <tr>
                                                 <td>
                                                     <input type="hidden" formControlName="idbuscado">
-                                                    <input class="form-control" type="text" style="min-width:150px; background-color: var(--bs-secondary-bg);"
+                                                    <input class="form-control" type="text"
+                                                        style="min-width:150px; background-color: var(--bs-secondary-bg);"
                                                         formControlName="codigobuscado" [readonly]="true">
                                                 </td>
                                                 <td>
-                                                    <!-- <mat-select class="form-control select"
-                                                        formControlName="nombrebuscado"
-                                                        (selectionChange)="onProductSelected($event.value)" placeholder="Seleccione un producto">
-                                                        <mat-option *ngFor="let producto of datoPRODUCTO"
-                                                            [value]="producto.prod_id">
-                                                            {{ producto.prod_nombre }}
-                                                        </mat-option>
-                                                    </mat-select> -->
-                                                    <mat-form-field class="example-full-width" style="width: 100%; top: 9px; position: relative;">
+                                                    <mat-form-field class="example-full-width"
+                                                        style="width: 100%; top: 9px; position: relative;">
                                                         <mat-label>Ubique el producto</mat-label>
-                                                        <input matInput aria-label="Seleccione el producto" [matAutocomplete]="auto" formControlName="nombrebproducto">
-                                                        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onProductSelected($event)">
-                                                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option.nombre">
-                                                                <span style="font-weight: 700;">{{option.nombre}}</span> |
+                                                        <input matInput aria-label="Seleccione el producto"
+                                                            [matAutocomplete]="auto" formControlName="nombrebproducto">
+                                                        <mat-autocomplete #auto="matAutocomplete"
+                                                            (optionSelected)="onProductSelected($event)">
+                                                            <mat-option *ngFor="let option of filteredOptions | async"
+                                                                [value]="option.nombre">
+                                                                <span style="font-weight: 700;">{{option.nombre}}</span>
+                                                                |
+                                                                <small>Stock: {{option.stock}}</small>
+                                                                |
                                                                 <small>{{option.descripcion}}</small>
                                                             </mat-option>
                                                         </mat-autocomplete>
@@ -102,23 +102,26 @@
                                                         formControlName="preciobuscado">
                                                 </td>
                                                 <td>
-                                                    <input class="form-control" style="width:80px; background-color: var(--bs-secondary-bg);" type="text"
-                                                        formControlName="medidabuscado">
+                                                    <input class="form-control"
+                                                        style="width:80px; background-color: var(--bs-secondary-bg);"
+                                                        type="text" formControlName="medidanombrebuscado">
                                                 </td>
                                                 <td>
+                                                    <input type="hidden" class="form-control" formControlName="cantidadStockBuscado">
                                                     <input class="form-control " style="width:120px" type="text"
                                                         formControlName="cantidadbuscado">
                                                 </td>
                                                 <td><a #addToListLink href="javascript:void(0)"
-                                                        class="text-success font-18 add-table-invoice" title="Agregar Producto"
-                                                        (click)="agregarALista()"><i class="fa fa-plus"></i></a></td>
+                                                        class="text-success font-18 add-table-invoice"
+                                                        title="Agregar Producto" (click)="agregarALista()"><i
+                                                            class="fa fa-plus"></i></a></td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                             <div class="invoice-add-table" style="padding-top: 0px;">
-                                <h4>Lista de compra</h4>
+                                <h4>Lista de productos para venta</h4>
                                 <div class="table-responsive">
                                     <table class="table table-striped table-nowrap  mb-0 no-footer add-table-items">
                                         <thead>
@@ -134,34 +137,42 @@
                                         </thead>
                                         <tbody>
                                             <tr class="add-row"
-                                                *ngFor="let producto of form.get('listaCompra')?.value; let i = index">
+                                                *ngFor="let producto of form.get('listaVenta')?.value; let i = index">
                                                 <td style="max-width: 50px;">
                                                     <input type="hidden" class="form-control"
                                                         [value]="producto.idobtenido">
                                                     <input type="text" class="form-control" value="{{i+1}}"
-                                                        style="text-align: center; background-color: var(--bs-secondary-bg);" readonly>
+                                                        style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                        readonly>
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        [value]="producto.codigoobtenido" style="background-color: var(--bs-secondary-bg);" readonly>
+                                                        [value]="producto.codigoobtenido"
+                                                        style="background-color: var(--bs-secondary-bg);" readonly>
                                                 </td>
                                                 <td>
                                                     <input type="hidden" class="form-control"
                                                         [value]="producto.nombreobtenido">
                                                     <input type="text" class="form-control"
-                                                        [value]="producto.nombrepobtenido" style="background-color: var(--bs-secondary-bg);" readonly>
+                                                        [value]="producto.nombrepobtenido"
+                                                        style="background-color: var(--bs-secondary-bg);" readonly>
                                                 </td>
                                                 <td style="max-width: 100px;">
-                                                    <input type="text" class="form-control" [value]="producto.cantidad"
-                                                        style="text-align: center; background-color: var(--bs-secondary-bg);" readonly>
+                                                    <input type="number" class="form-control" [class.estilo-rojo]="producto.estiloRojo"
+                                                        [value]="producto.cantidad"
+                                                        style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                        readonly>
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control" [value]="producto.precio"
-                                                        style="text-align: center; background-color: var(--bs-secondary-bg);" readonly>
+                                                        style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                        readonly>
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"
-                                                        [value]="producto.subtotalagregado" style="text-align: center; background-color: var(--bs-secondary-bg);" readonly>
+                                                        [value]="producto.subtotalagregado"
+                                                        style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                        readonly>
                                                 </td>
                                                 <td class="add-remove text-end">
                                                     <a class="remove-btn" (click)="eliminarProducto(i)"><i
