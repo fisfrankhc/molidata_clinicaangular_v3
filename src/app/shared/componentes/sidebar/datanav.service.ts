@@ -37,9 +37,11 @@ export class DatanavService {
           menuValue: 'Sucursal',
           hasSubRoute: false,
           showSubRoute: false,
-          base: 'blogs',
+          base: 'gallery',
+          base2: 'profile',
+          icon: 'fa-columns',
+          faIcon: true,
           route: 'sucursal',
-          img: 'assets/img/icons/menu-icon-13.svg',
           subMenus: [],
         },
 
@@ -113,6 +115,25 @@ export class DatanavService {
             {
               menuValue: 'Movimientos de Almacen',
               route: 'almacen/movimientos-almacen',
+            },
+          ],
+        },
+
+        {
+          menuValue: 'Contable',
+          hasSubRoute: true,
+          showSubRoute: false,
+          base: 'blogs',
+          route: 'sucursal',
+          img: 'assets/img/icons/menu-icon-13.svg',
+          subMenus: [
+            {
+              menuValue: 'Comprobantes',
+              route: 'contable/comprobantes',
+            },
+            {
+              menuValue: 'Reporte de Ventas',
+              route: 'contable/reporte-ventas',
             },
           ],
         },

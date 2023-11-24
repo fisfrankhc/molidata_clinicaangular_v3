@@ -4,7 +4,7 @@ export interface pageSelection {
 }
 
 export interface Ventas {
-  venta_id?: number | null;
+  venta_id: number;
   venta_fecha: string;
   cliente_id: number;
   venta_proceso?: string | null;
@@ -13,6 +13,7 @@ export interface Ventas {
   venta_estado: string;
   nombreCliente: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   nombreSucursal: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
+  montototal: number;
 }
 
 export interface VentasDetalle {

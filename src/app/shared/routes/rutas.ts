@@ -89,6 +89,14 @@ export class rutas {
   public static get almacen_movimientosalmacen_nuevo(): string {
     return this.baseUrl + '/almacen/movimientos-almacen/nuevo';
   }
+
+  public static get contable_comprobante(): string {
+    return this.baseUrl + '/contable/comprobantes';
+  }
+
+  public static get contable_reporteventas(): string {
+    return this.baseUrl + '/contable/reporte-ventas';
+  }
 }
   
   

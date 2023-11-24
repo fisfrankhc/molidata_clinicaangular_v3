@@ -41,6 +41,11 @@ const routes: Routes = [
         loadChildren: () =>
           import('./almacen/almacen.module').then((m) => m.AlmacenModule),
       },
+      {
+        path: 'contable',
+        loadChildren: () =>
+          import('./contable/contable.module').then((m) => m.ContableModule),
+      },
     ],
   },
 ];
