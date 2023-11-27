@@ -14,9 +14,14 @@ import { ClientesService } from 'src/app/shared/services/farmacia/clientes/clien
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MediosPagoService } from '../../../../shared/services/farmacia/caja/medios-pago.service';
 import { OperacionService } from 'src/app/shared/services/farmacia/caja/operacion.service';
+import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
 import { DatePipe } from '@angular/common';
 
 import { VentasDetalle } from 'src/app/shared/interfaces/farmacia';
+import { Stock } from 'src/app/shared/interfaces/logistica';
+
+import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
+import { MovimientosAlmacenDetalleService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen-detalle.service';
 
 @Component({
   selector: 'app-caja-ver',
@@ -24,6 +29,9 @@ import { VentasDetalle } from 'src/app/shared/interfaces/farmacia';
   styleUrls: ['./caja-ver.component.scss'],
 })
 export class CajaVerComponent implements OnInit {
+  usersucursal = localStorage.getItem('usersucursal');
+  userid = localStorage.getItem('userid');
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -34,6 +42,9 @@ export class CajaVerComponent implements OnInit {
     public productoService: ProductoService,
     public mediosPagoService: MediosPagoService,
     public operacionService: OperacionService,
+    private stockService: StockService,
+    private movimientosAlmacenService: MovimientosAlmacenService,
+    private movimientosAlmacenDetalleService: MovimientosAlmacenDetalleService,
     private datePipe: DatePipe
   ) {}
   ventaId: number | null = null;
@@ -61,7 +72,7 @@ export class CajaVerComponent implements OnInit {
       nombrecliente: [''],
       email: [''],
     }),
-    listaCompra: this.fb.array([]), // FormArray para la lista de compra
+    listaVenta: this.fb.array([]), // FormArray para la lista de compra
     ventaMedioPago: this.fb.group({
       medio_pago: ['', Validators.required],
     }),
@@ -85,8 +96,39 @@ export class CajaVerComponent implements OnInit {
       next: (datosPRO: any) => {
         this.datosPRO = datosPRO;
         this.ventaDetalleItem(this.ventaId);
+
+        this.stockAll();
       },
       error: () => {},
+      complete: () => {},
+    });
+  }
+
+  datoStock: any[] = [];
+  stockAll() {
+    this.stockService.getStockAll().subscribe({
+      next: (data: any) => {
+        this.datoStock = data;
+        //console.log(data);
+        // Mapea los nombres de datos de ventas
+        this.datoStock = this.datoStock.map((stockValor: Stock) => {
+          //PARA PROVEEDOR
+          const datoStocks = this.datosPRO.find(
+            (prod: any) =>
+              stockValor.producto_id === prod.prod_id &&
+              stockValor.almacen_id === this.usersucursal &&
+              stockValor.unidad_medida === prod.med_id
+          );
+          if (datoStocks) {
+            datoStocks.cantidadStockSucursal = stockValor.cantidad;
+            datoStocks.almacen_id = stockValor.almacen_id;
+            datoStocks.stock_id = stockValor.stock_id;
+          }
+          return datoStocks;
+        });
+        //console.log(this.datoStock);
+      },
+      error: (_erroData) => {},
       complete: () => {},
     });
   }
@@ -146,11 +188,12 @@ export class CajaVerComponent implements OnInit {
             if (producto) {
               ventasDetalle.nombreProducto = producto.prod_nombre;
               ventasDetalle.codigoProducto = producto.prod_codigo;
+              ventasDetalle.medidaProducto = producto.med_id;
             }
             return ventasDetalle;
           }
         );
-
+        //console.log(this.datosProductosDetalle);
         this.productoList = this.datosProductosDetalle;
       },
       error: (errorData) => {
@@ -182,56 +225,191 @@ export class CajaVerComponent implements OnInit {
 
   public selectedValue?: string;
   mediosPago: any[] = [];
-  userid = localStorage.getItem('userid');
   fechaActual = new Date();
   fechaFormateada = this.datePipe.transform(
     this.fechaActual,
     'yyyy/MM/dd HH:mm'
   );
+
+  movimiento: any;
   pagarVenta() {
+    const cantidadesPorId: {
+      [id: string]: {
+        almacen: number;
+        producto: number;
+        cantidad: number;
+        medida: string;
+        stock_id: number;
+      };
+    } = {};
+
     if (this.form.valid) {
-      //console.log(this.form.value);
       const ventaData = {
         id: this.ventaId,
         proceso: 'PAGADO',
       };
 
-      const operacionData = {
-        usuario: this.userid, //user_id
-        fecha: this.fechaFormateada, //fecha_pago
-        tipo: 'INGRESO', //ope_tipo
-        monto: this.calcularSubtotalTotal(), //monto_pago
-        motivo: 'VENTA', // motivo_pago
-        motivoCodigo: this.ventaId, // motivo_codigo: codigo de la venta, su id
-        descripcion: '', // descripcion_pago: Cuando es egreso, se decribe la operacion
-        medio: this.form.get('ventaMedioPago')?.value.medio_pago, //medio_pago
-        medioDetalle: '', // medio_detalle: Cuando no es efectivo, se describe
-      };
+      this.productoList.forEach((producto: any) => {
+        //console.log(producto);
+        const idobtenido = producto.prod_id;
+        const cantidad = +producto.cantidad_venta;
+        cantidadesPorId[idobtenido] = cantidadesPorId[idobtenido] || {
+          almacen: this.usersucursal,
+          producto: producto.prod_id,
+          cantidad: 0,
+          medida: producto.medidaProducto,
+          stock_id: '', //ID DEL STOCK PARA EL PUT
+        };
+        cantidadesPorId[idobtenido].cantidad += cantidad;
+      });
+      let todosProductosCumplen = true; // Variable de bandera
+      const productosCumplenCriterio: {
+        id: number;
+        cantidad: number;
+        producto: number;
+      }[] = []; // Almacena los productos que cumplen con el criterio
 
-      this.ventasService.updatedVenta(ventaData).subscribe({
-        next: (response) => {
-          console.log(response);
+      //PARA EL PUT
+      Object.keys(cantidadesPorId).forEach((id) => {
+        const datosFind = this.datoStock.find(
+          (prod: any) => prod.prod_id === cantidadesPorId[id].producto
+        );
+        const operacionCantidad = parseFloat(
+          (
+            datosFind.cantidadStockSucursal - cantidadesPorId[id].cantidad
+          ).toFixed(2)
+        );
+        const stockSucursal = this.datoStock.find(
+          (stock: any) =>
+            stock.prod_id === cantidadesPorId[id].producto &&
+            stock.med_id === cantidadesPorId[id].medida &&
+            stock.almacen_id === this.usersucursal
+        );
+        cantidadesPorId[id].stock_id = stockSucursal.stock_id;
 
-                this.operacionService.postOperacion(operacionData).subscribe({
-                  next: (response2) => {console.log("Guardado con exito:" + response2)},
-                  error: (errorData) => {
-                    console.log("Error al guardar la Operacion")
-                    console.log(errorData);
-                  },
-                  complete: () => {},
-                });
-        },
-        error: (errorData) => {
-          console.log(errorData);
-        },
-        complete: () => {
-          this.router.navigate([`/farmacia/caja/venta-pagada/${this.ventaId}`]);
-        },
+        if (operacionCantidad < 0) {
+          todosProductosCumplen = false;
+        } else {
+          productosCumplenCriterio.push({
+            id: cantidadesPorId[id].stock_id,
+            cantidad: operacionCantidad,
+            producto: cantidadesPorId[id].producto,
+          });
+        }
       });
 
-      /* console.log(this.form.value);
-      console.log(ventaData);
-      console.log(operacionData); */
+      if (todosProductosCumplen) {
+
+        productosCumplenCriterio.forEach((ventasDataPut) => {
+          //console.log(ventasDataPut); console.log(ventasDataPut.cantidad);
+          //HACER EL PUT
+          this.stockService.updatedStock(ventasDataPut).subscribe({
+            next: (response) => {
+              console.log(response);
+            },
+            error: (errorData) => {
+              console.log(errorData);
+            },
+            complete: () => {},
+          });
+          //FIN HACER EL PUT
+        });
+
+        const movimientoData = {
+          fecha: this.fechaFormateada,
+          tipo: 'SALIDA',
+          usuario: this.userid,
+          sucursal: this.usersucursal,
+          origen: 'VENTA',
+          origencodigo: this.ventaId, //I DE LA VENTA
+          observaciones: '',
+        };
+
+        //POST MOVIMIENTOS
+        this.movimientosAlmacenService
+          .postMovimientos(movimientoData)
+          .subscribe({
+            next: (response) => {
+              this.movimiento = response;
+
+              this.productoList.forEach((producto: any) => {
+                producto.movimiento = this.movimiento;
+                const movimientoDetalleData = {
+                  movimiento: producto.movimiento,
+                  producto: producto.prod_id,
+                  cantidad: producto.cantidad_venta,
+                  medida: producto.medidaProducto,
+                  vencimiento: '',
+                  lote: '',
+                  peso: '',
+                };
+                this.movimientosAlmacenDetalleService
+                  .postMovimientosDetalle(movimientoDetalleData)
+                  .subscribe({
+                    next: (response) => {
+                      console.log(
+                        'Movimientodetalle registrado con éxito:',
+                        response
+                      );
+                    },
+                    error: (errorData) => {
+                      console.error(
+                        'Error al enviar la solicitud POST de MOVIMIENTODETALLE:',
+                        errorData
+                      );
+                    },
+                    complete: () => {},
+                  });
+              });
+            },
+            error: (errorData) => {
+              console.error(
+                'Error al enviar la solicitud POST de MOVIMIENTO:',
+                errorData
+              );
+            },
+            complete: () => {},
+          });
+
+        //PROCEDIMIENTO ANTERIOR SIN MODIFICACIONES
+        const operacionData = {
+          usuario: this.userid, //user_id
+          fecha: this.fechaFormateada, //fecha_pago
+          tipo: 'INGRESO', //ope_tipo
+          monto: this.calcularSubtotalTotal(), //monto_pago
+          motivo: 'VENTA', // motivo_pago
+          motivoCodigo: this.ventaId, // motivo_codigo: codigo de la venta, su id
+          descripcion: '', // descripcion_pago: Cuando es egreso, se decribe la operacion
+          medio: this.form.get('ventaMedioPago')?.value.medio_pago, //medio_pago
+          medioDetalle: '', // medio_detalle: Cuando no es efectivo, se describe
+        };
+
+        this.ventasService.updatedVenta(ventaData).subscribe({
+          next: (response) => {
+            console.log(response);
+
+            this.operacionService.postOperacion(operacionData).subscribe({
+              next: (response2) => {
+                console.log('Guardado con exito:' + response2);
+              },
+              error: (errorData) => {
+                console.log('Error al guardar la Operacion');
+                console.log(errorData);
+              },
+              complete: () => {},
+            });
+          },
+          error: (errorData) => {
+            console.log(errorData);
+          },
+          complete: () => {
+            this.router.navigate([
+              `/farmacia/caja/venta-pagada/${this.ventaId}`,
+            ]);
+          },
+        });
+        //FIN PROCEDIMIENTO ANTERIOR SIN MODIFICACIONES
+      }
     }
   }
 }

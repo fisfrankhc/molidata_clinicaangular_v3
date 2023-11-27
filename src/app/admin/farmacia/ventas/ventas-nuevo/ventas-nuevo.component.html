@@ -98,8 +98,9 @@
                                                     </mat-form-field>
                                                 </td>
                                                 <td>
-                                                    <input class="form-control" style="width:100px" type="number"
+                                                    <input class="form-control" style="width:100px" type="hidden"
                                                         formControlName="preciobuscado">
+                                                    <input class="form-control" style="width:100px" type="number" formControlName="precioventabuscado">
                                                 </td>
                                                 <td>
                                                     <input class="form-control"
@@ -128,9 +129,10 @@
                                             <tr style="text-align: center">
                                                 <th>#</th>
                                                 <th>C&Oacute;DIGO</th>
-                                                <th>PRODUCTO</th>
+                                                <th>NOMBRE DEL PRODUCTO</th>
                                                 <th>CANTIDAD</th>
                                                 <th>PRECIO</th>
+                                                <th>PRECIO VENTA</th>
                                                 <th>SUBTOTAL</th>
                                                 <th></th>
                                             </tr>
@@ -145,12 +147,12 @@
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td>
+                                                <td style="max-width: 115px;">
                                                     <input type="text" class="form-control"
                                                         [value]="producto.codigoobtenido"
                                                         style="background-color: var(--bs-secondary-bg);" readonly>
                                                 </td>
-                                                <td>
+                                                <td style="max-width: 300px;">
                                                     <input type="hidden" class="form-control"
                                                         [value]="producto.nombreobtenido">
                                                     <input type="text" class="form-control"
@@ -158,17 +160,21 @@
                                                         style="background-color: var(--bs-secondary-bg);" readonly>
                                                 </td>
                                                 <td style="max-width: 100px;">
-                                                    <input type="number" class="form-control" [class.estilo-rojo]="producto.estiloRojo"
+                                                    <input type="number" class="form-control" 
                                                         [value]="producto.cantidad"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td>
-                                                    <input type="text" class="form-control" [value]="producto.precio"
+                                                <td style="max-width: 100px;">
+                                                    <input type="text" class="form-control" [value]="producto.preciooriginal"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td>
+                                                <td style="max-width: 100px;">
+                                                    <input type="text"  class="form-control" [class.estilo-rojo]="!producto.precioIgualOriginal" [value]="producto.precio" style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                        readonly>
+                                                </td>
+                                                <td style="max-width: 120px;">
                                                     <input type="text" class="form-control"
                                                         [value]="producto.subtotalagregado"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"

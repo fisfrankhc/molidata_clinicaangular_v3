@@ -52,8 +52,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="invoice-add-table" style="padding-top: 0px;">
-                                <h4>Lista de compra</h4>
+                            <div class="invoice-add-table" style="padding-top: 0px;" formGroupName="listaVenta">
+                                <h4>Productos en Lista de Venta</h4>
                                 <div class="table-responsive">
                                     <table class="table table-striped table-nowrap  mb-0 no-footer add-table-items">
                                         <thead>
@@ -77,32 +77,27 @@
                                                 </td>
                                                 <td style="max-width: 150px;">
                                                     <input class="form-control" [value]="data.codigoProducto"
-                                                        style="text-align: center; background-color: transparent;border: 0;"
-                                                        readonly>
+                                                        style="text-align: center; background-color: transparent;border: 0;" readonly>
                                                 </td>
                                                 <td>
                                                     <input type="text" class="form-control"
                                                         [value]="data.nombreProducto"
-                                                        style="text-align: center; background-color: transparent;border: 0;"
-                                                        readonly>
+                                                        style="text-align: center; background-color: transparent;border: 0;" readonly>
                                                 </td>
                                                 <td style="max-width: 100px;">
                                                     <input class="form-control" [value]="data.cantidad_venta"
-                                                        style="text-align: center; background-color: transparent;border: 0;"
-                                                        readonly>
+                                                        style="text-align: center; background-color: transparent;border: 0;" readonly>
                                                 </td>
                                                 <td style="max-width: 110px;">
                                                     <input class="form-control" [value]="data.precio_venta"
-                                                        style="text-align: center; background-color: transparent;border: 0;"
-                                                        readonly>
+                                                        style="text-align: center; background-color: transparent;border: 0;" readonly>
                                                 </td>
                                                 <td style="max-width: 110px;">
                                                     <input class="form-control" [value]="data.descuento"
-                                                        style="text-align: center; background-color: transparent;border: 0;"
-                                                        readonly>
+                                                        style="text-align: center; background-color: transparent;border: 0;" readonly>
                                                 </td>
                                                 <td style="vertical-align: middle;">
-                                                    <p style="margin: 0; text-align: center; font-weight: 500;">
+                                                    <p style="margin: 0; text-align: center; font-weight: 500;"> 
                                                         {{calcularSubtotal(data)}}</p>
                                                 </td>
                                             </tr>

@@ -102,6 +102,7 @@ export class VentasNuevoComponent implements OnInit {
         nombrebuscado: [''],
         nombrebproducto: [''],
         preciobuscado: [''],
+        precioventabuscado: [''],
         medidabuscado: [''],
         medidanombrebuscado: [''],
         cantidadStockBuscado: [''],
@@ -127,6 +128,7 @@ export class VentasNuevoComponent implements OnInit {
             codigobuscado: '',
             nombrebuscado: '',
             preciobuscado: '',
+            precioventabuscado: '',
             medidabuscado: '',
             medidanombrebuscado: '',
             cantidadStockBuscado: '',
@@ -302,6 +304,7 @@ export class VentasNuevoComponent implements OnInit {
         nombrebuscado: productoSeleccionado.prod_id,
         nombrebproducto: productoSeleccionado.prod_nombre,
         preciobuscado: productoSeleccionado.precio_venta,
+        precioventabuscado: productoSeleccionado.precio_venta,
         medidabuscado: productoSeleccionado.med_id,
         medidanombrebuscado: medida.med_simbolo,
         cantidadStockBuscado: productoSeleccionado.cantidadStockSucursal,
@@ -315,6 +318,7 @@ export class VentasNuevoComponent implements OnInit {
         nombrebuscado: '',
         nombrebproducto: '',
         preciobuscado: '',
+        precioventabuscado: '',
         medidabuscado: '',
         medidanombrebuscado: '',
         cantidadStockBuscado: '',
@@ -337,10 +341,12 @@ export class VentasNuevoComponent implements OnInit {
         producto: [''],
         nombrepobtenido: [''],
         cantidad: [''],
+        preciooriginal: [''],
         precio: [''],
         medida: [''],
         subtotalagregado: [''],
         descuento: [0],
+        precioIgualOriginal: [true], // Nueva propiedad
       });
 
       // Copia los valores del producto buscado al nuevo producto
@@ -350,14 +356,23 @@ export class VentasNuevoComponent implements OnInit {
         producto: productoBuscado?.get('nombrebuscado')?.value,
         nombrepobtenido: productoBuscado?.get('nombrebproducto')?.value,
         cantidad: productoBuscado?.get('cantidadbuscado')?.value,
-        precio: productoBuscado?.get('preciobuscado')?.value,
+        preciooriginal: productoBuscado?.get('preciobuscado')?.value,
+        precio: productoBuscado?.get('precioventabuscado')?.value,
         medida: productoBuscado?.get('medidabuscado')?.value,
         descuento: 0,
         subtotalagregado: (
-          productoBuscado?.get('preciobuscado')?.value *
+          productoBuscado?.get('precioventabuscado')?.value *
           productoBuscado?.get('cantidadbuscado')?.value
         ).toFixed(2),
       });
+
+      // Verifica si el precio es igual al precio original
+      nuevoProducto
+        .get('precioIgualOriginal')
+        ?.setValue(
+          nuevoProducto.get('precio')?.value ===
+            nuevoProducto.get('preciooriginal')?.value
+        );
 
       // Agrega el nuevo producto a la lista de compra
       listaVenta.push(nuevoProducto);
@@ -473,23 +488,9 @@ export class VentasNuevoComponent implements OnInit {
         }
       });
 
+
       // Verifica la variable de bandera antes de imprimir
       if (todosProductosCumplen) {
-        productosCumplenCriterio.forEach((ventasDataPut) => {
-          console.log(ventasDataPut);
-          console.log(ventasDataPut.cantidad);
-          //HACER EL PUT
-          this.stockService.updatedStock(ventasDataPut).subscribe({
-            next: (response) => {
-              console.log(response);
-            },
-            error: (errorData) => {
-              console.log(errorData);
-            },
-            complete: () => {},
-          });
-          //FIN HACER EL PUT
-        });
 
         //HACER EL POST
         const movimientoData = {
@@ -545,6 +546,7 @@ export class VentasNuevoComponent implements OnInit {
           text: 'HAY UN PRODUCTO QUE NO CUENTA CON EL STOCK DISPONIBLE PARA LA COMPRA',
         });
       }
+      
     }
   }
   movimiento: any;
@@ -636,22 +638,6 @@ export class VentasNuevoComponent implements OnInit {
 
       // Verifica la variable de bandera antes de imprimir
       if (todosProductosCumplen) {
-        productosCumplenCriterio.forEach((ventasDataPut) => {
-          //console.log(ventasDataPut);
-          //console.log(ventasDataPut.cantidad);
-          //HACER EL PUT
-          this.stockService.updatedStock(ventasDataPut).subscribe({
-            next: (response) => {
-              console.log(response);
-            },
-            error: (errorData) => {
-              console.log(errorData);
-            },
-            complete: () => {},
-          });
-          //FIN HACER EL PUT
-        });
-
         //HACER EL POST
         const movimientoData = {
           fecha: this.fechaFormateada,
@@ -686,61 +672,6 @@ export class VentasNuevoComponent implements OnInit {
               });
               //FIN DE VENTA-DETALLE
             });
-
-            const movimientoData = {
-              fecha: this.fechaFormateada,
-              tipo: 'SALIDA',
-              usuario: this.userid,
-              sucursal: this.usersucursal,
-              origen: 'VENTA',
-              origencodigo: this.venta, //I DE LA VENTA
-              observaciones: '',
-            };
-            //POST MOVIMIENTOS
-            this.movimientosAlmacenService
-              .postMovimientos(movimientoData)
-              .subscribe({
-                next: (response) => {
-                  this.movimiento = response;
-
-                  this.form.value.listaVenta.forEach((producto: Producto) => {
-                    producto.movimiento = this.movimiento;
-                    const movimientoDetalleData = {
-                      movimiento: producto.movimiento,
-                      producto: producto.producto,
-                      cantidad: producto.cantidad,
-                      medida: producto.medida,
-                      vencimiento: '',
-                      lote: '',
-                      peso: '',
-                    };
-                    this.movimientosAlmacenDetalleService
-                      .postMovimientosDetalle(movimientoDetalleData)
-                      .subscribe({
-                        next: (response) => {
-                          console.log(
-                            'Movimientodetalle registrado con éxito:',
-                            response
-                          );
-                        },
-                        error: (errorData) => {
-                          console.error(
-                            'Error al enviar la solicitud POST de MOVIMIENTODETALLE:',
-                            errorData
-                          );
-                        },
-                        complete: () => {},
-                      });
-                  });
-                },
-                error: (errorData) => {
-                  console.error(
-                    'Error al enviar la solicitud POST de MOVIMIENTO:',
-                    errorData
-                  );
-                },
-                complete: () => {},
-              });
           },
           error: (errorData) => {
             console.error(
