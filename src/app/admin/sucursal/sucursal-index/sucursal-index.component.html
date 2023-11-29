@@ -75,13 +75,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of sucursalList">
+                                    <tr *ngFor="let data of sucursalList, let i = index">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td>{{data.suc_id}}</td>
+                                        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                         <td>{{data.suc_nombre}}</td>
                                         <td>{{data.suc_direccion}}</td>
                                             <td [ngSwitch]="data.suc_estado">

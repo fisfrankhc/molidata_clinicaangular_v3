@@ -77,7 +77,7 @@
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td class="profile-image">{{ i+1 }}</td>
+                                        <td class="profile-image">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                         <td>{{data.codigoProducto}}</td>
                                         <td>{{data.nombreProducto}}</td>
                                         <td>{{data.cantidad}}</td>

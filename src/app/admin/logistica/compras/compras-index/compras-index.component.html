@@ -81,13 +81,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of comprasList">
+                                    <tr *ngFor="let data of comprasList; let i = index">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td> 
-                                        <td>{{ data.compra_id }}</td>
+                                        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                         <td>{{ data.nombreProveedor }}</td>
                                         <td>{{ data.compra_fecha | date: 'dd/MM/yyyy' }}</td>
                                         <td>{{ data.tipo_pago }}</td>

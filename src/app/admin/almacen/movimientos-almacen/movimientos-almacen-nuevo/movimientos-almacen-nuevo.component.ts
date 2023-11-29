@@ -75,7 +75,7 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
         codigo_origen: [''],
       }),
       productoBuscado: this.fb.group({
-        idbuscado: [''],
+        idbuscado: ['', Validators.required],
         codigobuscado: [''],
         nombrebuscado: [''],
         nombrebproducto: [''],

@@ -94,7 +94,7 @@ export class VentasNuevoComponent implements OnInit {
         id: ['', Validators.required],
         documento: [''],
         nombrecliente: [''],
-        email: [''],
+        direccion: [''],
       }),
       productoBuscado: this.fb.group({
         idbuscado: ['', Validators.required],
@@ -214,15 +214,15 @@ export class VentasNuevoComponent implements OnInit {
               .get('clienteDetalle.nombrecliente')
               ?.patchValue(clienteEncontrado.cli_nombre);
             this.form
-              .get('clienteDetalle.email')
-              ?.patchValue(clienteEncontrado.cli_email);
+              .get('clienteDetalle.direccion')
+              ?.patchValue(clienteEncontrado.cli_direccion);
           } else {
             // En caso de no encontrar el cliente, puedes limpiar los campos
             this.form.get('clienteDetalle.id')?.patchValue('');
             this.form
               .get('clienteDetalle.nombrecliente')
               ?.patchValue('Cliente no encontrado');
-            this.form.get('clienteDetalle.email')?.patchValue('-');
+            this.form.get('clienteDetalle.direccion')?.patchValue('-');
           }
         },
         error: (_errorData) => {},
@@ -231,7 +231,7 @@ export class VentasNuevoComponent implements OnInit {
     } else {
       this.form.get('clienteDetalle.id')?.patchValue('');
       this.form.get('clienteDetalle.nombrecliente')?.patchValue('');
-      this.form.get('clienteDetalle.email')?.patchValue('');
+      this.form.get('clienteDetalle.direccion')?.patchValue('');
     }
   }
 

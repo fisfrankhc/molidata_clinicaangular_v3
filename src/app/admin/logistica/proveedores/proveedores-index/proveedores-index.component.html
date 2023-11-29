@@ -70,7 +70,7 @@
                                                 <input class="form-check-input" type="checkbox" value="something">
                                             </div>
                                         </th>
-                                        <th mat-sort-header="proveedor_id">ID</th>
+                                        <th mat-sort-header="proveedor_id">#</th>
                                         <th mat-sort-header="documento_tipo">TIPO</th>
                                         <th mat-sort-header="documento_numero"># DOCUMENTO</th>
                                         <th mat-sort-header="razon_social">RAZON SOCIAL</th>
@@ -82,13 +82,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of proveedorList">
+                                    <tr *ngFor="let data of proveedorList; let i = index">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td class="profile-image">{{data.proveedor_id}}</td>
+                                        <td class="profile-image">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                         <td>{{data.documento_tipo}}</td>
                                         <td>{{data.documento_numero}}</td>
                                         <td>{{data.razon_social}}</td>

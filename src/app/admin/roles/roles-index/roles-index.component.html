@@ -75,13 +75,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of rolesList">
+                                    <tr *ngFor="let data of rolesList, let i = index">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td>{{data.rol_id}}</td>
+                                        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                         <td>{{data.rol_nombre}}</td>
                                         <td>{{data.rol_descripcion}}</td>
                                         <td [ngSwitch]="data.rol_estado">

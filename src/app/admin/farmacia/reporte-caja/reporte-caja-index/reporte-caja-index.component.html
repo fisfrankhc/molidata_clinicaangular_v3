@@ -94,7 +94,7 @@
                                                 <input class="form-check-input" type="checkbox" value="something">
                                             </div>
                                         </th>
-                                        <th mat-sort-header="ope_id">ID</th>
+                                        <th mat-sort-header="ope_id">#</th>
                                         <th mat-sort-header="user_id">USUARIO</th>
                                         <th mat-sort-header="fecha_pago">FECHA P.</th>
                                         <th mat-sort-header="ope_tipo">OPERACI&Oacute;N</th>
@@ -106,13 +106,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of operacionList">
+                                    <tr *ngFor="let data of operacionList; let i = index">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td>{{ data.ope_id }}</td>
+                                        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                         <td>{{ data.user_id }}</td>
                                         <td>{{ data.fecha_pago | date: 'dd/MM/yyyy' }}</td>
                                         <td>{{ data.ope_tipo }}</td>

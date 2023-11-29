@@ -70,7 +70,7 @@
                                                 <input class="form-check-input" type="checkbox" value="something">
                                             </div>
                                         </th>
-                                        <th mat-sort-header="venta_id">ID</th>
+                                        <th mat-sort-header="venta_id">#</th>
                                         <th mat-sort-header="venta_fecha">FECHA</th>
                                         <th mat-sort-header="cliente_id">CLIENTE</th>
                                         <th mat-sort-header="venta_proceso">PROCESO DE VENTA</th>
@@ -81,13 +81,13 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of ventasList">
+                                    <tr *ngFor="let data of ventasList; let i = index">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td>{{ data.venta_id }}</td>
+                                        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                         <td>{{ data.venta_fecha | date: 'dd/MM/yyyy' }}</td>
                                         <!-- <td>{{ data.cliente_id }}</td> -->
                                         <td>{{ data.nombreCliente }}</td>
