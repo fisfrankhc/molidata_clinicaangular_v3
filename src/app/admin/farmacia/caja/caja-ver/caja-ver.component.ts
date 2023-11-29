@@ -75,6 +75,7 @@ export class CajaVerComponent implements OnInit {
     listaVenta: this.fb.array([]), // FormArray para la lista de compra
     ventaMedioPago: this.fb.group({
       medio_pago: ['', Validators.required],
+      medioDetalle: [''],
     }),
   });
 
@@ -299,7 +300,6 @@ export class CajaVerComponent implements OnInit {
       });
 
       if (todosProductosCumplen) {
-
         productosCumplenCriterio.forEach((ventasDataPut) => {
           //console.log(ventasDataPut); console.log(ventasDataPut.cantidad);
           //HACER EL PUT
