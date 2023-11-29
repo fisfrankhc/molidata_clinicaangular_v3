@@ -328,6 +328,7 @@ export class VentasNuevoComponent implements OnInit {
     //console.log(this.form.value.productoBuscado);
   }
 
+  preciosNoIguales: any;
   //PARA EL TERCER FORMGROUP
   agregarALista() {
     if (this.form.get('productoBuscado')?.valid) {
@@ -372,8 +373,13 @@ export class VentasNuevoComponent implements OnInit {
         ?.setValue(
           nuevoProducto.get('precio')?.value ===
             nuevoProducto.get('preciooriginal')?.value
-        );
-
+      );
+      if (nuevoProducto.get('precioIgualOriginal')) {
+        console.log(nuevoProducto.value.precioIgualOriginal);
+        this.preciosNoIguales = nuevoProducto.value.precioIgualOriginal;
+      }
+        
+      // Almacena en preciosNoIguales si los precios no son iguales
       // Agrega el nuevo producto a la lista de compra
       listaVenta.push(nuevoProducto);
       //console.log(listaVenta.controls);
@@ -402,7 +408,7 @@ export class VentasNuevoComponent implements OnInit {
   venta: any;
   ActualizarVentaStock: any;
 
-  ProformaClick() {
+  async ProformaClick() {
     const cantidadesPorId: {
       [id: string]: {
         almacen: number;
@@ -488,10 +494,9 @@ export class VentasNuevoComponent implements OnInit {
         }
       });
 
-
       // Verifica la variable de bandera antes de imprimir
       if (todosProductosCumplen) {
-
+        /* 
         //HACER EL POST
         const movimientoData = {
           fecha: this.fechaFormateada,
@@ -535,7 +540,24 @@ export class VentasNuevoComponent implements OnInit {
           complete: () => {
             this.router.navigate(['/farmacia/venta']);
           },
-        });
+        }); */
+        if (!this.preciosNoIguales) {
+          //console.log(this.preciosNoIguales);
+          const { value: codigo } = await Swal.fire({
+            title: 'Ingrese codigo de validaci&oacute;n',
+            input: 'text',
+            //inputLabel: 'Tu codigo de validacion',
+            inputPlaceholder: 'Codigo',
+          });
+          if (codigo) {
+            //Swal.fire(`Entered Code: ${codigo}`);
+            if (codigo == '1234') {
+              console.log("EL CODIGO ES CORRECTO")
+            } else {
+              Swal.fire('El codigo es incorrecto');
+            }
+          }
+        }
       } else {
         Swal.fire({
           icon: 'error',
@@ -543,10 +565,9 @@ export class VentasNuevoComponent implements OnInit {
           timerProgressBar: true, // Muestra una barra de progreso
           showConfirmButton: false,
           timer: 4000,
-          text: 'HAY UN PRODUCTO QUE NO CUENTA CON EL STOCK DISPONIBLE PARA LA COMPRA',
+          text: 'HAY UNO O MAS PRODUCTOS QUE NO CUENTAN CON EL STOCK',
         });
       }
-      
     }
   }
   movimiento: any;
@@ -649,7 +670,7 @@ export class VentasNuevoComponent implements OnInit {
           observaciones: '',
         };
         //POST VENTAS
-        this.ventasService.postVentas(ventaData).subscribe({
+        /* this.ventasService.postVentas(ventaData).subscribe({
           next: (response) => {
             this.venta = response;
 
@@ -682,7 +703,8 @@ export class VentasNuevoComponent implements OnInit {
           complete: () => {
             this.router.navigate(['/farmacia/caja']);
           },
-        });
+        }); */
+        console.log;
       } else {
         Swal.fire({
           icon: 'error',
@@ -690,7 +712,7 @@ export class VentasNuevoComponent implements OnInit {
           timerProgressBar: true, // Muestra una barra de progreso
           showConfirmButton: false,
           timer: 4000,
-          text: 'HAY UN PRODUCTO QUE NO CUENTA CON EL STOCK DISPONIBLE PARA LA COMPRA',
+          text: 'HAY UNO O MAS PRODUCTOS QUE NO CUENTAN CON EL STOCK',
         });
       }
     }

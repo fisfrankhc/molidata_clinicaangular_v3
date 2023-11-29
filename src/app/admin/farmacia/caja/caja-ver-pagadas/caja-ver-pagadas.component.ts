@@ -23,6 +23,11 @@ import { DatePipe } from '@angular/common';
 import { VentasDetalle } from 'src/app/shared/interfaces/farmacia';
 import { DatosEmpresa } from 'src/app/shared/interfaces/empresa';
 
+import * as pdfMake from 'pdfmake/build/pdfmake';
+import * as pdfFonts from 'pdfmake/build/vfs_fonts';
+(pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
+import { TDocumentDefinitions } from 'pdfmake/interfaces';
+
 @Component({
   selector: 'app-caja-ver-pagadas',
   templateUrl: './caja-ver-pagadas.component.html',
@@ -298,7 +303,7 @@ export class CajaVerPagadasComponent implements OnInit {
       'Novecientos',
     ];
 
-    if (numero < 10) {
+    /* if (numero < 10) {
       return unidades[numero];
     } else if (numero < 20) {
       //return 'Diez' + (numero === 10 ? '' : ' y ' + unidades[numero - 10]);
@@ -321,6 +326,44 @@ export class CajaVerPagadasComponent implements OnInit {
       }
 
       return result;
+    } */
+
+    if (numero === 0) {
+      return 'Cero';
+    } else if (numero < 10) {
+      return unidades[numero];
+    } else if (numero < 20) {
+      return especiales[numero - 10];
+    } else if (numero < 100) {
+      const unidad = numero % 10;
+      const decena = Math.floor(numero / 10);
+      return decenas[decena] + (unidad > 0 ? ' y ' + unidades[unidad] : '');
+    } else {
+      const partes: string[] = [];
+      let numeroRestante = Math.abs(numero);
+      const billones = Math.floor(numeroRestante / 1e12);
+      if (billones > 0) {
+        partes.push(this.numeroAString(billones) + ' Billones');
+        numeroRestante %= 1e12;
+      }
+
+      const millones = Math.floor(numeroRestante / 1e6);
+      if (millones > 0) {
+        partes.push(this.numeroAString(millones) + ' Millones');
+        numeroRestante %= 1e6;
+      }
+
+      const miles = Math.floor(numeroRestante / 1e3);
+      if (miles > 0) {
+        partes.push(this.numeroAString(miles) + ' Mil');
+        numeroRestante %= 1e3;
+      }
+
+      if (numeroRestante > 0) {
+        partes.push(this.numeroAString(numeroRestante));
+      }
+
+      return partes.join(' ');
     }
   }
 
@@ -349,11 +392,52 @@ export class CajaVerPagadasComponent implements OnInit {
       pdf.html(contenidoDiv, {
         callback: (pdf) => {
           // Guarda el PDF después de cargar el contenido
-          pdf.save('tu-archivo.pdf');
+          //pdf.save('tu-archivo.pdf');
+          // Abre el PDF en una nueva ventana o pestaña
+          pdf.output('dataurlnewwindow');
         },
       });
     } else {
       console.error('Elemento no encontrado:', contenidoDiv);
     }
   }
+
+  /*   generarPDF() {
+    const contenidoHTMLElement = document.getElementById('ticketEmitir');
+
+    if (contenidoHTMLElement) {
+      const contenidoHTML = contenidoHTMLElement.outerHTML;
+
+      const documentDefinition: TDocumentDefinitions = {
+        content: [
+          {
+            text: 'Nota de Venta Electrónica',
+            fontSize: 18,
+            alignment: 'center',
+            bold: true,
+          },
+          { text: '', margin: [0, 10] }, // espacio en blanco
+          {
+            text: 'Detalles del Ticket',
+            fontSize: 14,
+            alignment: 'center',
+            bold: true,
+          },
+          { text: '', margin: [0, 10] }, // espacio en blanco
+          {
+            text: {
+              text: '',
+              link:
+                'data:text/html;charset=utf-8,' +
+                encodeURIComponent(contenidoHTML),
+            },
+          },
+        ],
+      };
+
+      pdfMake.createPdf(documentDefinition).open();
+    } else {
+      console.error('Elemento con ID "ticketEmitir" no encontrado.');
+    }
+  } */
 }

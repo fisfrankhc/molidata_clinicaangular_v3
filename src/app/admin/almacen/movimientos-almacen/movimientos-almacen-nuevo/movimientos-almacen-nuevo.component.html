@@ -283,7 +283,7 @@
                                      -->
                                     <div class="upload-sign">
                                         <div class="form-group float-end mb-0">
-                                            <button class="btn btn-primary" type="submit" [disabled]="form.invalid"
+                                            <button class="btn btn-primary" type="submit" [disabled]="form.get('listaMovimiento')?.invalid && form.get('movimientoDetalle')?.invalid"
                                                 style="margin: 5px;">REGISTRAR MOVIMIENTO</button>
                                             <a class="btn btn-light cancel-form"
                                                 [routerLink]="ruta.almacen_movimientosalmacen">Cancelar</a>

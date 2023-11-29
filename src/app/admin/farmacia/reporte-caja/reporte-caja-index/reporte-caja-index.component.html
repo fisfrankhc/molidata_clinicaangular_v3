@@ -46,7 +46,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-5">
+                                <!-- <div class="col-5">
                                     <div class="row" style="display: flex;flex-wrap: wrap; align-items: center;">
                                         <div class="col-12 col-md-6 col-xl-4">
                                             <div class="form-group local-forms" style="margin-bottom: 0;">
@@ -70,16 +70,15 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="col-2 text-end float-end ms-auto download-grp">
-                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-01.svg"
+                                    <!-- <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-01.svg"
                                             alt=""></a>
                                     <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-02.svg"
                                             alt=""></a>
                                     <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-03.svg"
-                                            alt=""></a>
-                                    <a (click)="exportarAExcel()" href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""></a>
-
+                                            alt=""></a> -->
+                                    <a (click)="exportarAExcel()" href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""><span style="font-size: 10px;">Reporte</span></a>
                                 </div>
                             </div>
                         </div>
@@ -102,7 +101,7 @@
                                         <th mat-sort-header="motivo_pago">MOTIVO</th>
                                         <th mat-sort-header="motivo_codigo">VENTAID</th>
                                         <th mat-sort-header="medio_pago">MEDIO PAGO</th>
-                                        <th></th>
+                                        <!-- <th></th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,7 +119,7 @@
                                         <td>{{ data.motivo_pago }}</td>
                                         <td>{{ data.motivo_codigo }}</td>
                                         <td>{{ data.medio_pago }}</td>
-                                        <td class="text-end">
+                                        <!-- <td class="text-end">
                                             <div class="dropdown dropdown-action">
                                                 <a href="javascript:void(0);" class="action-icon dropdown-toggle"
                                                     data-bs-toggle="dropdown" aria-expanded="false"><i
@@ -134,7 +133,7 @@
                                                             class="fa fa-trash-alt m-r-5"></i> Delete</a>
                                                 </div>
                                             </div>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 </tbody>
                             </table>

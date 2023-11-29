@@ -49,12 +49,22 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-2 text-end float-end ms-auto download-grp">
+                                    <!-- <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-01.svg"
+                                                                            alt=""></a>
+                                                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-02.svg"
+                                                                            alt=""></a>
+                                                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-03.svg"
+                                                                            alt=""></a> -->
+                                    <a (click)="exportarAExcel()" href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                            style="font-size: 10px;">Reporte</span></a>
+                                </div>
                             </div>
                         </div>
                         <!-- /Table Header -->
 
                         <div class="table-responsive">
-                            <table matSort (matSortChange)="sortData($event)"
+                            <table #table matSort (matSortChange)="sortData($event)"
                                 class="table border-0 custom-table comman-table datatable mb-0">
                                 <thead>
                                     <tr>

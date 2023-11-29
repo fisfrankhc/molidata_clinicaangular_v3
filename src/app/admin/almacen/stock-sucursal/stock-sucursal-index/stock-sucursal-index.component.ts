@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
 import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
@@ -13,6 +13,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+
+import * as XLSX from 'xlsx';
+
 @Component({
   selector: 'app-stock-sucursal-index',
   templateUrl: './stock-sucursal-index.component.html',
@@ -66,7 +69,9 @@ export class StockSucursalIndexComponent implements OnInit {
         const sucursalEncontrada = this.datosSUC.find(
           (sucursal: any) => sucursal.suc_id === this.usersucursal
         );
-        this.nombreSucursal = sucursalEncontrada ? sucursalEncontrada.suc_nombre : '';
+        this.nombreSucursal = sucursalEncontrada
+          ? sucursalEncontrada.suc_nombre
+          : '';
       },
       error: (errorData) => {},
       complete: () => {},
@@ -226,5 +231,97 @@ export class StockSucursalIndexComponent implements OnInit {
 
   public actualizarStock(): void {
     this.stockAll();
+  }
+
+  @ViewChild('table') table!: ElementRef;
+  /*   public exportarAExcel(): void {
+    const header = ['#', 'CODIGO', 'PRODUCTO', 'STOCK', 'UNIDAD MEDIDA'];
+    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(
+      this.table.nativeElement
+    );
+
+    // Modificar los encabezados de las columnas
+    ws['A1'] = { v: header[0], t: 's' };
+    ws['B1'] = { v: header[1], t: 's' };
+    ws['C1'] = { v: header[2], t: 's' };
+    ws['D1'] = { v: header[3], t: 's' };
+    ws['E1'] = { v: header[4], t: 's' };
+
+    // Iterar sobre los datos y asignarlos a las celdas correspondientes
+    for (let i = 0; i < this.stockList.length; i++) {
+      ws[`A${i + 2}`] = {
+        v: (this.currentPage - 1) * this.pageSize + i + 1,
+        t: 'n',
+      };
+      ws[`B${i + 2}`] = { v: this.stockList[i].codigoProducto, t: 's' };
+      ws[`C${i + 2}`] = { v: this.stockList[i].nombreProducto, t: 's' };
+      ws[`D${i + 2}`] = { v: this.stockList[i].cantidad, t: 'n' };
+      ws[`E${i + 2}`] = { v: this.stockList[i].nombreMedida, t: 's' };
+    }
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+    XLSX.writeFile(wb, 'exported-data.xlsx');
+  } */
+
+  public exportarAExcel(): void {
+    const header0 = [this.nombreSucursal];
+    const header = ['#', 'CODIGO', 'PRODUCTO', 'STOCK', 'UNIDAD MEDIDA'];
+    const data: any[][] = [];
+
+    // Agregar encabezados a los datos
+    data.push(header0);
+    data.push(header);
+
+    // Iterar sobre los datos y agregarlos a la matriz
+    for (let i = 0; i < this.stockList.length; i++) {
+      const rowData = [
+        (this.currentPage - 1) * this.pageSize + i + 1,
+        this.stockList[i].codigoProducto,
+        this.stockList[i].nombreProducto,
+        this.stockList[i].cantidad,
+        this.stockList[i].nombreMedida,
+      ];
+
+      data.push(rowData);
+    }
+
+    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(data);
+
+    // Combinar celdas para header0
+    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+
+    // Aplicar estilos a header0 para centrar
+    for (let i = 0; i < 5; i++) {
+      const cell = XLSX.utils.encode_cell({ r: 0, c: i });
+      if (!ws[cell]) {
+        ws[cell] = { s: {} }; // Crea la celda si no existe
+      }
+      Object.assign(ws[cell], {
+        s: { alignment: { horizontal: 'center' }, font: { bold: true } },
+      });
+    }
+
+    // Aplicar estilos a los encabezados
+    ws['!cols'] = [
+      { width: 10 }, // A
+      { width: 20 }, // B
+      { width: 50 }, // C
+      { width: 15 }, // D
+      { width: 25 }, // E
+    ];
+    // Iterar sobre las celdas de los encabezados para aplicar estilos individualmente
+    for (let i = 0; i < header.length; i++) {
+      const cell = XLSX.utils.encode_cell({ r: 1, c: i });
+      Object.assign(ws[cell], {
+        s: { alignment: { horizontal: 'center' }, font: { bold: true } },
+      });
+    }
+
+    ws['!rows'] = [{ hpx: 20 }]; // Altura de la primera fila (encabezados)
+
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, this.nombreSucursal);
+    XLSX.writeFile(wb, 'Stock de Sucursal '+this.nombreSucursal+'.xlsx');
   }
 }

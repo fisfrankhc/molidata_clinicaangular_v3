@@ -106,8 +106,8 @@
                                                         readonly>
                                                 </td>
                                                 <td style="vertical-align: middle;">
-                                                    <p style="margin: 0; text-align: center; font-weight: 500;">
-                                                        {{calcularSubtotal(data)}}</p>
+                                                    <p style="margin: 0; text-align: right; font-weight: 500;">
+                                                        {{calcularSubtotal(data) | number:'1.2-2' }}</p>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -169,7 +169,7 @@
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-body">
-                                            <div id="ticketEmitir" style="text-align: center; width: 65px">
+                                            <!-- <div id="ticketEmitir" style="text-align: center; width: 65px">
                                                 <div *ngIf="datosEMP">
                                                     <img src="assets/img/logo.png" width="5" height="5" alt="">
                                                     <br><span>{{ datosEMP.nombre_comercial }}</span>
@@ -224,16 +224,94 @@
                                                             <th>P. UN.</th>
                                                             <th>IMP.</th>
                                                         </thead>
+                                                        <tbody>//style="border-bottom: 0.1px #000000;"
+                                                            <tr *ngFor="let data of datosProductosDetalle, let i = index">
+                                                                <td style="padding: 0;">{{ data.cantidad_venta }}</td>
+                                                                <td style="padding: 0;">{{ data.medidaProducto }}</td>
+                                                                <td style="padding: 0;">{{ data.nombreProducto }}</td>
+                                                                <td style="padding: 0;">{{ data.precio_venta }}</td>
+                                                                <td style="padding: 0; text-align: right;">{{ calcularSubtotal(data) | number:'1.2-2' }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="5" style="padding-bottom: 0;">TOTAL: <span style="font-weight: bold;"> S/. {{calcularSubtotalTotal() | number:'1.2-2'}}</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="5" style="padding-top: 0;">SON: {{totalEnTexto()}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <p style="margin-bottom: 0;">Nota de venta para canjear con un
+                                                    comprobante</p>
+                                                <p style="margin-bottom: 0;">VENDEDOR: {{ this.usernombre }}</p>
+                                                <p style="margin-bottom: 0;">Telefono: </p>
+                                            </div> -->
+                                            <div id="ticketEmitir" style="text-align: center">
+                                                <div *ngIf="datosEMP">
+                                                    <img src="assets/img/logo.png" width="5" height="5" alt="">
+                                                    <br><span>{{ datosEMP.nombre_comercial }}</span>
+                                                    <br><span>NOTA DE VENTA ELECTRÓNICA</span>
+                                                    <br><span style="font-weight: bold;">2023-40</span>
+                                                    <br><span>{{ datosEMP.razon_social }}</span>
+                                                    <br><span>RUC: {{ datosEMP.empresa_ruc }}</span>
+                                                    <br><span>{{ datosEMP.empresa_direccion }}</span>
+                                                    <br><br>
+                                                    <span>TEL&Eacute;FONO: 964 622 000</span>
+                                                    <br><br>
+                                                </div>
+                                                <div class="row ">
+                                                    <table>
+                                                        <thead>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </thead>
+                                                        <tbody style="text-align: justify;">
+                                                            <tr>
+                                                                <td style="padding: 0;">FECHA</td>
+                                                                <td style="padding: 0;">: 2023-03-29</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">DNI</td>
+                                                                <td style="padding: 0;">: {{ form.get('clienteDetalle.documento')?.value }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">SEÑOR (A)</td>
+                                                                <td style="padding: 0;">: {{ form.get('clienteDetalle.nombrecliente')?.value }}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">DIRECCION</td>
+                                                                <td style="padding: 0;">: {{ form.get('clienteDetalle.direccioncliente')?.value }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">FECHA EMISION</td>
+                                                                <td style="padding: 0;">: 29-03-2023</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <br>
+                                                <div class="row">
+                                                    <table class="">
+                                                        <thead>
+                                                            <th>CANT.</th>
+                                                            <th>UM.</th>
+                                                            <th>DESCRIPCION</th>
+                                                            <th>P. UN.</th>
+                                                            <th>IMP.</th>
+                                                        </thead>
                                                         <tbody><!-- style="border-bottom: 0.1px #000000;" -->
                                                             <tr *ngFor="let data of datosProductosDetalle, let i = index">
                                                                 <td style="padding: 0;">{{ data.cantidad_venta }}</td>
                                                                 <td style="padding: 0;">{{ data.medidaProducto }}</td>
                                                                 <td style="padding: 0;">{{ data.nombreProducto }}</td>
                                                                 <td style="padding: 0;">{{ data.precio_venta }}</td>
-                                                                <td style="padding: 0;">{{ calcularSubtotal(data) }}</td>
+                                                                <td style="padding: 0; text-align: right;">{{ calcularSubtotal(data) | number:'1.2-2' }}</td>
                                                             </tr>
                                                             <tr>
-                                                                <td colspan="5" style="padding-bottom: 0;">TOTAL: <span style="font-weight: bold;"> S/. {{calcularSubtotalTotal()}}</span>
+                                                                <td colspan="5" style="padding-bottom: 0;">TOTAL: <span style="font-weight: bold;"> S/.
+                                                                        {{calcularSubtotalTotal() | number:'1.2-2'}}</span>
                                                                 </td>
                                                             </tr>
                                                             <tr>

@@ -100,7 +100,8 @@
                                                 <td>
                                                     <input class="form-control" style="width:100px" type="hidden"
                                                         formControlName="preciobuscado">
-                                                    <input class="form-control" style="width:100px" type="number" formControlName="precioventabuscado">
+                                                    <input class="form-control" style="width:100px" type="number"
+                                                        formControlName="precioventabuscado">
                                                 </td>
                                                 <td>
                                                     <input class="form-control"
@@ -108,7 +109,8 @@
                                                         type="text" formControlName="medidanombrebuscado">
                                                 </td>
                                                 <td>
-                                                    <input type="hidden" class="form-control" formControlName="cantidadStockBuscado">
+                                                    <input type="hidden" class="form-control"
+                                                        formControlName="cantidadStockBuscado">
                                                     <input class="form-control " style="width:120px" type="text"
                                                         formControlName="cantidadbuscado">
                                                 </td>
@@ -160,18 +162,23 @@
                                                         style="background-color: var(--bs-secondary-bg);" readonly>
                                                 </td>
                                                 <td style="max-width: 100px;">
-                                                    <input type="number" class="form-control" 
+                                                    <input type="number" class="form-control"
+                                                        [class.estilo-rojo]="producto.estiloRojo"
                                                         [value]="producto.cantidad"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
                                                 <td style="max-width: 100px;">
-                                                    <input type="text" class="form-control" [value]="producto.preciooriginal"
+                                                    <input type="text" class="form-control"
+                                                        [value]="producto.preciooriginal"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
                                                 <td style="max-width: 100px;">
-                                                    <input type="text"  class="form-control" [class.estilo-rojo]="!producto.precioIgualOriginal" [value]="producto.precio" style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                    <input type="text" class="form-control"
+                                                        [class.producto-cambio]="!producto.precioIgualOriginal"
+                                                        [value]="producto.precio | number:'1.2-2'"
+                                                        style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
                                                 <td style="max-width: 120px;">

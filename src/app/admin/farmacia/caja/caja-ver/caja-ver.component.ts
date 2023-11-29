@@ -381,7 +381,7 @@ export class CajaVerComponent implements OnInit {
           motivoCodigo: this.ventaId, // motivo_codigo: codigo de la venta, su id
           descripcion: '', // descripcion_pago: Cuando es egreso, se decribe la operacion
           medio: this.form.get('ventaMedioPago')?.value.medio_pago, //medio_pago
-          medioDetalle: '', // medio_detalle: Cuando no es efectivo, se describe
+          medioDetalle: this.form.get('ventaMedioPago')?.value.medioDetalle, // medio_detalle: Cuando no es efectivo, se describe
         };
 
         this.ventasService.updatedVenta(ventaData).subscribe({
