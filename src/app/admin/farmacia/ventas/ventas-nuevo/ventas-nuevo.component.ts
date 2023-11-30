@@ -16,6 +16,7 @@ import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.se
 import { VentasDetalleService } from 'src/app/shared/services/farmacia/ventas/ventas-detalle.service';
 import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
+import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
 
@@ -63,6 +64,7 @@ export class VentasNuevoComponent implements OnInit {
     private movimientosAlmacenDetalleService: MovimientosAlmacenDetalleService,
     private stockService: StockService,
     private medidaService: MedidaService,
+    private sucursalService: SucursalService,
     private datePipe: DatePipe //private cdr: ChangeDetectorRef
   ) {}
 
@@ -328,7 +330,7 @@ export class VentasNuevoComponent implements OnInit {
     //console.log(this.form.value.productoBuscado);
   }
 
-  preciosNoIguales: any;
+  preciosIguales: any;
   //PARA EL TERCER FORMGROUP
   agregarALista() {
     if (this.form.get('productoBuscado')?.valid) {
@@ -373,13 +375,13 @@ export class VentasNuevoComponent implements OnInit {
         ?.setValue(
           nuevoProducto.get('precio')?.value ===
             nuevoProducto.get('preciooriginal')?.value
-      );
+        );
       if (nuevoProducto.get('precioIgualOriginal')) {
         console.log(nuevoProducto.value.precioIgualOriginal);
-        this.preciosNoIguales = nuevoProducto.value.precioIgualOriginal;
+        this.preciosIguales = nuevoProducto.value.precioIgualOriginal;
       }
-        
-      // Almacena en preciosNoIguales si los precios no son iguales
+
+      // Almacena en preciosIguales si los precios no son iguales
       // Agrega el nuevo producto a la lista de compra
       listaVenta.push(nuevoProducto);
       //console.log(listaVenta.controls);
@@ -407,7 +409,7 @@ export class VentasNuevoComponent implements OnInit {
   //ID DE VENTA OBTENIDA GUARDADA
   venta: any;
   ActualizarVentaStock: any;
-
+  datasucursalall: any;
   async ProformaClick() {
     const cantidadesPorId: {
       [id: string]: {
@@ -496,67 +498,122 @@ export class VentasNuevoComponent implements OnInit {
 
       // Verifica la variable de bandera antes de imprimir
       if (todosProductosCumplen) {
-        /* 
-        //HACER EL POST
-        const movimientoData = {
-          fecha: this.fechaFormateada,
-          tipo: 'SALIDA',
-          usuario: this.userid,
-          sucursal: this.usersucursal,
-          origen: 'VENTA',
-          origencodigo: '', //I DE LA VENTA
-          observaciones: '',
-        };
-        this.ventasService.postVentas(ventaData).subscribe({
-          next: (response) => {
-            this.venta = response;
-
-            this.form.value.listaVenta.forEach((producto: Producto) => {
-              // Agregamos el ID de venta obtenido al objeto producto
-              producto.venta = this.venta;
-
-              // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
-              this.ventasDetalleService.postVentasDetalle(producto).subscribe({
-                next: (response) => {
-                  console.log('Entrada registrada con éxito:', response);
-                },
-                error: (errorData) => {
-                  console.error(
-                    'Error al enviar la solicitud POST de VENTADETALLE:',
-                    errorData
-                  );
-                },
-                complete: () => {},
-              });
-              //FIN DE VENTA-DETALLE
-            });
-          },
-          error: (errorData) => {
-            console.error(
-              'Error al enviar la solicitud POST de VENTA:',
-              errorData
-            );
-          },
-          complete: () => {
-            this.router.navigate(['/farmacia/venta']);
-          },
-        }); */
-        if (!this.preciosNoIguales) {
-          //console.log(this.preciosNoIguales);
+        //SI LOS PRECIOS NO SON IGUALES/HUBO ALGUN AJUSTE
+        if (!this.preciosIguales) {
+          //console.log(this.preciosIguales);
           const { value: codigo } = await Swal.fire({
             title: 'Ingrese codigo de validaci&oacute;n',
-            input: 'text',
-            //inputLabel: 'Tu codigo de validacion',
+            input: 'text', //inputLabel: 'Tu codigo de validacion',
             inputPlaceholder: 'Codigo',
           });
           if (codigo) {
             //Swal.fire(`Entered Code: ${codigo}`);
-            if (codigo == '1234') {
-              console.log("EL CODIGO ES CORRECTO")
-            } else {
-              Swal.fire('El codigo es incorrecto');
-            }
+            this.sucursalService.getSucursalAll().subscribe({
+              next: (datas) => {
+                this.datasucursalall = datas;
+                const dataSucursal = this.datasucursalall.find(
+                  (suc: any) => suc.suc_id === this.usersucursal
+                );
+
+                if (codigo == dataSucursal.codigo_autorizacion) {
+                  //console.log('EL CODIGO ES CORRECTO');
+                  //SI EL CODIGO ES CORRECTO, PROCEDEMOS A GUARDAR
+                  this.ventasService.postVentas(ventaData).subscribe({
+                    next: (response) => {
+                      this.venta = response;
+
+                      this.form.value.listaVenta.forEach(
+                        (producto: Producto) => {
+                          // Agregamos el ID de venta obtenido al objeto producto
+                          producto.venta = this.venta;
+
+                          // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+                          this.ventasDetalleService
+                            .postVentasDetalle(producto)
+                            .subscribe({
+                              next: (response) => {
+                                console.log(
+                                  'Entrada registrada con éxito:',
+                                  response
+                                );
+                              },
+                              error: (errorData) => {
+                                console.error(
+                                  'Error al enviar la solicitud POST de VENTADETALLE:',
+                                  errorData
+                                );
+                              },
+                              complete: () => {},
+                            });
+                          //FIN DE VENTA-DETALLE
+                        }
+                      );
+                    },
+                    error: (errorData) => {
+                      console.error(
+                        'Error al enviar la solicitud POST de VENTA:',
+                        errorData
+                      );
+                    },
+                    complete: () => {
+                      this.router.navigate(['/farmacia/venta']);
+                    },
+                  });
+                } else {
+                  Swal.fire({
+                    title: 'El codigo es incorrecto',
+                    icon: 'error',
+                    timer: 2500,
+                  });
+                }
+              },
+              error: () => {},
+              complete: () => {},
+            });
+          } else {
+            Swal.fire('No ingres&oacute; un c&oacute;digo');
           }
+        }
+        //NO HUBO ALGUN AJUSTE
+        else {
+          //console.log('Todo es correcto');
+          //HACER EL POST
+          this.ventasService.postVentas(ventaData).subscribe({
+            next: (response) => {
+              this.venta = response;
+
+              this.form.value.listaVenta.forEach((producto: Producto) => {
+                // Agregamos el ID de venta obtenido al objeto producto
+                producto.venta = this.venta;
+
+                // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+                this.ventasDetalleService
+                  .postVentasDetalle(producto)
+                  .subscribe({
+                    next: (response) => {
+                      console.log('Entrada registrada con éxito:', response);
+                    },
+                    error: (errorData) => {
+                      console.error(
+                        'Error al enviar la solicitud POST de VENTADETALLE:',
+                        errorData
+                      );
+                    },
+                    complete: () => {},
+                  });
+                //FIN DE VENTA-DETALLE
+              });
+            },
+            error: (errorData) => {
+              console.error(
+                'Error al enviar la solicitud POST de VENTA:',
+                errorData
+              );
+            },
+            complete: () => {
+              this.router.navigate(['/farmacia/venta']);
+            },
+          });
         }
       } else {
         Swal.fire({
@@ -571,7 +628,7 @@ export class VentasNuevoComponent implements OnInit {
     }
   }
   movimiento: any;
-  ConfirmarVentaClick() {
+  async ConfirmarVentaClick() {
     const cantidadesPorId: {
       [id: string]: {
         almacen: number;
@@ -660,51 +717,85 @@ export class VentasNuevoComponent implements OnInit {
       // Verifica la variable de bandera antes de imprimir
       if (todosProductosCumplen) {
         //HACER EL POST
-        const movimientoData = {
-          fecha: this.fechaFormateada,
-          tipo: 'SALIDA',
-          usuario: this.userid,
-          sucursal: this.usersucursal,
-          origen: 'VENTA',
-          origencodigo: '', //ID DE LA VENTA
-          observaciones: '',
-        };
-        //POST VENTAS
-        /* this.ventasService.postVentas(ventaData).subscribe({
-          next: (response) => {
-            this.venta = response;
+        //SI LOS PRECIOS NO SON IGUALES/HUBO ALGUN AJUSTE
+        if (!this.preciosIguales) {
+          const { value: codigo } = await Swal.fire({
+            title: 'Ingrese codigo de validaci&oacute;n',
+            input: 'text', //inputLabel: 'Tu codigo de validacion',
+            inputPlaceholder: 'Codigo',
+          });
 
-            this.form.value.listaVenta.forEach((producto: Producto) => {
-              // Agregamos el ID de venta obtenido al objeto producto
-              producto.venta = this.venta;
+          if (codigo) {
+            this.sucursalService.getSucursalAll().subscribe({
+              next: (datas) => {
+                this.datasucursalall = datas;
+                const dataSucursal = this.datasucursalall.find(
+                  (suc: any) => suc.suc_id === this.usersucursal
+                );
 
-              // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
-              this.ventasDetalleService.postVentasDetalle(producto).subscribe({
-                next: (response) => {
-                  console.log('Entrada registrada con éxito:', response);
-                },
-                error: (errorData) => {
-                  console.error(
-                    'Error al enviar la solicitud POST de VENTADETALLE:',
-                    errorData
-                  );
-                },
-                complete: () => {},
-              });
-              //FIN DE VENTA-DETALLE
+                if (codigo == dataSucursal.codigo_autorizacion) {
+                  //console.log('Codigo es correcto');
+                  //POST VENTAS
+                  this.ventasService.postVentas(ventaData).subscribe({
+                    next: (response) => {
+                      this.venta = response;
+
+                      this.form.value.listaVenta.forEach(
+                        (producto: Producto) => {
+                          // Agregamos el ID de venta obtenido al objeto producto
+                          producto.venta = this.venta;
+
+                          // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+                          this.ventasDetalleService
+                            .postVentasDetalle(producto)
+                            .subscribe({
+                              next: (response) => {
+                                console.log(
+                                  'Entrada registrada con éxito:',
+                                  response
+                                );
+                              },
+                              error: (errorData) => {
+                                console.error(
+                                  'Error al enviar la solicitud POST de VENTADETALLE:',
+                                  errorData
+                                );
+                              },
+                              complete: () => {},
+                            });
+                          //FIN DE VENTA-DETALLE
+                        }
+                      );
+                    },
+                    error: (errorData) => {
+                      console.error(
+                        'Error al enviar la solicitud POST de VENTA:',
+                        errorData
+                      );
+                    },
+                    complete: () => {
+                      this.router.navigate(['/farmacia/caja']);
+                    },
+                  });
+                } else {
+                  Swal.fire({
+                    title: 'El codigo es incorrecto',
+                    icon: 'error',
+                    timer: 2500,
+                  });
+                }
+              },
+              error: () => {},
+              complete: () => {},
             });
-          },
-          error: (errorData) => {
-            console.error(
-              'Error al enviar la solicitud POST de VENTA:',
-              errorData
-            );
-          },
-          complete: () => {
-            this.router.navigate(['/farmacia/caja']);
-          },
-        }); */
-        console.log;
+          } else {
+            Swal.fire('No ingres&oacute; un c&oacute;digo');
+          }
+        }
+        //NO HUBO ALGUN AJUSTE
+        else {
+          console.log('Todo es correcto');
+        }
       } else {
         Swal.fire({
           icon: 'error',
