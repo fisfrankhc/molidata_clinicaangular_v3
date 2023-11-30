@@ -7,11 +7,16 @@ const routes: Routes = [
     loadChildren: () =>
       import('./stock-sucursal/stock-sucursal.module').then((m) => m.StockSucursalModule),
   },
-    {
+  {
     path: 'movimientos-almacen',
     loadChildren: () =>
       import('./movimientos-almacen/movimientos-almacen.module').then((m) => m.MovimientosAlmacenModule),
   },
+  {
+    path: 'generar-requerimiento',
+    loadChildren: () =>
+      import('./generar-requerimiento/generar-requerimiento.module').then((m) => m.GenerarRequerimientoModule),
+  }
 ];
 
 @NgModule({

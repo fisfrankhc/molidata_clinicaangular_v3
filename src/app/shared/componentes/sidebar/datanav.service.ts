@@ -109,12 +109,16 @@ export class DatanavService {
           img: 'assets/img/icons/menu-icon-15.svg',
           subMenus: [
             {
-              menuValue: 'Stock Sucursal',
-              route: 'almacen/stock-sucursal',
+              menuValue: 'Generar Requerimiento',
+              route: 'almacen/generar-requerimiento',
             },
             {
               menuValue: 'Movimientos de Almacen',
               route: 'almacen/movimientos-almacen',
+            },
+            {
+              menuValue: 'Stock Sucursal',
+              route: 'almacen/stock-sucursal',
             },
           ],
         },

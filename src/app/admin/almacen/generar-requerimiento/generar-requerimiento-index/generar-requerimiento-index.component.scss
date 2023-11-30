@@ -1,0 +1,15 @@
+.add-group .btn-primary:hover {
+    color: #fff;
+}
+
+.add-group .add-pluss {
+    width: 170px;
+    ;
+}
+
+@media screen and (max-width: 520px) {
+    .add-group .add-pluss {
+        margin: auto;
+        width: 100px;
+    }
+}
