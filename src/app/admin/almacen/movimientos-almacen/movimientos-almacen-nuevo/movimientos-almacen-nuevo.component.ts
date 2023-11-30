@@ -400,7 +400,7 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                       producto: cantidadesPorId[id].producto,
                       cantidad: sucursalFindUpdate.cantidad,
                       medida: cantidadesPorId[id].medida,
-                      condicion: 'ACTUALIZAR',
+                      condicion: 'MOVIMIENTO-ALMACEN',
                     };
                     //console.log(stockActualizar);
                     this.stockService.updatedStock(stockActualizar).subscribe({
@@ -419,7 +419,7 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                       producto: cantidadesPorId[id].producto,
                       cantidad: cantidadesPorId[id].cantidad,
                       medida: cantidadesPorId[id].medida,
-                      condicion: 'REGISTRAR',
+                      condicion: 'MOVIMIENTO-ALMACEN',
                     };
 
                     this.stockService.postStock(stockPostNew).subscribe({

@@ -14,6 +14,8 @@ import {
   Validators,
 } from '@angular/forms';
 
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-stock-index',
   templateUrl: './stock-index.component.html',
@@ -229,5 +231,73 @@ export class StockIndexComponent implements OnInit {
 
   public actualizarStock(): void {
     this.stockAll();
+  }
+
+  form2 = this.fb.group({
+    idstock: ['', Validators.required],
+    productoNombre: ['', Validators.required],
+    stock: ['', Validators.required],
+    stockMinimo: ['', Validators.required],
+    condicion: '',
+  });
+
+  selectedStockData: Stock | null = null;
+  openEditModal(data: Stock) {
+    this.selectedStockData = data;
+    // Mostrar el modal
+    const modalElement = document.getElementById('modal_stock');
+    if (modalElement) {
+      modalElement.classList.add('show');
+    }
+
+    this.form2.setValue({
+      idstock: data.stock_id.toString(),
+      productoNombre: data.nombreProducto,
+      stock: data.cantidad.toString(),
+      stockMinimo: data.stock_minimo.toString(),
+      condicion: 'STOCK-MINIMO',
+    });
+  }
+
+  updatedStock(): void {
+    if (this.form2.valid) {
+      const dataStockMin = {
+        id: this.form2.value.idstock,
+        productoNombre: this.form2.value.productoNombre,
+        stockmin: this.form2.value.stockMinimo,
+        condicion: this.form2.value.condicion,
+      };
+
+      //console.log(dataStockMin);
+      this.stockService.updatedStock(dataStockMin).subscribe({
+        next: (response) => {
+          console.log(response);
+        },
+        error: (errorData) => {
+          console.log(errorData);
+        },
+        complete: () => {
+          this.stockAll();
+
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+          Toast.fire({
+            icon: 'success',
+            //title: 'Stock minimo guardado',
+            html: '<div style="font-size: 15px; font-weight: 700">Stock mínimo guardado</div>',
+          });
+
+        },
+      });
+    }
   }
 }

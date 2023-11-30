@@ -37,11 +37,12 @@
                                                 <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
                                             </div>
                                             <div class="add-group">
-<!--                                                 <a [routerLink]="ruta.logistica_proveedor_nuevo"
+                                                <!--                                                 <a [routerLink]="ruta.logistica_proveedor_nuevo"
                                                     class="btn btn-primary add-pluss ms-2"><img
                                                         src="assets/img/icons/plus.svg" alt=""></a> -->
-                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2" (click)="actualizarStock()"><img
-                                                        src="assets/img/icons/re-fresh.svg" alt=""></a>
+                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"
+                                                    (click)="actualizarStock()"><img src="assets/img/icons/re-fresh.svg"
+                                                        alt=""></a>
                                             </div>
                                         </div>
                                     </div>
@@ -52,11 +53,13 @@
                                             <div class="col-12 col-md-6 offset-md-2 col-xl-6">
                                                 <div class="form-group local-forms" style="margin-bottom: 0;">
                                                     <label>SUCURSAL </label>
-                                                <mat-select formControlName="sucursalid" class="form-control select" placeholder="Seleccione una sucursal">
-                                                    <mat-option *ngFor="let option of datosSUC" [value]="option.suc_id">
-                                                        {{option.suc_nombre}}
-                                                    </mat-option>
-                                                </mat-select>
+                                                    <mat-select formControlName="sucursalid" class="form-control select"
+                                                        placeholder="Seleccione una sucursal">
+                                                        <mat-option *ngFor="let option of datosSUC"
+                                                            [value]="option.suc_id">
+                                                            {{option.suc_nombre}}
+                                                        </mat-option>
+                                                    </mat-select>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 col-xl-2">
@@ -86,7 +89,9 @@
                                         <th mat-sort-header="almacen_id">CODIGO</th>
                                         <th mat-sort-header="producto_id">PRODUCTO</th>
                                         <th mat-sort-header="cantidad">STOCK</th>
+                                        <th mat-sort-header="stock_minimo">STOCK MIN.</th>
                                         <th mat-sort-header="unidad_medida">UNIDAD MEDIDA</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -100,19 +105,24 @@
                                         <td>{{data.codigoProducto}}</td>
                                         <td>{{data.nombreProducto}}</td>
                                         <td>{{data.cantidad}}</td>
+                                        <td>{{data.stock_minimo}}</td>
                                         <td>{{data.nombreMedida}}</td>
-<!--                                         <td class="text-end">
+                                        <td class="text-end">
                                             <div class="dropdown dropdown-action">
                                                 <a href="javascript:void(0);" class="action-icon dropdown-toggle"
                                                     data-bs-toggle="dropdown" aria-expanded="false"><i
                                                         class="fa fa-ellipsis-v"></i></a>
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item"
+                                                    <!-- <a class="dropdown-item"
                                                         [routerLink]="['./editar', data.stock_id]"><i
-                                                            class="fa-solid fa-pen-to-square m-r-5"></i> EDITAR</a>
+                                                            class="fa-solid fa-pen-to-square m-r-5"></i> EDITAR STOCK
+                                                        MIN.</a> -->
+                                                        <a class="dropdown-item edit-link" (click)="openEditModal(data)" data-bs-toggle="modal" data-bs-target="#modal_stock" style="cursor: pointer;">
+                                                            <i class="fa-solid fa-pen-to-square m-r-5"></i> EDITAR STOCK MIN.
+                                                        </a>
                                                 </div>
                                             </div>
-                                        </td> -->
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -195,5 +205,61 @@
                 </div>
             </div>
         </div>
+        <form class="invoices-form" [formGroup]="form2" (ngSubmit)="updatedStock()">
+            <!-- Save Invoices Modal -->
+            <div class="modal custom-modal fade" id="modal_stock" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="form-header">
+                                <h3>EDITAR STOCK MINIMO</h3>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="hidden" formControlName="idstock">
+                                        <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                            <label style="position: initial;">PRODUCTO: <span
+                                                    class="login-danger">*</span></label>
+                                            <input class="form-control" style="text-align: center; background-color: rgba(87,87,87,0.2);"
+                                                formControlName="productoNombre" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                            <label style="position: initial;">STOCK: <span
+                                                    class="login-danger">*</span></label>
+                                            <input class="form-control" style="text-align: center; background-color: rgba(87,87,87,0.2);"
+                                                formControlName="stock" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                            <label style="position: initial;">STOCK MINIMO: <span
+                                                    class="login-danger">*</span></label>
+                                            <input class="form-control" type="number" step="1"  style="text-align: center;"
+                                                formControlName="stockMinimo" >
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-btn delete-action">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                            class="btn btn-primary paid-cancel-btn">Cancelar</a>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="submit" [disabled]="form.invalid"
+                                            data-bs-dismiss="modal" class="btn btn-primary paid-continue-btn"
+                                            style="width: 100%;">GUARDAR</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Save Invoices Modal -->
+        </form>
     </div>
 </div>

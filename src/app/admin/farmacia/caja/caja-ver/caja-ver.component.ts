@@ -268,6 +268,7 @@ export class CajaVerComponent implements OnInit {
         id: number;
         cantidad: number;
         producto: number;
+        condicion: string;
       }[] = []; // Almacena los productos que cumplen con el criterio
 
       //PARA EL PUT
@@ -295,6 +296,7 @@ export class CajaVerComponent implements OnInit {
             id: cantidadesPorId[id].stock_id,
             cantidad: operacionCantidad,
             producto: cantidadesPorId[id].producto,
+            condicion: 'CAJA-PAGAR',
           });
         }
       });

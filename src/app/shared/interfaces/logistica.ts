@@ -76,6 +76,7 @@ export interface Stock {
   almacen_id: string;
   producto_id: number;
   cantidad: number;
+  stock_minimo: number;
   unidad_medida: number;
   codigoProducto: string; // PARA VISTA
   nombreProducto: string; //PARA VISTA
