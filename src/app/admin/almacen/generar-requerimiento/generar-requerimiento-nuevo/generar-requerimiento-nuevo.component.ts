@@ -11,11 +11,12 @@ import {
 } from '@angular/forms';
 
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
-import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
-import { MovimientosAlmacenDetalleService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen-detalle.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
+import { GeneralService } from 'src/app/shared/services/general.service';
+import { GenerarRequerimientoService } from 'src/app/shared/services/almacen/generar-requerimiento/generar-requerimiento.service';
+import { GenerarRequerimientoDetalleService } from '../../../../shared/services/almacen/generar-requerimiento/generar-requerimiento-detalle.service';
 import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
 
@@ -28,12 +29,12 @@ interface Producto {
   nombrepobtenido: string;
   cantidad: number; //*
   medida: number; //*
-  vencimiento: any; //*
-  lote: string; //*
-  peso: number; //*
-  //precio: number; //*
+  vencimiento: any;
+  lote: string;
+  peso: number;
   subtotalagregado: string;
-  movimiento: number; //*
+  requerimiento: number; //*
+  prod_stockminimo: number;
   condicion: string | null;
 }
 interface data {
@@ -50,16 +51,23 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
   usersucursal = localStorage.getItem('usersucursal');
   userid = localStorage.getItem('userid');
   public ruta = rutas;
+  fechaActual = new Date();
+  fechaFormateadaver = this.datePipe.transform(this.fechaActual, 'dd/MM/yyyy');
+  fechaFormateada = this.datePipe.transform(
+    this.fechaActual,
+    'yyyy/MM/dd HH:mm'
+  );
 
   constructor(
     private router: Router,
     private fb: FormBuilder,
     private sucursalService: SucursalService,
-    private movimientosAlmacenService: MovimientosAlmacenService,
-    private movimientosAlmacenDetalleService: MovimientosAlmacenDetalleService,
     private productoService: ProductoService,
     private stockService: StockService,
     private medidaService: MedidaService,
+    private generalService: GeneralService,
+    private generarRequerimientoService: GenerarRequerimientoService,
+    private generarRequerimientoDetalleService: GenerarRequerimientoDetalleService,
     private datePipe: DatePipe
   ) {}
 
@@ -67,12 +75,11 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
 
   ngOnInit(): void {
     const initialForm = this.fb.group({
-      movimientoDetalle: this.fb.group({
+      requerimientoDetalle: this.fb.group({
         idsucursal_origen: ['', Validators.required],
         sucursal_origen: ['', Validators.required],
-        tipo_origen: ['', Validators.required],
-        movimiento_origen: ['', Validators.required],
-        codigo_origen: [''],
+        user_nombre: ['', Validators.required],
+        fecha: ['', Validators.required],
       }),
       productoBuscado: this.fb.group({
         idbuscado: ['', Validators.required],
@@ -83,11 +90,12 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
         medidabuscado: [''],
         medidanombrebuscado: [''],
         cantidadbuscado: [''],
-        fechabuscado: [''],
-        lotebuscado: [''],
-        pesobuscado: [''],
+        stockminimobuscado: [''],
+        //fechabuscado: [''],
+        //lotebuscado: [''],
+        //pesobuscado: ['']
       }),
-      listaMovimiento: this.fb.array([]), // FormArray para la lista de compra
+      listaRequerimiento: this.fb.array([]), // FormArray para la lista de compra
     });
 
     // Asignar el formulario
@@ -104,6 +112,8 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
     this.medidasAll();
     this.filteresOption();
     this.sucursalAll();
+    this.usuariosAll();
+    this.stockAll();
 
     // Agregar suscriptor para el evento valueChanges del campo nombrebproducto en caso este vacio
     this.form
@@ -119,12 +129,44 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
             medidabuscado: '',
             medidanombrebuscado: '',
             cantidadbuscado: '',
-            fecha_buscado: '',
-            lote_buscado: '',
-            peso_buscado: '',
+            stockminimobuscado: '',
+            //fecha_buscado: '',
+            //lote_buscado: '',
+            //peso_buscado: '',
           });
         }
       });
+  }
+
+  datosSTOCK: any;
+  stockAll(): void {
+    this.stockService.getStockAll().subscribe({
+      next: (datosSTOCK: any) => {
+        this.datosSTOCK = datosSTOCK;
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
+
+  datosUSER: any;
+  usuariosAll(): void {
+    this.generalService.getUsuariosAll().subscribe({
+      next: (datosUSER: any) => {
+        this.datosUSER = datosUSER;
+        const usuarioEncontrado = this.datosUSER.find(
+          (user: any) => user.user_id === this.userid
+        );
+        if (usuarioEncontrado) {
+          this.form.get('requerimientoDetalle')?.patchValue({
+            user_nombre: usuarioEncontrado.user_nombre,
+            fecha: this.fechaFormateadaver,
+          });
+        }
+      },
+      error: () => {},
+      complete: () => {},
+    });
   }
 
   datosMED: any;
@@ -149,7 +191,7 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
         const sucursalEncontrada = this.datosSUC.find(
           (sucursal: any) => sucursal.suc_id === this.usersucursal
         );
-        this.form.get('movimientoDetalle')?.patchValue({
+        this.form.get('requerimientoDetalle')?.patchValue({
           idsucursal_origen: sucursalEncontrada.suc_id,
           sucursal_origen: sucursalEncontrada.suc_nombre,
         });
@@ -161,8 +203,6 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
       complete: () => {},
     });
   }
-
-  datosSTOCK: any;
 
   filteredOptions!:
     | Observable<{ id: string; nombre: string; descripcion: string }[]>
@@ -200,10 +240,6 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
       }));
   }
 
-  tipoOrigen: data[] = [{ value: 'INGRESO' }, { value: 'SALIDA' }];
-  movmientoOrigen1: data[] = [{ value: 'STOCK INICIAL' }, { value: 'COMPRA' }];
-  movmientoOrigen2: data[] = [{ value: 'VENTA' }, { value: 'MERMA' }];
-
   //PARA EL 2DO FORMGROUP
   onProductSelected(event: any) {
     const selectedProduct = event.option.value;
@@ -211,11 +247,20 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
     const productoSeleccionado = this.datoPRODUCTO.find(
       (producto) => producto.prod_nombre == selectedProduct
     );
-    //console.log(productoSeleccionado);
+    console.log(productoSeleccionado);
     if (productoSeleccionado) {
       const medida = this.datosMED.find(
         (medida: any) => medida.med_id == productoSeleccionado.med_id
       );
+      const productoStock = this.datosSTOCK.find(
+        (stock: any) => stock.producto_id == productoSeleccionado.prod_id
+      );
+      if (productoStock) {
+        productoSeleccionado.prod_stockminimo = productoStock.stock_minimo;
+      } else {
+        productoSeleccionado.prod_stockminimo = 0;
+      }
+
       this.form.get('productoBuscado')?.patchValue({
         idbuscado: productoSeleccionado.prod_id,
         codigobuscado: productoSeleccionado.prod_codigo,
@@ -225,6 +270,7 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
         medidabuscado: productoSeleccionado.med_id,
         medidanombrebuscado: medida.med_simbolo,
         cantidadbuscado: 1,
+        stockminimobuscado: productoSeleccionado.prod_stockminimo,
       });
     } else {
       // Si no se selecciona un producto, puedes limpiar los campos
@@ -237,9 +283,10 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
         medidabuscado: '',
         medidanombrebuscado: '',
         cantidadbuscado: null,
-        fecha_buscado: '',
-        lote_buscado: '',
-        peso_buscado: '',
+        stockminimobuscado: '',
+        //fecha_buscado: '',
+        //lote_buscado: '',
+        //peso_buscado: '',
       });
     }
   }
@@ -248,7 +295,9 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
   agregarALista() {
     if (this.form.get('productoBuscado')?.valid) {
       const productoBuscado = this.form.get('productoBuscado');
-      const listaMovimiento = this.form.get('listaMovimiento') as FormArray;
+      const listaRequerimiento = this.form.get(
+        'listaRequerimiento'
+      ) as FormArray;
 
       // Crea un nuevo FormGroup para el producto
       const nuevoProducto = this.fb.group({
@@ -260,11 +309,12 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
         medida: [''],
         medidanombre: [''],
         precio: ['', Validators.required],
-        vencimiento: '',
-        lote: '',
-        peso: '',
-        subtotalagregado: ['', Validators.required],
-        descuento: [0],
+        stockminimo: ['', Validators.required],
+        //vencimiento: '',
+        //lote: '',
+        //peso: '',
+        //subtotalagregado: ['', Validators.required],
+        //descuento: [0],
       });
 
       // Copia los valores del producto buscado al nuevo producto
@@ -277,22 +327,23 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
         medida: productoBuscado?.get('medidabuscado')?.value,
         medidanombre: productoBuscado?.get('medidanombrebuscado')?.value,
         precio: productoBuscado?.get('preciobuscado')?.value,
-        vencimiento: this.datePipe.transform(
+        stockminimo: productoBuscado?.get('stockminimobuscado')?.value,
+        /* vencimiento: this.datePipe.transform(
           productoBuscado?.get('fechabuscado')?.value,
           'yyyy/MM/dd'
         ),
         lote: productoBuscado?.get('lotebuscado')?.value,
         peso: productoBuscado?.get('pesobuscado')?.value,
-        descuento: 0,
+        descuento: 0, 
         subtotalagregado: (
           productoBuscado?.get('preciobuscado')?.value *
           productoBuscado?.get('cantidadbuscado')?.value
-        ).toString(),
+        ).toString(),*/
       });
 
       // Agrega el nuevo producto a la lista de compra
-      listaMovimiento.push(nuevoProducto);
-      //console.log(listaMovimiento.controls);
+      listaRequerimiento.push(nuevoProducto);
+      //console.log(listaRequerimiento.controls);
 
       this.calcularSubtotal();
 
@@ -303,28 +354,74 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
   }
 
   eliminarProducto(index: number) {
-    const listaMovimiento = this.form.get('listaMovimiento') as FormArray;
-    listaMovimiento.removeAt(index);
+    const listaRequerimiento = this.form.get('listaRequerimiento') as FormArray;
+    listaRequerimiento.removeAt(index);
 
     this.calcularSubtotal();
   }
 
-  fechaActual = new Date();
-  fechaFormateada = this.datePipe.transform(
-    this.fechaActual,
-    'yyyy/MM/dd HH:mm'
-  );
-  //ID DE VENTA OBTENIDA GUARDADA
-  movimiento: any;
-
+  get listaRequerimientoControls() {
+    return (this.form.get('listaRequerimiento') as FormArray).controls;
+  }
+  //ID DE DEL REQUERIMIENTO GUARDADO
+  requerimiento: any;
   ConfirmarRequerimiento() {
+    const requerimientoData = {
+      fecha: this.fechaFormateada,
+      usuario: this.userid,
+      sucursal: this.usersucursal,
+      proceso: 'SOLICITUD',
+      observaciones: '',
+    };
+    if (this.listaRequerimientoControls.length === 0) {
+      alert('SIN PRODUCTOS EN LISTA');
+    } else {
+      //console.log(this.form.get('listaRequerimiento')?.value);
+      //console.log(requerimientoData);
+      this.generarRequerimientoService
+        .postRequerimientos(requerimientoData)
+        .subscribe({
+          next: (response) => {
+            this.requerimiento = response;
+            console.log(
+              'Requerimiento registrado con éxito:',
+              this.requerimiento
+            );
+
+            this.form.value.listaRequerimiento.forEach((producto: Producto) => {
+              producto.requerimiento = this.requerimiento;
+
+              this.generarRequerimientoDetalleService
+                .postRequerimientosDetalle(producto)
+                .subscribe({
+                  next: (response1) => {
+                    console.log('Entrada registrada con éxito:', response1);
+                  },
+                  error: (errorData) => {
+                    console.error(
+                      'Error al enviar la solicitud POST de REQUERIMIENTOSDETALLE:',
+                      errorData
+                    );
+                  },
+                  complete: () => {},
+                });
+            });
+          },
+          error: (errorData) => {
+            console.error(errorData);
+          },
+          complete: () => {
+            this.router.navigate(['/almacen/generar-requerimiento']);
+          },
+        });
+    }
   }
 
   calcularSubtotal(): number {
-    const listaMovimiento = this.form.get('listaMovimiento') as FormArray;
+    const listaRequerimiento = this.form.get('listaRequerimiento') as FormArray;
     let subtotal = 0;
 
-    for (const control of listaMovimiento.controls) {
+    for (const control of listaRequerimiento.controls) {
       const subtotalProducto = parseFloat(
         control.get('subtotalagregado')?.value || 0
       );

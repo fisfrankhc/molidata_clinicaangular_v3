@@ -226,7 +226,7 @@ export class ComprasVerComponent implements OnInit {
       },
       error: (errorData) => {
         console.error(
-          'Error al enviar la solicitud POST de VentaDetalleItems:',
+          'Error al enviar la solicitud GET de ComprasItems:',
           errorData
         );
       },

@@ -6,10 +6,10 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a>ALMAC&Eacute;N </a></li>
+                        <li class="breadcrumb-item"><a>LOG&Iacute;STICA </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.almacen_generarrequerimiento">GENERAR
-                                REQUERIMIENTO</a>
+                        <li class="breadcrumb-item"><a
+                                [routerLink]="ruta.almacen_generarrequerimiento">REQUERIMIENTOS</a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item active">Lista</li>
@@ -30,7 +30,7 @@
                             <div class="row align-items-center">
                                 <div class="col-12 col-md-6 col-xl-8">
                                     <div class="doctor-table-blk">
-                                        <h3>LISTA DE REQUERIMIENTOS GENERADOS</h3>
+                                        <h3>LISTA DE REQUERIMIENTOS</h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
                                                 <input class="form-control" placeholder="Escribe aqui"
@@ -39,14 +39,19 @@
                                                 <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
                                             </div>
                                             <div class="add-group">
-                                                <a [routerLink]="ruta.almacen_generarrequerimiento_nuevo"
+                                                <!-- <a [routerLink]="ruta.almacen_generarrequerimiento_nuevo"
                                                     class="btn btn-primary add-pluss ms-2"><img
-                                                        src="assets/img/icons/plus.svg" alt=""> &nbsp; Requerimiento</a>
+                                                        src="assets/img/icons/plus.svg" alt=""> &nbsp; Requerimiento</a> -->
                                                 <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"><img
                                                         src="assets/img/icons/re-fresh.svg" alt=""></a>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-2 text-end float-end ms-auto download-grp">
+                                    <a (click)="exportToExcel()" href="javascript:;"><img
+                                            src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                            style="font-size: 10px;">Reporte</span></a>
                                 </div>
                             </div>
                         </div>
@@ -65,6 +70,8 @@
                                         <th mat-sort-header="#">#</th>
                                         <th mat-sort-header="requerimiento_fecha">FECHA</th>
                                         <th mat-sort-header="usuario_id">USUARIO</th>
+                                        <th mat-sort-header="requerimiento_proceso">PROCESO</th>
+                                        <th mat-sort-header="sucursal_id">AGENCIA</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -79,10 +86,12 @@
                                             <td class="profile-image">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                             <td>{{data.requerimiento_fecha}}</td>
                                             <td>{{data.nombreUsuario}}</td>
+                                            <td>{{data.requerimiento_proceso}}</td>
+                                            <td>{{data.nombreSucursal}}</td>
                                             <td class="text-end">
                                                 <a type="button" class="btn btn-outline-primary"
-                                                    [routerLink]="['./ver', data.requerimiento_id ]"><i class="fa fa-eye"
-                                                        aria-hidden="true"></i>
+                                                    [routerLink]="['./ver', data.requerimiento_id ]"><i
+                                                        class="fa fa-eye" aria-hidden="true"></i>
                                                     Ver</a>
                                             </td>
                                         </tr>

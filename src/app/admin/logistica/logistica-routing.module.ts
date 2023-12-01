@@ -25,11 +25,16 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'requerimientos',
+    loadChildren: () =>
+      import('./requerimientos/requerimientos.module').then(
+        (m) => m.RequerimientosModule
+      ),
+  },
+  {
     path: 'stock',
     loadChildren: () =>
-      import('./stock/stock.module').then(
-        (m) => m.StockModule
-      ),
+      import('./stock/stock.module').then((m) => m.StockModule),
   },
 ];
 

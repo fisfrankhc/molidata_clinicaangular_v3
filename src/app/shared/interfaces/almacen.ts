@@ -21,10 +21,11 @@ export interface Requerimientos {
   requerimiento_fecha: Date;
   usuario_id: number;
   sucursal_id: number;
-  requerimiento_proceso: string;
+  requerimiento_proceso: string; // SOLICITUD, REVISADO, ATENDIDO
   requerimiento_observaciones: string;
   requerimiento_estado: string;
   nombreUsuario: string; //PARA VISTA
+  nombreSucursal: string; //PARA VISTA
 }
 
 export interface Requerimiento_Detalle {
@@ -32,5 +33,8 @@ export interface Requerimiento_Detalle {
   requerimiento_id: number;
   producto_id: number;
   requerimiento_cantidad: number;
-  unidad_medida: number
+  unidad_medida: number;
+  nombreProducto: string; //PARA VISTA
+  codigoProducto: string; //PARA VISTA
+  nombreMedida: string; //PARA VISTA
 }

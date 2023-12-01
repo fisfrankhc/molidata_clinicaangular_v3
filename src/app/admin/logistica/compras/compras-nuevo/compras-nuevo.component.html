@@ -181,7 +181,7 @@
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td>
+                                                <td style="max-width: 100px;">
                                                     <input type="text" class="form-control"
                                                         [value]="producto.codigoobtenido"
                                                         style="background-color: var(--bs-secondary-bg);" readonly>
@@ -198,14 +198,14 @@
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td>
+                                                <td style="max-width: 100px;">
                                                     <input type="text" class="form-control" [value]="producto.precio"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td>
+                                                <td style="max-width: 100px;">
                                                     <input type="text" class="form-control"
-                                                        [value]="producto.subtotalagregado"
+                                                        [value]="producto.subtotalagregado | number:'1.2-2'"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>

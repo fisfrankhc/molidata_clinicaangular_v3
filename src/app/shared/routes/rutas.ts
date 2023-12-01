@@ -57,6 +57,14 @@ export class rutas {
     return this.baseUrl + '/logistica/proveedores/nuevo';
   }
 
+  public static get logistica_requerimientos(): string {
+    return this.baseUrl + '/logistica/requerimientos';
+  }
+
+  public static get logistica_stock(): string {
+    return this.baseUrl + '/logistica/stock';
+  }
+
   public static get farmacia_venta(): string {
     return this.baseUrl + '/farmacia/venta';
   }

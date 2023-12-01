@@ -70,6 +70,10 @@ export class DatanavService {
               route: 'logistica/proveedores',
             },
             {
+              menuValue: 'requerimientos',
+              route: 'logistica/requerimientos',
+            },
+            {
               menuValue: 'Stock',
               route: 'logistica/stock',
             },

@@ -24,6 +24,7 @@
     "bootstrap": "^5.2.3",
     "crypto-js": "^4.1.1",
     "dom-to-image": "^2.6.0",
+    "exceljs": "^4.4.0",
     "html2canvas": "^1.4.1",
     "jquery": "^3.6.3",
     "jspdf": "^2.5.1",
