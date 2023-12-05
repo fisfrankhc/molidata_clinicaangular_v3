@@ -57,6 +57,8 @@ export class LoginComponent implements OnInit {
                   this.datosAPI['sucursal_id'],
                   this.datosAPI['user_estado']
                 );
+              } else {
+                alert("USUARIO O CONTRASEÑA NO EXISTE")
               }
             }
           },
@@ -68,7 +70,7 @@ export class LoginComponent implements OnInit {
             this.loginError = errorData;
           },
           complete: () => {
-            console.log('Inicio de sesión exitoso');
+            //console.log('Inicio de sesión exitoso');
             //console.log(this.datosAPI['user_id']);
           },
         }

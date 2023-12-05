@@ -28,7 +28,9 @@ export class SidebarComponent {
     private outloginService: OutloginService
   ) {
     this.sidebarData = this.data.sideBar;
+    console.log(this.sidebarData);
     router.events.subscribe((event: object) => {
+      //console.log(event)
       if (event instanceof NavigationEnd) {
         this.getRoutes(event);
       }
@@ -67,6 +69,14 @@ export class SidebarComponent {
     } else {
       this.sideBar.expandSideBar.next('false');
     }
+  }
+
+  checkUserRole(roles: Array<{ valor: string }>): boolean {
+    const userRol = localStorage.getItem('userrol');
+    if (userRol) {
+      return roles.some((role) => role.valor === userRol);
+    }
+    return false;
   }
 
   logout() {

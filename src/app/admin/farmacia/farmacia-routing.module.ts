@@ -23,6 +23,11 @@ const routes: Routes = [
         (m) => m.ReporteCajaModule
       ),
   },
+  {
+    path: 'inicio-cierre-operaciones',
+    loadChildren: () =>
+      import ('./inicio-cierre-operaciones/inicio-cierre-operaciones.module').then((m) => m.InicioCierreOperacionesModule)
+  }
 ];
 
 @NgModule({

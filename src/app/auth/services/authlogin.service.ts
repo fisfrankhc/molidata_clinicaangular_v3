@@ -23,8 +23,7 @@ export class AuthloginService {
     correo: string,
     rol: string,
     sucursal: string,
-    estado: string,
-
+    estado: string
   ) {
     localStorage.setItem('userid', id);
     localStorage.setItem('username', username);
@@ -42,6 +41,9 @@ export class AuthloginService {
     console.log(rol);
     console.log(sucursal);
     console.log(estado);
+  }
 
+  getRole(): string | null {
+    return localStorage.getItem('userrol');
   }
 }

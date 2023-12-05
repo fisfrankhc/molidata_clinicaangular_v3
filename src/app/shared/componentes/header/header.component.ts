@@ -1,23 +1,30 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { SidebarService } from '../../services/sidebar/sidebar.service';
 import { OutloginService } from 'src/app/auth/services/outlogin.service';
+import { RolesService } from '../../services/roles/roles.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   public openBox = false;
   public miniSidebar = false;
   public addClass = false;
 
   usuarionombre: any;
   usuariorol: any;
+  dataRol: any = {};
 
-  constructor(public router: Router, private sideBar: SidebarService, private outloginService: OutloginService) {
+  constructor(
+    public router: Router,
+    private sideBar: SidebarService,
+    private outloginService: OutloginService,
+    private rolesService: RolesService
+  ) {
     this.sideBar.toggleSideBar.subscribe((res: string) => {
       if (res == 'true') {
         this.miniSidebar = true;
@@ -25,15 +32,29 @@ export class HeaderComponent {
         this.miniSidebar = false;
       }
     });
+  }
 
+  dataROLES: any;
+  ngOnInit(): void {
     this.usuarionombre = localStorage.getItem('usernombre');
     //this.usuariorol = localStorage.getItem('userrol');
-    if (localStorage.getItem('userrol') == '1') {
-      this.usuariorol = 'ADMINISTRADOR';
-    } else {
-      this.usuariorol = 'EDITOR';
-    }
-
+    this.rolesService.getRolesAll().subscribe({
+      next: (data) => {
+        //console.log(data);
+        this.dataROLES = data;
+        const datoRol = this.dataROLES.find(
+          (rol: any) => rol.rol_id === localStorage.getItem('userrol')
+        );
+        if (datoRol) {
+          //console.log(datoRol);
+          this.dataRol = datoRol;
+        }
+      },
+      error: (errorData) => {
+        console.log(errorData);
+      },
+      complete: () => {},
+    })
   }
 
   openBoxFunc() {
@@ -68,7 +89,6 @@ export class HeaderComponent {
       sidebar.classList.remove('opened');
     }
   }
-
 
   logout() {
     this.outloginService.cerrarsesion();

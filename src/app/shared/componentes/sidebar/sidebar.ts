@@ -8,6 +8,7 @@ export interface SubMenu {
 }
 
 export interface MenuItem {
+rol: { valor: string; }[];
   menuValue: string;
   hasSubRoute: boolean;
   showSubRoute: boolean;

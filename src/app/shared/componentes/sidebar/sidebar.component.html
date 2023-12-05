@@ -7,13 +7,13 @@
                         <span>{{ mainTittle.tittle | titlecase }}</span>
                     </li>
                     <ng-container *ngFor="let menu of mainTittle.menu">
-                        <li *ngIf="menu.hasSubRoute === false">
+                        <li *ngIf="menu.hasSubRoute === false && checkUserRole(menu.rol)">
                             <a [class.active]="base === menu.base" [routerLink]="menu.route"><span class="menu-side"><i
                                         class="fa" [class]="menu.icon" *ngIf="menu.faIcon === true"></i><img
                                         [src]="menu.img" alt="" /></span>
                                 <span>{{ menu.menuValue | titlecase }}</span></a>
                         </li>
-                        <li class="submenu" *ngIf="menu.hasSubRoute === true">
+                        <li class="submenu" *ngIf="menu.hasSubRoute === true && checkUserRole(menu.rol)">
                             <a [class.active]="base === menu.base  " (click)="expandSubMenus(menu)"
                                 href="javascript:void(0)" [ngClass]="{ subdrop: menu.showSubRoute === true }"><span
                                     class="menu-side"><i class="fa" [class]="menu.icon"
@@ -79,7 +79,7 @@
                 </li>
             -->
             </ul>
-            <div class="logout-btn">
+            <div class="logout-btn" style="bottom: 10px; position: absolute;">
                 <a (click)="logout()" style="cursor: pointer; padding: 12px 12px;"><span class="menu-side"><img src="assets/img/icons/logout.svg"
                             alt="" /></span>
                     <span>Salir</span></a>

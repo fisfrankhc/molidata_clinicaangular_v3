@@ -83,6 +83,10 @@ export class rutas {
     return this.baseUrl + '/farmacia/caja';
   }
 
+  public static get farmacia_iniciocierre_operaciones(): string {
+    return this.baseUrl + '/farmacia/inicio-cierre-operaciones';
+  }
+
   public static get farmacia_reportecaja(): string {
     return this.baseUrl + '/farmacia/reportecaja';
   }

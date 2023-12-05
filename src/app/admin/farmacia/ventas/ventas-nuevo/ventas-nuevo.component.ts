@@ -505,6 +505,9 @@ export class VentasNuevoComponent implements OnInit {
             title: 'Ingrese codigo de validaci&oacute;n',
             input: 'text', //inputLabel: 'Tu codigo de validacion',
             inputPlaceholder: 'Codigo',
+            inputAttributes: {
+              autocomplete: 'off', // Desactivar el autocompletado
+            },
           });
           if (codigo) {
             //Swal.fire(`Entered Code: ${codigo}`);
@@ -723,6 +726,9 @@ export class VentasNuevoComponent implements OnInit {
             title: 'Ingrese codigo de validaci&oacute;n',
             input: 'text', //inputLabel: 'Tu codigo de validacion',
             inputPlaceholder: 'Codigo',
+            inputAttributes: {
+              autocomplete: 'off', // Desactivar el autocompletado
+            },
           });
 
           if (codigo) {
@@ -795,6 +801,43 @@ export class VentasNuevoComponent implements OnInit {
         //NO HUBO ALGUN AJUSTE
         else {
           console.log('Todo es correcto');
+          //SI NO HAY ALGUN CAMBIO EN LOS PRECIOS, HACEMOS EL POST
+          this.ventasService.postVentas(ventaData).subscribe({
+            next: (response) => {
+              this.venta = response;
+
+              this.form.value.listaVenta.forEach((producto: Producto) => {
+                // Agregamos el ID de venta obtenido al objeto producto
+                producto.venta = this.venta;
+
+                // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+                this.ventasDetalleService
+                  .postVentasDetalle(producto)
+                  .subscribe({
+                    next: (response) => {
+                      console.log('Entrada registrada con éxito:', response);
+                    },
+                    error: (errorData) => {
+                      console.error(
+                        'Error al enviar la solicitud POST de VENTADETALLE:',
+                        errorData
+                      );
+                    },
+                    complete: () => {},
+                  });
+                //FIN DE VENTA-DETALLE
+              });
+            },
+            error: (errorData) => {
+              console.error(
+                'Error al enviar la solicitud POST de VENTA:',
+                errorData
+              );
+            },
+            complete: () => {
+              this.router.navigate(['/farmacia/caja']);
+            },
+          });
         }
       } else {
         Swal.fire({

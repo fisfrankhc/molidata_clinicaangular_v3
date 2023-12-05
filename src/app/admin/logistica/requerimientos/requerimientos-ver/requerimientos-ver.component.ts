@@ -252,11 +252,15 @@ export class RequerimientosVerComponent implements OnInit {
     });
 
     // Agrega datos de PRODUCTOS
-    this.datosREQUERIMIENTODetalle.forEach((data: any) => {
+    const requerimientoDetalleValue = this.form.get(
+      'requerimientoDetalle'
+    )?.value;
+
+    if (requerimientoDetalleValue) {
       const row = [
-        this.datoREQUERIMIENTO[0]['usuario_id'],
-        this.datoREQUERIMIENTO[0]['requerimiento_fecha'],
-        this.datoREQUERIMIENTO[0]['sucursal_id'],
+        requerimientoDetalleValue.user_nombre,
+        requerimientoDetalleValue.fecha,
+        requerimientoDetalleValue.sucursal_origen,
       ];
 
       const excelRow = worksheet.addRow(row);
@@ -266,22 +270,18 @@ export class RequerimientosVerComponent implements OnInit {
       excelRow.getCell(1).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // ID
+      }; // USUARIO
       excelRow.getCell(2).alignment = {
         vertical: 'middle',
+        horizontal: 'center',
       }; // FECHA
       excelRow.getCell(3).alignment = {
         vertical: 'middle',
-      }; // USUARIO
-      excelRow.getCell(4).alignment = {
-        vertical: 'middle',
         horizontal: 'center',
-      }; // Proceso
-      excelRow.getCell(5).alignment = {
-        vertical: 'middle',
-        horizontal: 'center',
-      }; // AGENCIA
-    });
+      }; // SUCURSAL
+    } else {
+      console.error('requerimientoDetalle no esta definido o es nulo');
+    }
 
     //////////////////////////////////////////////////////////
     const emptyRow = worksheet.addRow([]);
@@ -331,21 +331,17 @@ export class RequerimientosVerComponent implements OnInit {
       excelRow.getCell(1).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // ID
+      }; // #
       excelRow.getCell(2).alignment = {
         vertical: 'middle',
-      }; // FECHA
+      }; // CODIGO
       excelRow.getCell(3).alignment = {
         vertical: 'middle',
-      }; // USUARIO
+      }; // NOMBREPRODUCTO
       excelRow.getCell(4).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // Proceso
-      excelRow.getCell(5).alignment = {
-        vertical: 'middle',
-        horizontal: 'center',
-      }; // AGENCIA
+      }; // CANTIDAD
     });
 
     // Descargar el archivo Excel
