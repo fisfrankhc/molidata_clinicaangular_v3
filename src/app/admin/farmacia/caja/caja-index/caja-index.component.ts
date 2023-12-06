@@ -2,10 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
 import { VentasConfirmadasService } from 'src/app/shared/services/farmacia/ventas/ventas-confirmadas.service';
 import { Sort } from '@angular/material/sort';
+import { DatePipe } from '@angular/common';
 import { MatTableDataSource } from '@angular/material/table';
 import { pageSelection, Ventas } from 'src/app/shared/interfaces/farmacia';
 import { ClientesService } from 'src/app/shared/services/farmacia/clientes/clientes.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
+import { InicioCierreOperacionesService } from 'src/app/shared/services/farmacia/inicio-cierre-operaciones/inicio-cierre-operaciones.service';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-caja-index',
   templateUrl: './caja-index.component.html',
@@ -15,10 +19,21 @@ export class CajaIndexComponent implements OnInit {
   public ruta = rutas;
   datosVENTA: Ventas[] = [];
 
+  userid = localStorage.getItem('userid');
+  fechaActual = new Date();
+  fechaFormateada = this.datePipe.transform(this.fechaActual, 'yyyy/MM/dd');
+  fechaFormateadaVTabla = this.datePipe.transform(
+    this.fechaActual,
+    'yyyy-MM-dd'
+  );
+
   constructor(
+    private router: Router,
     public ventasConfirmadasService: VentasConfirmadasService,
     public clientesService: ClientesService,
-    public sucursalService: SucursalService
+    public sucursalService: SucursalService,
+    private inicioCierreOperacionesService: InicioCierreOperacionesService,
+    private datePipe: DatePipe
   ) {}
 
   public ventasList: Array<Ventas> = [];
@@ -38,9 +53,66 @@ export class CajaIndexComponent implements OnInit {
   public pageSelection: Array<pageSelection> = [];
   public totalPages = 0;
 
+  datosICOperaciones: any;
+  ICOperacionesEncontrado1: any;
+  ICOperacionesEncontrado2: any;
   ngOnInit(): void {
-    this.clientesAll();
-    this.sucursalAll();
+    this.inicioCierreOperacionesService
+      .getInicioCierreOperacionesAll()
+      .subscribe({
+        next: (data) => {
+          this.datosICOperaciones = data;
+
+          //VALIDACION 1
+          this.ICOperacionesEncontrado1 = this.datosICOperaciones.find(
+            (ICO: any) =>
+              ICO.user_id === this.userid &&
+              ICO.sesion_tipo == 'APERTURA' &&
+              ICO.sesion_fecha == this.fechaFormateadaVTabla
+          ); //this.fechaFormateadaVTabla, '2023-12-05'
+          if (this.ICOperacionesEncontrado1) {
+            //console.log('TODO NORMAL');
+
+            //VALIDACION 2
+            this.ICOperacionesEncontrado2 = this.datosICOperaciones.find(
+              (ICO: any) =>
+                ICO.user_id === this.userid &&
+                ICO.sesion_tipo == 'CIERRE' &&
+                ICO.sesion_fecha == this.fechaFormateadaVTabla
+            ); //this.fechaFormateadaVTabla, '2023-12-05'
+            if (this.ICOperacionesEncontrado2) {
+              //console.log('YA HIZO EL CIERRE');
+              Swal.fire({
+                icon: 'info',
+                title: 'ya ha realizado el cierre de caja',
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true,
+              }).then(() => {
+                this.router.navigate(['/farmacia/inicio-cierre-operaciones']);
+              });
+            } else {
+              console.log('AUN NO HA REALIZADO EL CIERRE, TODO BIEN');
+              this.clientesAll();
+              this.sucursalAll();
+            }
+            //TERMINA VALIDACION 2
+          } else {
+            //alert("NO SE ENCONTRARON DATOS")
+            Swal.fire({
+              icon: 'error',
+              title: 'No ha realizado la apertura de caja',
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            }).then(() => {
+              this.router.navigate(['/farmacia/inicio-cierre-operaciones']);
+            });
+          }
+        },
+        error: (errorData) => {},
+        complete: () => {},
+      });
   }
 
   datosCLI: any;
