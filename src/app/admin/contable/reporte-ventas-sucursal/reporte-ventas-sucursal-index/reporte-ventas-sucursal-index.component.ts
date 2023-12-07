@@ -20,11 +20,11 @@ import { catchError, map } from 'rxjs/operators';
 import * as ExcelJS from 'exceljs';
 
 @Component({
-  selector: 'app-reporte-ventas-index',
-  templateUrl: './reporte-ventas-index.component.html',
-  styleUrls: ['./reporte-ventas-index.component.scss'],
+  selector: 'app-reporte-ventas-sucursal-index',
+  templateUrl: './reporte-ventas-sucursal-index.component.html',
+  styleUrls: ['./reporte-ventas-sucursal-index.component.scss'],
 })
-export class ReporteVentasIndexComponent implements OnInit {
+export class ReporteVentasSucursalIndexComponent implements OnInit {
   public ruta = rutas;
   constructor(
     private datePipe: DatePipe,
@@ -267,15 +267,36 @@ export class ReporteVentasIndexComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Agrega una fila para el título del reporte
     const titleRow = worksheet.addRow(['REPORTE DE VENTAS POR SUCURSAL']);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
     worksheet.mergeCells(`A${titleRow.number}:D${titleRow.number}`);
+    // Aplica estilo al fondo del título solo a las celdas combinadas
+    const titleRange = worksheet.getRow(titleRow.number);
+    titleRange.eachCell((cell) => {
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
+      };
+    });
+
+    // Configura bordes para la fila del título
+    /* titleRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    }); */
 
     // Espaciador entre el título y los encabezados
     worksheet.addRow([]); // Esto agrega una fila vacía
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Estilo para los encabezados
     const headerStyle = {
       font: { bold: true, size: 12 },
@@ -309,6 +330,16 @@ export class ReporteVentasIndexComponent implements OnInit {
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
 
+    // Configura bordes para la fila de encabezados
+    headerRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+
     // Agrega datos
     this.sucursalVentasList.forEach((data) => {
       // Redondea el valor de data.montotal a 2 decimales
@@ -324,6 +355,16 @@ export class ReporteVentasIndexComponent implements OnInit {
 
       const excelRow = worksheet.addRow(row);
       excelRow.height = 20; // Altura del header
+
+      // Configura bordes para las celdas en la fila de datos
+      excelRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
 
       // Centra las celdas específicas en la fila de datos
       excelRow.getCell(1).alignment = {
@@ -354,7 +395,7 @@ export class ReporteVentasIndexComponent implements OnInit {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Reporte de Ventas ' + this.fechaVisual + '.xlsx';
+      a.download = 'Reporte de Ventas x Sucursal' + this.fechaVisual + '.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
     });

@@ -222,14 +222,14 @@ export class RequerimientosVerComponent implements OnInit {
       fill: {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: '54C3FB' }, // Color de fondo Malibu
+        fgColor: { argb: 'A1C1E7' }, // Color de fondo Malibu
       } as ExcelJS.Fill,
     };
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Agrega encabezados con estilo y asigna anchos
     const headers0 = [
-      { header: 'USUARIO', key: 'usuario', width: 10 },
+      { header: 'USUARIO', key: 'usuario', width: 20 },
       { header: 'FECHA', key: 'fecha', width: 25 },
       { header: 'SUCURSAL', key: 'sucursal', width: 60 },
     ];
@@ -251,6 +251,16 @@ export class RequerimientosVerComponent implements OnInit {
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
 
+    // Configura bordes para la fila de encabezados
+    headerRow0.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+
     // Agrega datos de PRODUCTOS
     const requerimientoDetalleValue = this.form.get(
       'requerimientoDetalle'
@@ -265,6 +275,16 @@ export class RequerimientosVerComponent implements OnInit {
 
       const excelRow = worksheet.addRow(row);
       excelRow.height = 20; // Altura del header
+
+      // Configura bordes para las celdas en la fila de datos
+      excelRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
 
       // Centra las celdas específicas en la fila de datos
       excelRow.getCell(1).alignment = {
@@ -289,7 +309,7 @@ export class RequerimientosVerComponent implements OnInit {
 
     // Agrega encabezados con estilo y asigna anchos
     const headers1 = [
-      { header: '#', key: '#', width: 10 },
+      { header: '#', key: '#', width: 20 },
       { header: 'Codigo', key: 'codigo', width: 25 },
       { header: 'Producto', key: 'producto', width: 60 },
       { header: 'Cantidad', key: 'cantidad', width: 20 },
@@ -313,6 +333,16 @@ export class RequerimientosVerComponent implements OnInit {
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
 
+    // Configura bordes para la fila de encabezados
+    headerRow1.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+
     // Agrega datos de PRODUCTOS
     this.datosREQUERIMIENTODetalle.forEach((data: any) => {
       const row = [
@@ -327,6 +357,16 @@ export class RequerimientosVerComponent implements OnInit {
       const excelRow = worksheet.addRow(row);
       excelRow.height = 20; // Altura del header
 
+      // Configura bordes para las celdas en la fila de datos
+      excelRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
+
       // Centra las celdas específicas en la fila de datos
       excelRow.getCell(1).alignment = {
         vertical: 'middle',
@@ -338,10 +378,12 @@ export class RequerimientosVerComponent implements OnInit {
       excelRow.getCell(3).alignment = {
         vertical: 'middle',
       }; // NOMBREPRODUCTO
-      excelRow.getCell(4).alignment = {
+      const montoCell = excelRow.getCell(4);
+      montoCell.alignment = {
         vertical: 'middle',
         horizontal: 'center',
       }; // CANTIDAD
+      montoCell.numFmt = '#,##0.00'; // Formato de número con 2 decimales
     });
 
     // Descargar el archivo Excel

@@ -287,7 +287,7 @@ export class RequerimientosIndexComponent {
       fill: {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'FFFF00' }, // Color de fondo amarillo
+        fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
       } as ExcelJS.Fill,
     };
 
@@ -315,6 +315,16 @@ export class RequerimientosIndexComponent {
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
 
+    // Configura bordes para la fila de encabezados
+    headerRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+
     // Agrega datos
     this.requerimientosList.forEach((data) => {
       const row = [
@@ -329,6 +339,16 @@ export class RequerimientosIndexComponent {
 
       const excelRow = worksheet.addRow(row);
       excelRow.height = 20; // Altura del header
+
+      // Configura bordes para las celdas en la fila de datos
+      excelRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
 
       // Centra las celdas específicas en la fila de datos
       excelRow.getCell(1).alignment = {
@@ -359,7 +379,7 @@ export class RequerimientosIndexComponent {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Lista de Requerimientos '+this.fechaFormateada+'.xlsx';
+      a.download = 'Lista de Requerimientos ' + this.fechaFormateada + '.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
     });

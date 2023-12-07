@@ -8,7 +8,8 @@
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a>CONTABLE </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventas">Reporte de Ventas </a>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventasusuario">Reporte de Ventas por
+                                Usuario</a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item active">Lista</li>
@@ -30,7 +31,7 @@
                                 <div class="col-12 col-md-6 col-xl-5">
                                     <div class="doctor-table-blk">
                                         <div>
-                                            <h3>Reporte de Ventas</h3>
+                                            <h3>Reporte de Ventas por Usuario</h3>
                                             <span style="font-size: 12px;">Fecha: <b>{{this.fechaVisual}}</b></span>
                                         </div>
                                         <div class="doctor-search-blk">
@@ -71,7 +72,8 @@
                                     </form>
                                 </div>
                                 <div class="col-2 text-end float-end ms-auto download-grp">
-                                    <a (click)="exportToExcel()" href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                    <a (click)="exportToExcel()" href="javascript:;"><img
+                                            src="assets/img/icons/pdf-icon-04.svg" alt=""><span
                                             style="font-size: 10px;">Reporte</span></a>
                                 </div>
                             </div>
@@ -88,22 +90,22 @@
                                                 <input class="form-check-input" type="checkbox" value="something">
                                             </div>
                                         </th>
-                                        <th mat-sort-header="sucursal_id">SUCURSAL</th>
+                                        <th mat-sort-header="usuario_id">USUARIO</th>
                                         <th mat-sort-header="venta_fecha">FECHA</th>
                                         <th mat-sort-header="monto_pago">MONTO</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr *ngFor="let data of sucursalVentasList">
+                                    <tr *ngFor="let data of usuarioVentasList">
                                         <td>
                                             <div class="form-check check-tables">
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td>{{ data.suc_nombre }}</td>
+                                        <td>{{ data.user_nombre }}</td>
                                         <td>{{ data.fechaBusqueda | date: 'dd-MM-yyyy' }}</td>
                                         <td>{{ data.montotal | number:'1.2-2' }} </td>
-<!--                                         <td class="text-end">
+                                        <!--                                         <td class="text-end">
                                             <a type="button" class="btn btn-outline-primary"
                                                 [routerLink]="['./ver', ]"><i class="fa fa-eye" aria-hidden="true"></i>
                                                 Ver</a>
@@ -178,7 +180,7 @@
                                                                       disabled:
                                                                         currentPage ===
                                                                           pageNumberArray[pageNumberArray.length - 1] ||
-                                                                          sucursalVentasList.length === 0
+                                                                          usuarioVentasList.length === 0
                                                                     }">
                                                 <a (click)="getMoreData('next')" class="page-link"
                                                     href="javascript:void(0);">Next

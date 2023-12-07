@@ -10,10 +10,17 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'reporte-ventas',
+    path: 'reporte-ventas-por-sucursal',
     loadChildren: () =>
-      import('./reporte-ventas/reporte-ventas.module').then(
-        (m) => m.ReporteVentasModule
+      import('./reporte-ventas-sucursal/reporte-ventas-sucursal.module').then(
+        (m) => m.ReporteVentasSucursalModule
+      ),
+  },
+  {
+    path: 'reporte-ventas-por-usuario',
+    loadChildren: () =>
+      import('./reporte-ventas-usuario/reporte-ventas-usuario.module').then(
+        (m) => m.ReporteVentasUsuarioModule
       ),
   },
 ];

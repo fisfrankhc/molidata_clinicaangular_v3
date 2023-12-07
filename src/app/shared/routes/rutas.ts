@@ -113,8 +113,12 @@ export class rutas {
     return this.baseUrl + '/contable/comprobantes';
   }
 
-  public static get contable_reporteventas(): string {
-    return this.baseUrl + '/contable/reporte-ventas';
+  public static get contable_reporteventassucursal(): string {
+    return this.baseUrl + '/contable/reporte-ventas-por-sucursal';
+  }
+
+  public static get contable_reporteventasusuario(): string {
+    return this.baseUrl + '/contable/reporte-ventas-por-suusuario';
   }
 }
   

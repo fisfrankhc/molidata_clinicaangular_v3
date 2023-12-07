@@ -8,7 +8,7 @@
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a>CONTABLE </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventas">Reporte de Ventas </a>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventassucursal">Reporte de Ventas por Sucursal</a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item active">Lista</li>
@@ -30,7 +30,7 @@
                                 <div class="col-12 col-md-6 col-xl-5">
                                     <div class="doctor-table-blk">
                                         <div>
-                                            <h3>Reporte de Ventas</h3>
+                                            <h3>Reporte de Ventas por Sucursal</h3>
                                             <span style="font-size: 12px;">Fecha: <b>{{this.fechaVisual}}</b></span>
                                         </div>
                                         <div class="doctor-search-blk">
@@ -71,7 +71,8 @@
                                     </form>
                                 </div>
                                 <div class="col-2 text-end float-end ms-auto download-grp">
-                                    <a (click)="exportToExcel()" href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                    <a (click)="exportToExcel()" href="javascript:;"><img
+                                            src="assets/img/icons/pdf-icon-04.svg" alt=""><span
                                             style="font-size: 10px;">Reporte</span></a>
                                 </div>
                             </div>
@@ -103,7 +104,7 @@
                                         <td>{{ data.suc_nombre }}</td>
                                         <td>{{ data.fechaBusqueda | date: 'dd-MM-yyyy' }}</td>
                                         <td>{{ data.montotal | number:'1.2-2' }} </td>
-<!--                                         <td class="text-end">
+                                        <!--                                         <td class="text-end">
                                             <a type="button" class="btn btn-outline-primary"
                                                 [routerLink]="['./ver', ]"><i class="fa fa-eye" aria-hidden="true"></i>
                                                 Ver</a>

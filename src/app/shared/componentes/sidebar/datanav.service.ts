@@ -182,8 +182,12 @@ export class DatanavService {
               route: 'contable/comprobantes',
             },
             {
-              menuValue: 'Reporte de Ventas',
-              route: 'contable/reporte-ventas',
+              menuValue: 'Reporte de Ventas - Sucursal',
+              route: 'contable/reporte-ventas-por-sucursal',
+            },
+            {
+              menuValue: 'Reporte de Ventas - Usuario',
+              route: 'contable/reporte-ventas-por-usuario',
             },
           ],
         },

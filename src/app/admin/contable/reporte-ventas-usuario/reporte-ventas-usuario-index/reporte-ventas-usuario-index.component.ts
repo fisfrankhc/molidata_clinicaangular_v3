@@ -13,28 +13,30 @@ import { pageSelection, Ventas } from 'src/app/shared/interfaces/farmacia';
 import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.service';
 import { VentasItemService } from 'src/app/shared/services/farmacia/ventas/ventas-item.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
+import { GeneralService } from 'src/app/shared/services/general.service';
 import { forkJoin, of } from 'rxjs';
 import { DatePipe } from '@angular/common';
-import { catchError, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 
 import * as ExcelJS from 'exceljs';
 
 @Component({
-  selector: 'app-reporte-ventas-index',
-  templateUrl: './reporte-ventas-index.component.html',
-  styleUrls: ['./reporte-ventas-index.component.scss'],
+  selector: 'app-reporte-ventas-usuario-index',
+  templateUrl: './reporte-ventas-usuario-index.component.html',
+  styleUrls: ['./reporte-ventas-usuario-index.component.scss'],
 })
-export class ReporteVentasIndexComponent implements OnInit {
+export class ReporteVentasUsuarioIndexComponent implements OnInit {
   public ruta = rutas;
   constructor(
     private datePipe: DatePipe,
     private fb: FormBuilder,
     private ventasService: VentasService,
     private ventasItemService: VentasItemService,
-    private sucursalService: SucursalService
+    private sucursalService: SucursalService,
+    private generalService: GeneralService
   ) {}
 
-  public sucursalVentasList: Array<any> = [];
+  public usuarioVentasList: Array<any> = [];
   dataSource!: MatTableDataSource<Ventas>;
 
   public showFilter = false;
@@ -66,11 +68,12 @@ export class ReporteVentasIndexComponent implements OnInit {
     this.ventasService.getVentasAll().subscribe({
       next: (response0: any) => {
         this.datosVenta = response0;
+        console.log(this.datosVenta);
         // Obtener la fecha seleccionada del formulario
         const fechaSeleccionada = this.form.value.fechaventa;
-        // Asegurarse de que fechaSeleccionada no sea null ni undefined antes de llamar a sucursalesAll
+        // Asegurarse de que fechaSeleccionada no sea null ni undefined antes de llamar a usuariosAll
         if (fechaSeleccionada !== null && fechaSeleccionada !== undefined) {
-          this.sucursalesAll(fechaSeleccionada);
+          this.usuariosAll(fechaSeleccionada);
         }
       },
       error: (errorData) => {},
@@ -78,22 +81,23 @@ export class ReporteVentasIndexComponent implements OnInit {
     });
   }
 
-  datosSUC: any[] = [];
+  datosUSUARIO: any[] = [];
   sumatotal = 0;
 
-  sucursalesAll(fecha: string) {
-    this.sucursalVentasList = [];
+  usuariosAll(fecha: string) {
+    this.usuarioVentasList = [];
     this.serialNumberArray = [];
-    this.sucursalService.getSucursalAll().subscribe({
+    this.generalService.getUsuariosAll().subscribe({
       next: (response: any) => {
-        this.datosSUC = response;
+        this.datosUSUARIO = response;
         //console.log(response);
-
-        const observables = this.datosSUC.map((sucursal: any) => {
+        console.log(this.datosUSUARIO);
+        const observables = this.datosUSUARIO.map((usuario: any) => {
           const dataSucursal = this.datosVenta.filter(
             (vent: any) =>
-              vent.venta_fecha === fecha && vent.sucursal_id === sucursal.suc_id
+              vent.venta_fecha === fecha && vent.usuario_id === usuario.user_id
           );
+          console.log(dataSucursal);
 
           let sumaPrecioVenta = 0;
           let sumaCantidaPrecio: number = 0; // Inicializa con 0 o el valor inicial que desees
@@ -115,23 +119,23 @@ export class ReporteVentasIndexComponent implements OnInit {
                     //sumaPrecioVenta += sumaCantidaPrecio;
                   });
                 });
-                sucursal.montotal = sumaCantidaPrecio;
-                sucursal.fechaBusqueda = fecha;
-                return sucursal;
+                usuario.montotal = sumaCantidaPrecio;
+                usuario.fechaBusqueda = fecha;
+                return usuario;
               })
             );
           } else {
-            sucursal.fechaBusqueda = fecha;
-            sucursal.montotal = 0;
-            return of(sucursal);
+            usuario.fechaBusqueda = fecha;
+            usuario.montotal = 0;
+            return of(usuario);
           }
         });
 
         forkJoin(observables).subscribe({
           next: (sucursales: any) => {
-            this.datosSUC = sucursales;
-            // Ahora puedes acceder a this.datosSUC con los valores actualizados
-            //console.log(this.datosSUC);
+            this.datosUSUARIO = sucursales;
+            // Ahora puedes acceder a this.datosUSUARIO con los valores actualizados
+            //console.log(this.datosUSUARIO);
           },
           error: (errorData) => {
             console.error(errorData);
@@ -140,14 +144,15 @@ export class ReporteVentasIndexComponent implements OnInit {
             // El código después de que todas las operaciones asíncronas se completen
           },
         });
-        //console.log(this.datosSUC);
+        //console.log(this.datosUSUARIO);
         //AHORA SI PASAMOS DATOS A LA TABLA
-        this.totalData = this.datosSUC.length;
+        this.totalData = this.datosUSUARIO.length;
 
-        this.datosSUC.map((res: any, index: number) => {
+        this.datosUSUARIO.map((res: any, index: number) => {
           const serialNumber = index + 1;
           if (index >= this.skip && serialNumber <= this.limit) {
-            this.sucursalVentasList.push(res);
+            this.usuarioVentasList.push(res);
+            console.log(this.usuarioVentasList);
             this.serialNumberArray.push(serialNumber);
           }
         });
@@ -157,7 +162,7 @@ export class ReporteVentasIndexComponent implements OnInit {
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Ventas>(
-          this.sucursalVentasList
+          this.usuarioVentasList
         );
         this.calculateTotalPages(this.totalData, this.pageSize);
       },
@@ -170,15 +175,15 @@ export class ReporteVentasIndexComponent implements OnInit {
 
   public searchData(value: any): void {
     this.dataSource.filter = value.trim().toLowerCase();
-    this.sucursalVentasList = this.dataSource.filteredData;
+    this.usuarioVentasList = this.dataSource.filteredData;
   }
   public sortData(sort: Sort) {
-    const data = this.sucursalVentasList.slice();
+    const data = this.usuarioVentasList.slice();
 
     if (!sort.active || sort.direction === '') {
-      this.sucursalVentasList = data;
+      this.usuarioVentasList = data;
     } else {
-      this.sucursalVentasList = data.sort((a, b) => {
+      this.usuarioVentasList = data.sort((a, b) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const aValue = (a as any)[sort.active];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -199,12 +204,12 @@ export class ReporteVentasIndexComponent implements OnInit {
       this.limit -= this.pageSize;
       this.skip = this.pageSize * this.pageIndex;
     }
-    //this.sucursalesAll();
+    //this.usuariosAll();
     const fechaSeleccionada = this.form.value.fechaventa;
     if (fechaSeleccionada !== null && fechaSeleccionada !== undefined) {
-      this.sucursalesAll(fechaSeleccionada);
+      this.usuariosAll(fechaSeleccionada);
     }
-    this.dataSource = new MatTableDataSource<any>(this.sucursalVentasList); // Agregar esta línea
+    this.dataSource = new MatTableDataSource<any>(this.usuarioVentasList); // Agregar esta línea
   }
   public moveToPage(pageNumber: number): void {
     this.currentPage = pageNumber;
@@ -215,10 +220,10 @@ export class ReporteVentasIndexComponent implements OnInit {
     } else if (pageNumber < this.currentPage) {
       this.pageIndex = pageNumber + 1;
     }
-    //this.sucursalesAll();
+    //this.usuariosAll();
     const fechaSeleccionada = this.form.value.fechaventa;
     if (fechaSeleccionada !== null && fechaSeleccionada !== undefined) {
-      this.sucursalesAll(fechaSeleccionada);
+      this.usuariosAll(fechaSeleccionada);
     }
   }
   public PageSize(): void {
@@ -229,9 +234,9 @@ export class ReporteVentasIndexComponent implements OnInit {
     //
     const fechaSeleccionada = this.form.value.fechaventa;
     if (fechaSeleccionada !== null && fechaSeleccionada !== undefined) {
-      this.sucursalesAll(fechaSeleccionada);
+      this.usuariosAll(fechaSeleccionada);
     }
-    //this.sucursalesAll();
+    //this.usuariosAll();
   }
 
   private calculateTotalPages(totalData: number, pageSize: number): void {
@@ -259,7 +264,7 @@ export class ReporteVentasIndexComponent implements OnInit {
     if (fechaBuscada !== null && fechaBuscada !== undefined) {
       this.fechaVisual = fechaBuscada;
       // Filtrar los datos según la fecha seleccionada
-      this.sucursalesAll(fechaBuscada);
+      this.usuariosAll(fechaBuscada);
     }
   }
 
@@ -267,15 +272,27 @@ export class ReporteVentasIndexComponent implements OnInit {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Agrega una fila para el título del reporte
-    const titleRow = worksheet.addRow(['REPORTE DE VENTAS POR SUCURSAL']);
+    const titleRow = worksheet.addRow(['REPORTE DE VENTAS POR USUARIO']);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
     worksheet.mergeCells(`A${titleRow.number}:D${titleRow.number}`);
 
+    // Configura bordes para la fila del título
+    /* titleRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    }); */
+
     // Espaciador entre el título y los encabezados
     worksheet.addRow([]); // Esto agrega una fila vacía
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Estilo para los encabezados
     const headerStyle = {
       font: { bold: true, size: 12 },
@@ -289,7 +306,7 @@ export class ReporteVentasIndexComponent implements OnInit {
     // Agrega encabezados con estilo y asigna anchos
     const headers = [
       { header: '#', key: '#', width: 10 },
-      { header: 'SUCURSAL', key: 'sucursal', width: 35 },
+      { header: 'USUARIO', key: 'usuario', width: 35 },
       { header: 'FECHA', key: 'fecha', width: 20 },
       { header: 'MONTO', key: 'monto', width: 20 },
     ];
@@ -309,21 +326,41 @@ export class ReporteVentasIndexComponent implements OnInit {
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
     });
 
+    // Configura bordes para la fila de encabezados
+    headerRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+
     // Agrega datos
-    this.sucursalVentasList.forEach((data) => {
+    this.usuarioVentasList.forEach((data) => {
       // Redondea el valor de data.montotal a 2 decimales
       //const montoFormateado = data.montotal.toFixed(2);
       const row = [
         (this.currentPage - 1) * this.pageSize +
-          this.sucursalVentasList.indexOf(data) +
+          this.usuarioVentasList.indexOf(data) +
           1,
-        data.suc_nombre,
+        data.user_nombre,
         data.fechaBusqueda,
         data.montotal,
       ];
 
       const excelRow = worksheet.addRow(row);
       excelRow.height = 20; // Altura del header
+
+      // Configura bordes para las celdas en la fila de datos
+      excelRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      });
 
       // Centra las celdas específicas en la fila de datos
       excelRow.getCell(1).alignment = {
@@ -332,7 +369,7 @@ export class ReporteVentasIndexComponent implements OnInit {
       }; // #
       excelRow.getCell(2).alignment = {
         vertical: 'middle',
-      }; // SUCURSAL
+      }; // USUARIO
       excelRow.getCell(3).alignment = {
         vertical: 'middle',
         horizontal: 'center',
@@ -354,7 +391,7 @@ export class ReporteVentasIndexComponent implements OnInit {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Reporte de Ventas ' + this.fechaVisual + '.xlsx';
+      a.download = 'Reporte de Ventas x Usuario' + this.fechaVisual + '.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
     });
