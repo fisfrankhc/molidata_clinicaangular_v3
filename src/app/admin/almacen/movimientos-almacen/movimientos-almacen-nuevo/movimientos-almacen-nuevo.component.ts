@@ -314,6 +314,7 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
     this.fechaActual,
     'yyyy/MM/dd HH:mm'
   );
+
   //ID DE VENTA OBTENIDA GUARDADA
   movimiento: any;
 
@@ -338,7 +339,12 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
       };
     } = {};
 
-    if (this.form.valid) {
+    if (
+      this.form.get('movimientoDetalle')?.valid &&
+      this.form.get('listaMovimiento')?.valid
+    ) {
+      //console.log(movimientoData);
+      //console.log(this.form.value);
       this.movimientosAlmacenService.postMovimientos(movimientoData).subscribe({
         next: (response) => {
           this.movimiento = response;
@@ -405,7 +411,9 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                     //console.log(stockActualizar);
                     this.stockService.updatedStock(stockActualizar).subscribe({
                       next: (response) => {
-                        console.log("Respuesta de UpdatedPost interno: "+ response);
+                        console.log(
+                          'Respuesta de UpdatedPost interno: ' + response
+                        );
                       },
                       error: (errorData) => {
                         console.error(errorData);
@@ -424,7 +432,9 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
 
                     this.stockService.postStock(stockPostNew).subscribe({
                       next: (response) => {
-                        console.log("Respuesta de PostStock interno: " + response);
+                        console.log(
+                          'Respuesta de PostStock interno: ' + response
+                        );
                       },
                       error: (errorData) => {
                         console.error(errorData);
@@ -432,8 +442,7 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                       complete: () => {},
                     });
                   }
-                }
-                else if (movimientoData.tipo === 'SALIDA') {
+                } else if (movimientoData.tipo === 'SALIDA') {
                   if (sucursalFindUpdate) {
                     sucursalFindUpdate.cantidad =
                       Number(sucursalFindUpdate.cantidad) -
@@ -448,17 +457,19 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                       condicion: 'ACTUALIZAR',
                     };
                     //console.log(stockActualizarVenta);
-                    this.stockService.updatedStock(stockActualizarVenta).subscribe({
-                      next: (response) => {
-                        console.log(
-                          'Respuesta de UpdatedPost interno 2: ' + response
-                        );
-                      },
-                      error: (errorData) => {
-                        console.error(errorData);
-                      },
-                      complete: () => {},
-                    });
+                    this.stockService
+                      .updatedStock(stockActualizarVenta)
+                      .subscribe({
+                        next: (response) => {
+                          console.log(
+                            'Respuesta de UpdatedPost interno 2: ' + response
+                          );
+                        },
+                        error: (errorData) => {
+                          console.error(errorData);
+                        },
+                        complete: () => {},
+                      });
                   }
                 }
               },
@@ -474,6 +485,8 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
           this.router.navigate(['/almacen/movimientos-almacen']);
         },
       });
+    } else {
+      alert('Faltan datos');
     }
   }
 

@@ -31,7 +31,7 @@
                                     <div class="doctor-table-blk">
                                         <div>
                                             <h3>Reporte de Ventas por Sucursal</h3>
-                                            <span style="font-size: 12px;">Fecha: <b>{{this.fechaVisual}}</b></span>
+                                            <span style="font-size: 12px;">Fecha: <span *ngIf="resultadoMostrar"><b>{{this.fechaVisualInicio}}</b> al <b>{{this.fechaVisualFin}}</b></span></span>
                                         </div>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
@@ -52,16 +52,25 @@
                                         <div class="row" style="display: flex;flex-wrap: wrap; align-items: center;">
                                             <div class="col-12 col-md-6 col-xl-4">
                                                 <div class="form-group local-forms" style="margin-bottom: 0;">
-                                                    <label>FECHA: <span
+                                                    <label>DE: <span
                                                             style="font-size: 10px;">MM/DD/YYYY</span></label>
                                                     <input class="form-control datetimepicker" type="text"
-                                                        formControlName="fechaventa" matInput [matDatepicker]="picker1">
+                                                        formControlName="fechaventainicio" matInput [matDatepicker]="picker1">
                                                     <mat-datepicker #picker1></mat-datepicker>
                                                     <mat-datepicker-toggle matIconSuffix
                                                         [for]="picker1"></mat-datepicker-toggle>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-md-6 col-xl-4">
+                                                <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                    <label>HASTA: <span style="font-size: 10px;">MM/DD/YYYY</span></label>
+                                                    <input class="form-control datetimepicker" type="text" formControlName="fechaventafin" matInput
+                                                        [matDatepicker]="picker2">
+                                                    <mat-datepicker #picker2></mat-datepicker>
+                                                    <mat-datepicker-toggle matIconSuffix [for]="picker2"></mat-datepicker-toggle>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-3">
                                                 <div class="doctor-submit">
                                                     <button type="submit" [disabled]="form.invalid"
                                                         class="btn btn-primary submit-list-form me-2">Buscar</button>
@@ -71,14 +80,14 @@
                                     </form>
                                 </div>
                                 <div class="col-2 text-end float-end ms-auto download-grp">
-                                    <a (click)="exportToExcel()" href="javascript:;"><img
+                                    <a (click)="exportToExcel()" href="javascript:;" [class.disabled]="!resultadoMostrar"><img
                                             src="assets/img/icons/pdf-icon-04.svg" alt=""><span
                                             style="font-size: 10px;">Reporte</span></a>
                                 </div>
                             </div>
                         </div>
                         <!-- /Table Header -->
-
+                        
                         <div class="table-responsive">
                             <table matSort (matSortChange)="sortData($event)"
                                 class="table border-0 custom-table comman-table datatable mb-0">
@@ -90,11 +99,13 @@
                                             </div>
                                         </th>
                                         <th mat-sort-header="sucursal_id">SUCURSAL</th>
-                                        <th mat-sort-header="venta_fecha">FECHA</th>
+                                        <th mat-sort-header="venta_fecha_inicio">FECHA INICIO</th>
+                                        <th mat-sort-header="venta_fecha_fin">FECHA FIN</th>
                                         <th mat-sort-header="monto_pago">MONTO</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <ng-container *ngIf="resultadoMostrar; else noResults">
                                     <tr *ngFor="let data of sucursalVentasList">
                                         <td>
                                             <div class="form-check check-tables">
@@ -102,14 +113,21 @@
                                             </div>
                                         </td>
                                         <td>{{ data.suc_nombre }}</td>
-                                        <td>{{ data.fechaBusqueda | date: 'dd-MM-yyyy' }}</td>
+                                        <td>{{ data.fechaBusquedaInicio | date: 'dd-MM-yyyy' }}</td>
+                                        <td>{{ data.fechaBusquedaFin | date: 'dd-MM-yyyy' }}</td>
                                         <td>{{ data.montotal | number:'1.2-2' }} </td>
                                         <!--                                         <td class="text-end">
-                                            <a type="button" class="btn btn-outline-primary"
-                                                [routerLink]="['./ver', ]"><i class="fa fa-eye" aria-hidden="true"></i>
-                                                Ver</a>
-                                        </td> -->
+                                                                                <a type="button" class="btn btn-outline-primary"
+                                                                                    [routerLink]="['./ver', ]"><i class="fa fa-eye" aria-hidden="true"></i>
+                                                                                    Ver</a>
+                                                                            </td> -->
                                     </tr>
+                                    </ng-container>
+                                    <ng-template #noResults>
+                                    <tr>
+                                        <td colspan="5" class="text-center">Especifique un rango de fecha</td>
+                                    </tr>
+                                    </ng-template>
                                 </tbody>
                             </table>
 
@@ -191,6 +209,8 @@
                             </div>
 
                         </div>
+
+
                     </div>
                 </div>
             </div>

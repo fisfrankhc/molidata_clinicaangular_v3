@@ -502,9 +502,9 @@ export class VentasNuevoComponent implements OnInit {
         if (!this.preciosIguales) {
           //console.log(this.preciosIguales);
           const { value: codigo } = await Swal.fire({
-            title: 'Ingrese codigo de validaci&oacute;n',
+            title: 'Ingrese c&oacute;digo de validaci&oacute;n para modificar precio',
             input: 'text', //inputLabel: 'Tu codigo de validacion',
-            inputPlaceholder: 'Codigo',
+            inputPlaceholder: 'Ingrese aqui',
             inputAttributes: {
               autocomplete: 'off', // Desactivar el autocompletado
             },
@@ -723,9 +723,9 @@ export class VentasNuevoComponent implements OnInit {
         //SI LOS PRECIOS NO SON IGUALES/HUBO ALGUN AJUSTE
         if (!this.preciosIguales) {
           const { value: codigo } = await Swal.fire({
-            title: 'Ingrese codigo de validaci&oacute;n',
+            title: 'Ingrese c&oacute;digo de validaci&oacute;n para modificar precio',
             input: 'text', //inputLabel: 'Tu codigo de validacion',
-            inputPlaceholder: 'Codigo',
+            inputPlaceholder: 'Ingrese aqui',
             inputAttributes: {
               autocomplete: 'off', // Desactivar el autocompletado
             },

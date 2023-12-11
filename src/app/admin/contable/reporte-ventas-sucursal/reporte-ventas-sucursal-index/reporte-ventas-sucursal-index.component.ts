@@ -56,21 +56,29 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
   //fechaFormateada = this.datePipe.transform(this.fechaActual, 'yyyy-MM-dd');
   fechaFormateada = this.datePipe.transform(this.fechaActual, 'MM/dd/yyyy');
   ngOnInit(): void {
-    this.form.patchValue({ fechaventa: this.fechaFormateada });
+    //this.form.patchValue({ fechaventa: this.fechaFormateada });
     this.fechaVisual = this.fechaFormateada;
     this.ventasAll();
   }
   fechaVisual: any;
+  fechaVisualInicio: any;
+  fechaVisualFin: any;
   datosVenta: Ventas[] = [];
   ventasAll() {
     this.ventasService.getVentasAll().subscribe({
       next: (response0: any) => {
         this.datosVenta = response0;
         // Obtener la fecha seleccionada del formulario
-        const fechaSeleccionada = this.form.value.fechaventa;
+        const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
+        const fechaSeleccionadaFin = this.form.value.fechaventafin;
         // Asegurarse de que fechaSeleccionada no sea null ni undefined antes de llamar a sucursalesAll
-        if (fechaSeleccionada !== null && fechaSeleccionada !== undefined) {
-          this.sucursalesAll(fechaSeleccionada);
+        if (
+          fechaSeleccionadaInicio !== null &&
+          fechaSeleccionadaInicio !== undefined &&
+          fechaSeleccionadaFin !== null &&
+          fechaSeleccionadaFin !== undefined
+        ) {
+          this.sucursalesAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
         }
       },
       error: (errorData) => {},
@@ -80,10 +88,13 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
 
   datosSUC: any[] = [];
   sumatotal = 0;
+  resultadoMostrar: any;
 
-  sucursalesAll(fecha: string) {
+  sucursalesAll(fechaInicio: string, fechaFin: string) {
     this.sucursalVentasList = [];
     this.serialNumberArray = [];
+    this.fechaVisualInicio = this.datePipe.transform(fechaInicio,'dd/MM/yyyy');
+    this.fechaVisualFin = this.datePipe.transform(fechaFin, 'dd/MM/yyyy');;
     this.sucursalService.getSucursalAll().subscribe({
       next: (response: any) => {
         this.datosSUC = response;
@@ -92,15 +103,20 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
         const observables = this.datosSUC.map((sucursal: any) => {
           const dataSucursal = this.datosVenta.filter(
             (vent: any) =>
-              vent.venta_fecha === fecha && vent.sucursal_id === sucursal.suc_id
+              vent.venta_fecha >= fechaInicio &&
+              vent.venta_fecha <= fechaFin &&
+              vent.sucursal_id === sucursal.suc_id
           );
 
           let sumaPrecioVenta = 0;
           let sumaCantidaPrecio: number = 0; // Inicializa con 0 o el valor inicial que desees
+
           if (dataSucursal.length > 0) {
             const observablesVentaItem = dataSucursal.map((datoVenta: any) => {
               return this.ventasItemService.getVentaItem(datoVenta.venta_id);
             });
+
+            this.resultadoMostrar = true;
 
             return forkJoin(observablesVentaItem).pipe(
               map((responses: any) => {
@@ -116,17 +132,18 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
                   });
                 });
                 sucursal.montotal = sumaCantidaPrecio;
-                sucursal.fechaBusqueda = fecha;
+                sucursal.fechaBusquedaInicio = fechaInicio;
+                sucursal.fechaBusquedaFin = fechaFin;
                 return sucursal;
               })
             );
           } else {
-            sucursal.fechaBusqueda = fecha;
+            sucursal.fechaBusquedaInicio = fechaInicio;
+            sucursal.fechaBusquedaFin = fechaFin;
             sucursal.montotal = 0;
             return of(sucursal);
           }
         });
-
         forkJoin(observables).subscribe({
           next: (sucursales: any) => {
             this.datosSUC = sucursales;
@@ -165,7 +182,8 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
   }
 
   form = this.fb.group({
-    fechaventa: ['', Validators.required],
+    fechaventainicio: ['', Validators.required],
+    fechaventafin: ['', Validators.required],
   });
 
   public searchData(value: any): void {
@@ -200,9 +218,15 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
       this.skip = this.pageSize * this.pageIndex;
     }
     //this.sucursalesAll();
-    const fechaSeleccionada = this.form.value.fechaventa;
-    if (fechaSeleccionada !== null && fechaSeleccionada !== undefined) {
-      this.sucursalesAll(fechaSeleccionada);
+    const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
+    const fechaSeleccionadaFin = this.form.value.fechaventafin;
+    if (
+      fechaSeleccionadaInicio !== null &&
+      fechaSeleccionadaInicio !== undefined &&
+      fechaSeleccionadaFin !== null &&
+      fechaSeleccionadaFin !== undefined
+    ) {
+      this.sucursalesAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
     }
     this.dataSource = new MatTableDataSource<any>(this.sucursalVentasList); // Agregar esta línea
   }
@@ -216,9 +240,15 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
       this.pageIndex = pageNumber + 1;
     }
     //this.sucursalesAll();
-    const fechaSeleccionada = this.form.value.fechaventa;
-    if (fechaSeleccionada !== null && fechaSeleccionada !== undefined) {
-      this.sucursalesAll(fechaSeleccionada);
+    const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
+    const fechaSeleccionadaFin = this.form.value.fechaventafin;
+    if (
+      fechaSeleccionadaInicio !== null &&
+      fechaSeleccionadaInicio !== undefined &&
+      fechaSeleccionadaFin !== null &&
+      fechaSeleccionadaFin !== undefined
+    ) {
+      this.sucursalesAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
     }
   }
   public PageSize(): void {
@@ -227,9 +257,15 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
     this.skip = 0;
     this.currentPage = 1;
     //
-    const fechaSeleccionada = this.form.value.fechaventa;
-    if (fechaSeleccionada !== null && fechaSeleccionada !== undefined) {
-      this.sucursalesAll(fechaSeleccionada);
+    const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
+    const fechaSeleccionadaFin = this.form.value.fechaventafin;
+    if (
+      fechaSeleccionadaInicio !== null &&
+      fechaSeleccionadaInicio !== undefined &&
+      fechaSeleccionadaFin !== null &&
+      fechaSeleccionadaFin !== undefined
+    ) {
+      this.sucursalesAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
     }
     //this.sucursalesAll();
   }
@@ -250,16 +286,23 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
   }
 
   verFecha() {
-    console.log(this.form.value.fechaventa);
-    const fechaBuscada = this.datePipe.transform(
-      this.form.value.fechaventa,
+    const fechaInicio = this.datePipe.transform(
+      this.form.value.fechaventainicio,
+      'yyyy-MM-dd'
+    );
+    const fechaFin = this.datePipe.transform(
+      this.form.value.fechaventafin,
       'yyyy-MM-dd'
     );
 
-    if (fechaBuscada !== null && fechaBuscada !== undefined) {
-      this.fechaVisual = fechaBuscada;
-      // Filtrar los datos según la fecha seleccionada
-      this.sucursalesAll(fechaBuscada);
+    if (
+      fechaInicio !== null &&
+      fechaInicio !== undefined &&
+      fechaFin !== null &&
+      fechaFin !== undefined
+    ) {
+      // Realizar la lógica de filtrado según el rango de fechas (fechaInicio y fechaFin)
+      this.sucursalesAll(fechaInicio, fechaFin);
     }
   }
 
@@ -311,7 +354,8 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
     const headers = [
       { header: '#', key: '#', width: 10 },
       { header: 'SUCURSAL', key: 'sucursal', width: 35 },
-      { header: 'FECHA', key: 'fecha', width: 20 },
+      { header: 'FECHA INICIO', key: 'fecha', width: 20 },
+      { header: 'FECHA FIN', key: 'fecha', width: 20 },
       { header: 'MONTO', key: 'monto', width: 20 },
     ];
 
@@ -349,7 +393,8 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
           this.sucursalVentasList.indexOf(data) +
           1,
         data.suc_nombre,
-        data.fechaBusqueda,
+        data.fechaBusquedaInicio,
+        data.fechaBusquedaFin,
         data.montotal,
       ];
 
@@ -377,9 +422,13 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
       excelRow.getCell(3).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // FECHA
+      }; // FECHA INICIO
+      excelRow.getCell(4).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // FECHA FIN
       // Configura el formato de la celda para la columna del monto
-      const montoCell = excelRow.getCell(4);
+      const montoCell = excelRow.getCell(5);
       montoCell.alignment = {
         vertical: 'middle',
         horizontal: 'center',
@@ -395,7 +444,12 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Reporte de Ventas x Sucursal' + this.fechaVisual + '.xlsx';
+      a.download =
+        'Reporte de Ventas x Sucursal del ' +
+        this.fechaVisualInicio +
+        ' al ' +
+        this.fechaVisualFin +
+        '.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
     });
