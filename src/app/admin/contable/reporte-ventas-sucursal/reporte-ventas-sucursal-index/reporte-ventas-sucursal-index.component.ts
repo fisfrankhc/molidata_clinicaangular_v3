@@ -105,6 +105,7 @@ export class ReporteVentasSucursalIndexComponent implements OnInit {
             (vent: any) =>
               vent.venta_fecha >= fechaInicio &&
               vent.venta_fecha <= fechaFin &&
+              vent.venta_proceso == 'PAGADO' &&
               vent.sucursal_id === sucursal.suc_id
           );
 

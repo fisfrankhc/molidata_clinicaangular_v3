@@ -71,7 +71,6 @@ export class CajaVerPagadasComponent implements OnInit {
     this.generalService.getDatosEmpresa().subscribe({
       next: (datosEMP: DatosEmpresa[]) => {
         this.datosEMP = datosEMP[0];
-        console.log(this.datosEMP);
       },
       error: () => {},
       complete: () => {},
@@ -176,7 +175,6 @@ export class CajaVerPagadasComponent implements OnInit {
     this.ventasItemService.getVentaItem(ventaId).subscribe({
       next: (response) => {
         this.datosProductosDetalle = response;
-        console.log(this.datosProductosDetalle);
         // Mapea los nombres de los clientes a los datos de ventas
         this.datosProductosDetalle = this.datosProductosDetalle.map(
           (ventasDetalle: VentasDetalle) => {
@@ -184,7 +182,6 @@ export class CajaVerPagadasComponent implements OnInit {
             const producto = this.datosPRO.find(
               (pro: any) => pro.prod_id === ventasDetalle.prod_id
             );
-            console.log(producto);
             if (producto) {
               ventasDetalle.nombreProducto = producto.prod_nombre;
               ventasDetalle.codigoProducto = producto.prod_codigo;
@@ -229,6 +226,7 @@ export class CajaVerPagadasComponent implements OnInit {
     this.productoList.forEach((producto) => {
       subtotalTotal += this.calcularSubtotal(producto);
     });
+
     return subtotalTotal;
   }
 
@@ -242,15 +240,18 @@ export class CajaVerPagadasComponent implements OnInit {
   );
 
   public totalEnTexto(): string {
-    const parteEntera = Math.floor(this.calcularSubtotalTotal());
-    const parteDecimal = Math.round(
-      (this.calcularSubtotalTotal() - parteEntera) * 100
-    );
-
-    const parteEnteraEnPalabras = this.numeroAString(parteEntera);
-    const parteDecimalEnPalabras = this.numeroAString(parteDecimal);
-
-    return `${parteEnteraEnPalabras} con ${parteDecimalEnPalabras}/100 soles`;
+    const subtotalTotal = this.calcularSubtotalTotal();
+    const parteEntera = Math.floor(subtotalTotal);
+    const parteDecimal = Math.round((subtotalTotal - parteEntera) * 100);
+    // Convertir a texto
+    if (subtotalTotal !== 0) {
+      const parteEnteraEnPalabras = this.numeroAString(parteEntera);
+      const parteDecimalEnPalabras = this.numeroAString(parteDecimal);
+      return `${parteEnteraEnPalabras} con ${parteDecimalEnPalabras}/100 soles`;
+    } else {
+      // En caso de que subtotalTotal sea igual a 0
+      return 'Cero soles';
+    }
   }
 
   numeroAString(numero: number): string {
@@ -303,31 +304,6 @@ export class CajaVerPagadasComponent implements OnInit {
       'Novecientos',
     ];
 
-    /* if (numero < 10) {
-      return unidades[numero];
-    } else if (numero < 20) {
-      //return 'Diez' + (numero === 10 ? '' : ' y ' + unidades[numero - 10]);
-      return especiales[numero - 10];
-    } else if (numero < 100) {
-      const unidad = numero % 10;
-      const decena = Math.floor(numero / 10);
-      return decenas[decena] + (unidad > 0 ? ' y ' + unidades[unidad] : '');
-    } else {
-      const unidad = numero % 10;
-      const decena = Math.floor((numero % 100) / 10);
-      const centena = Math.floor(numero / 100);
-      let result = centenas[centena];
-
-      if (decena > 0 || unidad > 0) {
-        result +=
-          ' ' +
-          (decena > 0 ? decenas[decena] : '') +
-          (unidad > 0 ? ' y ' + unidades[unidad] : '');
-      }
-
-      return result;
-    } */
-
     if (numero === 0) {
       return 'Cero';
     } else if (numero < 10) {
@@ -338,32 +314,29 @@ export class CajaVerPagadasComponent implements OnInit {
       const unidad = numero % 10;
       const decena = Math.floor(numero / 10);
       return decenas[decena] + (unidad > 0 ? ' y ' + unidades[unidad] : '');
+    } else if (numero < 1000) {
+      const centena = Math.floor(numero / 100);
+      const restoCentena = numero % 100;
+      return (
+        centenas[centena] +
+        (restoCentena > 0 ? ' ' + this.numeroAString(restoCentena) : '')
+      );
+    } else if (numero < 1e6) {
+      const miles = Math.floor(numero / 1e3);
+      const restoMiles = numero % 1e3;
+      return (
+        (miles === 1 ? 'Mil' : this.numeroAString(miles) + ' Mil') +
+        (restoMiles > 0 ? ' ' + this.numeroAString(restoMiles) : '')
+      );
     } else {
-      const partes: string[] = [];
-      let numeroRestante = Math.abs(numero);
-      const billones = Math.floor(numeroRestante / 1e12);
-      if (billones > 0) {
-        partes.push(this.numeroAString(billones) + ' Billones');
-        numeroRestante %= 1e12;
-      }
-
-      const millones = Math.floor(numeroRestante / 1e6);
-      if (millones > 0) {
-        partes.push(this.numeroAString(millones) + ' Millones');
-        numeroRestante %= 1e6;
-      }
-
-      const miles = Math.floor(numeroRestante / 1e3);
-      if (miles > 0) {
-        partes.push(this.numeroAString(miles) + ' Mil');
-        numeroRestante %= 1e3;
-      }
-
-      if (numeroRestante > 0) {
-        partes.push(this.numeroAString(numeroRestante));
-      }
-
-      return partes.join(' ');
+      const millones = Math.floor(numero / 1e6);
+      const restoMillones = numero % 1e6;
+      return (
+        (millones === 1
+          ? 'Un Millón'
+          : this.numeroAString(millones) + ' Millones') +
+        (restoMillones > 0 ? ' ' + this.numeroAString(restoMillones) : '')
+      );
     }
   }
 
@@ -402,42 +375,4 @@ export class CajaVerPagadasComponent implements OnInit {
     }
   }
 
-  /*   generarPDF() {
-    const contenidoHTMLElement = document.getElementById('ticketEmitir');
-
-    if (contenidoHTMLElement) {
-      const contenidoHTML = contenidoHTMLElement.outerHTML;
-
-      const documentDefinition: TDocumentDefinitions = {
-        content: [
-          {
-            text: 'Nota de Venta Electrónica',
-            fontSize: 18,
-            alignment: 'center',
-            bold: true,
-          },
-          { text: '', margin: [0, 10] }, // espacio en blanco
-          {
-            text: 'Detalles del Ticket',
-            fontSize: 14,
-            alignment: 'center',
-            bold: true,
-          },
-          { text: '', margin: [0, 10] }, // espacio en blanco
-          {
-            text: {
-              text: '',
-              link:
-                'data:text/html;charset=utf-8,' +
-                encodeURIComponent(contenidoHTML),
-            },
-          },
-        ],
-      };
-
-      pdfMake.createPdf(documentDefinition).open();
-    } else {
-      console.error('Elemento con ID "ticketEmitir" no encontrado.');
-    }
-  } */
 }

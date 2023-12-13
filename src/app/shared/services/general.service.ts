@@ -20,4 +20,8 @@ export class GeneralService {
   getUsuariosAll(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl2}`);
   }
+
+  getUsuario(id: any): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl2}?id=${id}`);
+  }
 }

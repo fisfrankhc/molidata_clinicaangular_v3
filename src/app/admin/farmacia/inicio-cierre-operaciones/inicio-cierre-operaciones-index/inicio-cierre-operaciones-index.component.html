@@ -38,14 +38,16 @@
                     <div style="text-align: center;">FECHA: {{fechaFormateadaver}}</div>
                     <br>
                     <div class="row" style="--bs-gutter-x: -1rem;">
-                        <div class="col-md-4 btn btn-outline-success" [class.disabled]="this.ICOperacionesEncontrado1 && this.ICOperacionesEncontrado1 !== undefined"
+                        <div class="col-md-4 btn btn-outline-success"
+                            [class.disabled]="this.ICOperacionesEncontrado1 && this.ICOperacionesEncontrado1 !== undefined"
                             style="padding: 15px; position: relative; height: 150px; margin: auto 1% auto auto;"
                             href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#apertura_caja">
                             <p
                                 style="top: 50%; position: absolute; left: 50%; transform: translate(-50%, -50%); font-weight: bold;">
                                 APERTURA DE CAJA</p>
                         </div>
-                        <div class="col-md-4 btn btn-outline-danger" [class.disabled]="this.ICOperacionesEncontrado2 && this.ICOperacionesEncontrado2 !== undefined"
+                        <div class="col-md-4 btn btn-outline-danger"
+                            [class.disabled]="this.ICOperacionesEncontrado2 && this.ICOperacionesEncontrado2 !== undefined"
                             style="padding: 15px; position: relative; height: 150px;margin: auto auto auto 1%;"
                             href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#cierre_caja">
                             <p
@@ -166,6 +168,29 @@
                         </div>
                         <!-- /Save CIERRE Modal -->
                     </form>
+                </div>
+            </div>
+            <div class="col-sm-12" [class.disabled-reporte]="!this.ICOperacionesEncontrado2 && this.ICOperacionesEncontrado2 == undefined">
+                <div class="card card-table show-entire">
+                    <div class="card-body">
+                        <!-- Table Header -->
+                        <div class="page-table-header mb-2">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <div class="doctor-table-blk">
+                                        <h3 style="font-size: 15px;">Descargar reporte del d&iacute;a</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2" style="padding: 5px 15px 10px;"  >
+                        <div class="col-2 download-grp">
+                            <a (click)="exportToExcel()" href="javascript:;"><img
+                                    src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                    style="font-size: 10px;">Descargar Reporte del dia</span></a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

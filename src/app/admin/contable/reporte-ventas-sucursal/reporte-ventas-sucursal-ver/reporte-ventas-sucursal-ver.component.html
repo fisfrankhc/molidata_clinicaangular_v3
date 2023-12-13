@@ -1,0 +1,167 @@
+<div class="page-wrapper">
+    <div class="content container-fluid">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>CONTABLE </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventassucursal">Reporte de
+                                Ventas por Sucursal</a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Detalle de la Sucursal {{sucursalID}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card invoices-add-card">
+                    <div class="card-body">
+                        <form class="invoices-form" [formGroup]="form">
+                            <div class="invoices-main-form" style="margin-bottom: 8px; padding-bottom: 0px;">
+                                <div formGroupName="datosGenerales">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <div class="form-heading">
+                                                <h4>Datos Generales</h4>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-md-6 col-xl-2">
+                                                <div class="form-group local-forms">
+                                                    <label>SUCURSAL </label>
+                                                    <input class="form-control" formControlName="sucursalNombre"
+                                                        type="text" style="background-color: transparent; border: none"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-3">
+                                                <div class="form-group local-forms">
+                                                    <label>DIRECCI&Oacute;N </label>
+                                                    <input class="form-control" formControlName="sucursalDireccion"
+                                                        style="background-color: transparent; border: none" type="text"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-5">
+                                                <div class="form-group local-forms">
+                                                    <label>FECHA DE B&Uacute;SQUEDA </label>
+                                                    <input class="form-control" formControlName="fechaBusqueda"
+                                                        style="background-color: transparent; border: none" type="text"
+                                                        readonly>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-2 text-end float-end ms-auto download-grp">
+                                                <a (click)="exportToExcel()" href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                                        style="font-size: 10px;">Descargar Reporte</span></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="invoice-add-table" style="padding-top: 0px;">
+                                <h4>Ventas realizadas</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-nowrap  mb-0 no-footer add-table-items">
+                                        <thead>
+                                            <tr style="text-align: center">
+                                                <th>C&Oacute;DIGO VENTA</th>
+                                                <th># DOCUMENTO</th>
+                                                <th>CLIENTE</th>
+                                                <th>FECHA DE VENTA</th>
+                                                <th>TIPO DE PAGO</th>
+                                                <th>ESTADO VENTA</th>
+                                                <th>MONTO</th>
+                                                <th>USUARIO VENTA</th>
+                                                <th>USUARIO COBRO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr class="add-row" *ngFor="let data of datosVENTA; let i = index">
+
+                                                <td style="width: 139px;">
+                                                    <input class="form-control" [value]="data.venta_id"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                                <td style="width: 180px;">
+                                                    <input type="text" class="form-control"
+                                                        [value]="data.numeroDocumento"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                                <td style="width: 280px;">
+                                                    <input class="form-control" [value]="data.clienteNombre"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                                <td style="max-width: 110px;">
+                                                    <input class="form-control" [value]="data.venta_fecha"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                                <td style="width: 180px;">
+                                                    <input class="form-control" [value]="data.tipoPago"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                                <td style="max-width: 110px;">
+                                                    <input class="form-control" [value]="data.venta_proceso"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                                <td style="max-width: 110px;">
+                                                    <input class="form-control"
+                                                        [value]="data.sumatotal | number:'1.2-2'"
+                                                        style="text-align: right; background-color: transparent; border: 0; padding: 5px 20px 5px 5px;"
+                                                        readonly>
+                                                </td>
+                                                <td style="max-width: 110px;">
+                                                    <input class="form-control" [value]="data.usuarioIdNombre"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                                <td style="max-width: 110px;">
+                                                    <input class="form-control" [value]="data.usuariCobroNombre"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="offset-lg-6 col-md-6">
+                                    <div class="invoice-total-card">
+                                        <h3 class="invoice-total-title">Resumen</h3>
+                                        <div class="invoice-total-box">
+                                            <div class="invoice-total-inner">
+                                                <p style="margin-bottom: 0; font-weight: 800;     font-size: 18px;">
+                                                    TOTAL <span>{{ calcularSubtotalTotal() |
+                                                        currency: 'PEN ' }}</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="upload-sign">
+                                        <div class="doctor-submit text-end">
+                                            <a class="btn btn-primary cancel-form"
+                                                [routerLink]="ruta.contable_reporteventassucursal">ATRÁS</a>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

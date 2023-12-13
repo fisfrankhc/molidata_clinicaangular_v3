@@ -8,3 +8,15 @@
 .text-desbordamiento {
     overflow-x: auto;
 }
+
+.textoMonto span {
+    display: block;
+}
+
+.textoMonto td::first-letter {
+    text-transform: uppercase;
+}
+
+.textoMonto td:not(::first-letter) {
+    text-transform: lowercase;
+}
