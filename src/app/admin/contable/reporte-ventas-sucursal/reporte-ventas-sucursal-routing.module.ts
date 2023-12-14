@@ -1,16 +1,25 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ReporteVentasSucursalIndexComponent } from './reporte-ventas-sucursal-index/reporte-ventas-sucursal-index.component';
-import { ReporteVentasSucursalVerComponent } from './reporte-ventas-sucursal-ver/reporte-ventas-sucursal-ver.component';
+import { RVSIndexComponent } from './r-v-s-index/r-v-s-index.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ReporteVentasSucursalIndexComponent,
+    component: RVSIndexComponent,
   },
   {
-    path: 'ver/:sucursal_id/:fechainicio/:fechafin',
-    component: ReporteVentasSucursalVerComponent,
+    path: 'ventas-confirmadas',
+    loadChildren: () =>
+      import(
+        './r-v-s-confirmadas/r-v-s-confirmadas.module'
+      ).then((m) => m.RVSConfirmadasModule),
+  },
+  {
+    path: 'ventas-pagadas',
+    loadChildren: () =>
+      import(
+        './reporte-ventas-sucursal-pagadas/reporte-ventas-sucursal-pagadas.module'
+      ).then((m) => m.ReporteVentasSucursalPagadasModule),
   },
 ];
 

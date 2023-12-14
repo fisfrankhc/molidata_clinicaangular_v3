@@ -170,7 +170,8 @@
                     </form>
                 </div>
             </div>
-            <div class="col-sm-12" [class.disabled-reporte]="!this.ICOperacionesEncontrado2 && this.ICOperacionesEncontrado2 == undefined">
+            <div class="col-sm-12"
+                [class.disabled-reporte]="!this.ICOperacionesEncontrado2 && this.ICOperacionesEncontrado2 == undefined">
                 <div class="card card-table show-entire">
                     <div class="card-body">
                         <!-- Table Header -->
@@ -184,12 +185,20 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-2" style="padding: 5px 15px 10px;"  >
-                        <div class="col-2 download-grp">
-                            <a (click)="exportToExcel()" href="javascript:;"><img
-                                    src="assets/img/icons/pdf-icon-04.svg" alt=""><span
-                                    style="font-size: 10px;">Descargar Reporte del dia</span></a>
+                    <div class="mb-2" style="padding: 5px 15px 10px;">
+                        <div class="row">
+                            <div class="col-sm-2 download-grp">
+                                <a (click)="exportToExcel()" href="javascript:;"><img
+                                        src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                        style="font-size: 10px;">Descargar Reporte del dia</span></a>
+                            </div>
+                            <div class="col-sm-3 download-grp">
+                                <a (click)="exportOperacionesToExcel()" href="javascript:;"><img
+                                        src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                        style="font-size: 10px;">Descargar Reporte de Operaciones del dia</span></a>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>

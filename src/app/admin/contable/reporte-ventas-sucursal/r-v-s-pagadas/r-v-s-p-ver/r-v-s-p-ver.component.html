@@ -12,7 +12,11 @@
                                 Ventas por Sucursal</a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item active">Detalle de la Sucursal {{sucursalID}}</li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventassucursal_pagadas">Ventas
+                                Pagadas</a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Detalle de la Sucursal {{datoNombreSucursal}}</li>
                     </ul>
                 </div>
             </div>
@@ -56,8 +60,10 @@
                                                         readonly>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-md-6 col-xl-2 text-end float-end ms-auto download-grp">
-                                                <a (click)="exportToExcel()" href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                            <div
+                                                class="col-12 col-md-6 col-xl-2 text-end float-end ms-auto download-grp">
+                                                <a (click)="exportToExcel()" href="javascript:;"><img
+                                                        src="assets/img/icons/pdf-icon-04.svg" alt=""><span
                                                         style="font-size: 10px;">Descargar Reporte</span></a>
                                             </div>
                                         </div>
@@ -128,7 +134,7 @@
                                                         readonly>
                                                 </td>
                                                 <td style="max-width: 110px;">
-                                                    <input class="form-control" [value]="data.usuariCobroNombre"
+                                                    <input class="form-control" [value]="data.usuarioCobroNombre"
                                                         style="text-align: center; background-color: transparent;border: 0;"
                                                         readonly>
                                                 </td>
@@ -152,7 +158,7 @@
                                     <div class="upload-sign">
                                         <div class="doctor-submit text-end">
                                             <a class="btn btn-primary cancel-form"
-                                                [routerLink]="ruta.contable_reporteventassucursal">ATRÁS</a>
+                                                [routerLink]="ruta.contable_reporteventassucursal_pagadas">ATRÁS</a>
                                         </div>
 
                                     </div>

@@ -28,7 +28,7 @@ export class SidebarComponent {
     private outloginService: OutloginService
   ) {
     this.sidebarData = this.data.sideBar;
-    console.log(this.sidebarData);
+    //console.log(this.sidebarData);
     router.events.subscribe((event: object) => {
       //console.log(event)
       if (event instanceof NavigationEnd) {

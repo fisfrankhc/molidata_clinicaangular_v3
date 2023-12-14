@@ -11,8 +11,9 @@ export interface Ventas {
   usuario_id?: number;
   sucursal_id?: number;
   venta_estado: string;
-  nombreCliente: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
+  nombreCliente?: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   nombreSucursal: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
+  nombreUsuarioVenta: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   montototal: number;
 }
 

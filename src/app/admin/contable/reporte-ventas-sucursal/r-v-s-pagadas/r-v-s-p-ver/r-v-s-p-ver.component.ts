@@ -21,11 +21,11 @@ import { firstValueFrom } from 'rxjs';
 import * as ExcelJS from 'exceljs';
 
 @Component({
-  selector: 'app-reporte-ventas-sucursal-ver',
-  templateUrl: './reporte-ventas-sucursal-ver.component.html',
-  styleUrls: ['./reporte-ventas-sucursal-ver.component.scss'],
+  selector: 'app-r-v-s-p-ver',
+  templateUrl: './r-v-s-p-ver.component.html',
+  styleUrls: ['./r-v-s-p-ver.component.scss'],
 })
-export class ReporteVentasSucursalVerComponent implements OnInit {
+export class RVSPVerComponent implements OnInit {
   form: FormGroup = new FormGroup({}); // Declaración con valor inicial;
   usersucursal = localStorage.getItem('usersucursal');
   userid = localStorage.getItem('userid');
@@ -101,6 +101,7 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
   }
 
   datoSUCURSAL: any;
+  datoNombreSucursal: string = '';
   sucursalInfo(): void {
     this.sucursalService.getSucursal(this.sucursalID).subscribe({
       next: (datoSUCURSAL: any) => {
@@ -109,6 +110,7 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
         this.form
           .get('datosGenerales.sucursalNombre')
           ?.setValue(this.datoSUCURSAL.suc_nombre);
+        this.datoNombreSucursal = this.datoSUCURSAL.suc_nombre;
         this.form
           .get('datosGenerales.sucursalDireccion')
           ?.setValue(this.datoSUCURSAL.suc_direccion);
@@ -377,7 +379,7 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
               (uscobro: any) => uscobro.user_id === datoVentac.usuarioCobro
             );
             if (usuarioCobro) {
-              datoVentac.usuariCobroNombre = usuarioCobro.user_nombre;
+              datoVentac.usuarioCobroNombre = usuarioCobro.user_nombre;
             }
           });
 
@@ -416,7 +418,10 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Agrega una fila para el título del reporte
-    const titleRow = worksheet.addRow(['', 'REPORTE DE VENTAS POR SUCURSAL']);
+    const titleRow = worksheet.addRow([
+      '',
+      'REPORTE DE VENTAS PAGADAS POR SUCURSAL',
+    ]);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
     worksheet.mergeCells(`B${titleRow.number}:G${titleRow.number}`);
@@ -434,18 +439,22 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
       bottom: { style: 'thin' },
       right: { style: 'thin' },
     };
+    titleRow.height = 30;
 
     const datosRow = worksheet.addRow([
       '',
       'SUCURSAL',
-      'EL TAMBITO',
+      this.datoNombreSucursal,
       'DEL',
-      '20/01/2023',
+      this.fechaInicioFormato,
       'AL',
-      '30/01/2023',
+      this.fechaFinFormato,
     ]);
-    datosRow.eachCell((cell) => {
-      // Configura bordes para la fila
+    datosRow.height = 20;
+
+    // Configura bordes para las columnas B a G
+    for (let col = 2; col <= 7; col++) {
+      const cell = datosRow.getCell(col);
       cell.border = {
         top: { style: 'thin' },
         left: { style: 'thin' },
@@ -456,11 +465,14 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
         vertical: 'middle',
         horizontal: 'center',
       };
-    });
+    }
+
+    // Espaciador entre el título y los encabezados
+    worksheet.addRow([]); // Esto agrega una fila vacía
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Estilo para los encabezados
-    /* const headerStyle = {
+    const headerStyle = {
       font: { bold: true, size: 12 },
       fill: {
         type: 'pattern',
@@ -471,11 +483,16 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
 
     // Agrega encabezados con estilo y asigna anchos
     const headers = [
-      { header: '#', key: '#', width: 10 },
-      { header: 'SUCURSAL', key: 'sucursal', width: 35 },
-      { header: 'FECHA INICIO', key: 'fecha', width: 20 },
-      { header: 'FECHA FIN', key: 'fecha', width: 20 },
-      { header: 'MONTO', key: 'monto', width: 20 },
+      { header: 'CODIGO DE VENTA', key: 'codigo de venta' },
+      { header: 'CLIENTE DOCUMENTO', key: 'cliente documento' },
+      { header: 'DOCUMENTO NUMERO', key: 'documento numero' },
+      { header: 'CLIENTE NOMBRE', key: 'cliente nombre' },
+      { header: 'FECHA DE VENTA', key: 'fecha de venta' },
+      { header: 'TIPO DE PAGO', key: 'tipo de pago' },
+      { header: 'ESTADO DE VENTA', key: 'estado de venta' },
+      { header: 'MONTO', key: 'monto' },
+      { header: 'USUARIO VENTA', key: 'usuario venta' },
+      { header: 'USUARIO COBRO', key: 'usuario cobro' },
     ];
 
     // Ajusta la altura de la fila de encabezados
@@ -485,9 +502,6 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
     headerRow.eachCell((cell, colNumber) => {
       cell.fill = headerStyle.fill;
       cell.font = headerStyle.font;
-
-      // Configura el ancho de la columna
-      worksheet.getColumn(colNumber).width = headers[colNumber - 1].width;
 
       // Centra el texto en la celda
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -508,10 +522,16 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
       // Redondea el valor de data.montotal a 2 decimales
       //const montoFormateado = data.montotal.toFixed(2);
       const row = [
-        data.suc_nombre,
-        data.fechaBusquedaInicio,
-        data.fechaBusquedaFin,
-        data.montotal,
+        data.venta_id,
+        data.tipoDocumento,
+        data.numeroDocumento,
+        data.clienteNombre,
+        data.venta_fecha,
+        data.tipoPago,
+        data.venta_proceso,
+        data.sumatotal,
+        data.usuarioIdNombre,
+        data.usuarioCobroNombre,
       ];
 
       const excelRow = worksheet.addRow(row);
@@ -531,35 +551,60 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
       excelRow.getCell(1).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // #
+      }; // CODIGO DE VENTA
       excelRow.getCell(2).alignment = {
         vertical: 'middle',
-      }; // SUCURSAL
+        horizontal: 'center',
+      }; // CLIENTE DOCUMENTO
       excelRow.getCell(3).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // FECHA INICIO
+      }; // DOCUMENTO NUMERO
       excelRow.getCell(4).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // FECHA FIN
-      // Configura el formato de la celda para la columna del monto
-      const montoCell = excelRow.getCell(5);
-      montoCell.alignment = {
+      }; // CLIENTE NOMBRE
+      excelRow.getCell(5).alignment = {
         vertical: 'middle',
         horizontal: 'center',
+      }; // FECHA DE VENTA
+      excelRow.getCell(6).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // TIPO DE PAGO
+      excelRow.getCell(7).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // ESTADO DE VENTA
+      excelRow.getCell(8).alignment = {
+        vertical: 'middle',
+        horizontal: 'right',
       }; // MONTO
+      excelRow.getCell(9).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // USUARIO VENTA
+      excelRow.getCell(10).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // USUARIO COBRO
+      // Configura el formato de la celda para la columna del monto
+      const montoCell = excelRow.getCell(8);
+      //montoCell.alignment = {vertical: 'middle',horizontal: 'center',}; // MONTO
       montoCell.numFmt = '#,##0.00'; // Formato de número con 2 decimales
-    }); */
+    });
 
     // Ajustar el ancho de las columnas A, B y C
-    worksheet.getColumn('A').width = 10; // Ancho de la columna A
-    worksheet.getColumn('B').width = 15; // Ancho de la columna B
-    worksheet.getColumn('C').width = 20; // Ancho de la columna C
-    worksheet.getColumn('D').width = 10; // Ancho de la columna D
+    worksheet.getColumn('A').width = 20; // Ancho de la columna A
+    worksheet.getColumn('B').width = 25; // Ancho de la columna B
+    worksheet.getColumn('C').width = 27; // Ancho de la columna C
+    worksheet.getColumn('D').width = 35; // Ancho de la columna D
     worksheet.getColumn('E').width = 20; // Ancho de la columna E
-    worksheet.getColumn('F').width = 10; // Ancho de la columna F
+    worksheet.getColumn('F').width = 25; // Ancho de la columna F
     worksheet.getColumn('G').width = 20; // Ancho de la columna G
+    worksheet.getColumn('H').width = 15; // Ancho de la columna H
+    worksheet.getColumn('I').width = 20; // Ancho de la columna I
+    worksheet.getColumn('J').width = 20; // Ancho de la columna J
 
     // Descargar el archivo Excel
     workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
@@ -569,7 +614,14 @@ export class ReporteVentasSucursalVerComponent implements OnInit {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Reporte de Ventas x Sucursal del .xlsx';
+      a.download =
+        'Reporte de Ventas Pagadas de la Sucursal ' +
+        this.datoNombreSucursal +
+        ' del ' +
+        this.fechaInicioFormato +
+        ' al ' +
+        this.fechaFinFormato +
+        '.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
     });

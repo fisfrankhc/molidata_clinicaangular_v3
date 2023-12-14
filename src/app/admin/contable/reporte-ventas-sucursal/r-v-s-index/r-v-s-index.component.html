@@ -1,0 +1,85 @@
+<div class="page-wrapper">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>CONTABLE </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventassucursal">Reporte de
+                                Ventas por Sucursal</a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Elija:</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card card-table show-entire">
+                    <div class="card-body">
+
+                        <!-- Table Header -->
+                        <div class="page-table-header mb-2">
+                            <div class="row align-items-center">
+                                <div class="col-12 col-md-6 col-xl-5">
+                                    <div class="doctor-table-blk">
+                                        <div>
+                                            <h3>Reporte de Ventas por Sucursal</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Table Header -->
+                        <div class="row" style="padding: 20px;">
+                            <div id="container">
+                                <div id="success-box">
+                                    <!-- <div class="dot"></div>
+                                    <div class="dot two"></div> -->
+                                    <!-- <div class="face">
+                                        <div class="eye"></div>
+                                        <div class="eye right"></div>
+                                        <div class="mouth happy"></div>
+                                    </div> -->
+                                    <!-- <div class="shadow scale"></div> -->
+                                    <div class="message">
+                                        <h1 class="alert">VENTAS CONFIRMADAS</h1>
+                                        <p>REPORTE DE VENTAS CONFIRMADAS QUE AUN NO HAN SIDO CANCELADAS</p>
+                                    </div>
+                                    <button class="button-box">
+                                        <h1 class="green" [routerLink]="['./ventas-confirmadas']">VER</h1>
+                                    </button>
+                                </div>
+                                <div id="error-box">
+                                    <!-- <div class="dot"></div>
+                                    <div class="dot two"></div> -->
+                                    <!-- <div class="face2">
+                                        <div class="eye"></div>
+                                        <div class="eye right"></div>
+                                        <div class="mouth sad"></div>
+                                    </div> -->
+                                    <!-- <div class="shadow move"></div> -->
+                                    <div class="message">
+                                        <h1 class="alert">VENTAS PAGADAS</h1>
+                                        <p>REPORTE DE VENTAS PAGADAS QUE FUERON CANCELADAS</p>
+                                    </div>
+                                    <button class="button-box">
+                                        <h1 class="red" [routerLink]="['./ventas-pagadas']">VER</h1>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

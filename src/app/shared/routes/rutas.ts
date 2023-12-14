@@ -116,6 +116,16 @@ export class rutas {
   public static get contable_reporteventassucursal(): string {
     return this.baseUrl + '/contable/reporte-ventas-por-sucursal';
   }
+  public static get contable_reporteventassucursal_confirmadas(): string {
+    return (
+      this.baseUrl + '/contable/reporte-ventas-por-sucursal/ventas-confirmadas'
+    );
+  }
+  public static get contable_reporteventassucursal_pagadas(): string {
+    return (
+      this.baseUrl + '/contable/reporte-ventas-por-sucursal/ventas-pagadas'
+    );
+  }
 
   public static get contable_reporteventasusuario(): string {
     return this.baseUrl + '/contable/reporte-ventas-por-suusuario';

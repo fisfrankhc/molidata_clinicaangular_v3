@@ -12,6 +12,10 @@
                                 Ventas por Sucursal</a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventassucursal_pagadas">Ventas
+                                Pagadas</a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item active">Lista</li>
                     </ul>
                 </div>
@@ -28,10 +32,10 @@
                         <!-- Table Header -->
                         <div class="page-table-header mb-2">
                             <div class="row align-items-center">
-                                <div class="col-12 col-md-6 col-xl-5">
+                                <div class="col-12 col-md-6 col-xl-6">
                                     <div class="doctor-table-blk">
                                         <div>
-                                            <h3>Reporte de Ventas por Sucursal</h3>
+                                            <h3>Reporte de Ventas Pagadas x Sucursal</h3>
                                             <span style="font-size: 12px;">Fecha: <span
                                                     *ngIf="resultadoMostrar"><b>{{this.fechaVisualInicio}}</b> al
                                                     <b>{{this.fechaVisualFin}}</b></span></span>
@@ -85,7 +89,7 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-2 text-end float-end ms-auto download-grp">
+                                <div class="col-1 text-end float-end ms-auto download-grp">
                                     <a (click)="exportToExcel()" href="javascript:;"
                                         [class.disabled]="!resultadoMostrar"><img src="assets/img/icons/pdf-icon-04.svg"
                                             alt=""><span style="font-size: 10px;">Reporte</span></a>
@@ -123,11 +127,26 @@
                                             <td>{{ data.fechaBusquedaFin | date: 'dd-MM-yyyy' }}</td>
                                             <td>{{ data.montotal | number:'1.2-2' }} </td>
                                             <td class="text-end">
-                                                <a type="button" class="btn btn-outline-primary"
-                                                    [routerLink]="['./ver', data.suc_id, data.fechaBusquedaInicio, data.fechaBusquedaFin ]"><i class="fa fa-eye"
-                                                        aria-hidden="true"></i>
-                                                    Ver</a>
+                                                <div class="dropdown dropdown-action">
+                                                    <a href="javascript:void(0);" class="action-icon dropdown-toggle"
+                                                        data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                            class="fa fa-ellipsis-v"></i></a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item vista"
+                                                            [routerLink]="['./ver', data.suc_id, data.fechaBusquedaInicio, data.fechaBusquedaFin ]"><i
+                                                                class="fa-solid fa-pen-to-square m-r-5"></i> VER
+                                                            DETALLE</a>
+                                                        <a class="dropdown-item vista"><i class="fa fa-file-excel"
+                                                                aria-hidden="true"></i> REPORTE POR PRODUCTOS</a>
+                                                    </div>
+                                                </div>
                                             </td>
+                                            <!-- <td class="text-end">
+                                                <a type="button" class="btn btn-outline-primary"
+                                                    [routerLink]="['./ver', data.suc_id, data.fechaBusquedaInicio, data.fechaBusquedaFin ]"><i
+                                                        class="fa fa-eye" aria-hidden="true"></i>
+                                                    Ver</a>
+                                            </td> -->
                                         </tr>
                                     </ng-container>
                                     <ng-template #noResults>
