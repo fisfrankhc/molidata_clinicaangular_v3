@@ -14,6 +14,7 @@ export interface Ventas {
   nombreCliente?: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   nombreSucursal: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   nombreUsuarioVenta: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
+  tipoPago: string; //AGREGADO PARA IMPRMIR EN OTRAS VISTAS
   montototal: number;
 }
 

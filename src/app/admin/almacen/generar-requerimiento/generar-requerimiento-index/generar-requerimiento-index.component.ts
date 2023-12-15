@@ -75,7 +75,7 @@ export class GenerarRequerimientoIndexComponent implements OnInit {
             const usuario = this.datosUSUARIOS.find(
               (user: any) => user.user_id === requerimiento.usuario_id
             );
-            requerimiento;
+            //requerimiento;
             if (usuario) {
               requerimiento.nombreUsuario = usuario.user_name;
             }

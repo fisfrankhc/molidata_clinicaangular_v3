@@ -11,6 +11,7 @@ export interface Categoria {
 }
 
 export interface Producto {
+  forEach: any;
   prod_id: number;
   prod_codigo: string;
   prod_nombre: string;
@@ -81,4 +82,5 @@ export interface Stock {
   codigoProducto: string; // PARA VISTA
   nombreProducto: string; //PARA VISTA
   nombreMedida: string; //PARA VISTA
+  lineaRoja: boolean; //PARA COLOR EN STOCK
 }

@@ -1,0 +1,13 @@
+.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.vista:hover {
+    background-color: #2e37a4;
+    color: white;
+}
+
+.vista {
+    cursor: pointer;
+}

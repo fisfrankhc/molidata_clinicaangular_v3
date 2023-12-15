@@ -14,6 +14,7 @@ import {
   Validators,
 } from '@angular/forms';
 
+import * as ExcelJS from 'exceljs';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -132,7 +133,18 @@ export class StockSucursalIndexComponent implements OnInit {
           return stock;
         });
 
-        datosSTOCK.map((res: Stock, index: number) => {
+        this.datosSTOCK.forEach((dataStockVer: any) => {
+          console.log(dataStockVer);
+          if (
+            parseFloat(dataStockVer.cantidad) <=
+            parseFloat(dataStockVer.stock_minimo)
+          ) {
+            dataStockVer.lineaRoja = true;
+          }
+        });
+        console.log(this.datosSTOCK);
+
+        this.datosSTOCK.map((res: Stock, index: number) => {
           const serialNumber = index + 1;
           if (index >= this.skip && serialNumber <= this.limit) {
             this.stockList.push(res);
@@ -144,10 +156,6 @@ export class StockSucursalIndexComponent implements OnInit {
         console.error(errorData);
       },
       complete: () => {
-        //console.log(this.usersucursal);
-        /* this.stockList = this.datosSTOCK.filter(
-          (data) => data.almacen_id === sucursalId
-        ); */
         this.stockList = this.datosSTOCK.filter(
           (data) => data.almacen_id === this.usersucursal
         );
@@ -265,63 +273,315 @@ export class StockSucursalIndexComponent implements OnInit {
   } */
 
   public exportarAExcel(): void {
-    const header0 = [this.nombreSucursal];
-    const header = ['#', 'CODIGO', 'PRODUCTO', 'STOCK', 'UNIDAD MEDIDA'];
-    const data: any[][] = [];
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(this.nombreSucursal);
 
-    // Agregar encabezados a los datos
-    data.push(header0);
-    data.push(header);
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Agrega una fila para el título del reporte
+    const titleRow = worksheet.addRow(['REPORTE STOCK DE PRODUCTOS']);
+    titleRow.font = { bold: true, size: 16 };
+    titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    worksheet.mergeCells(`A${titleRow.number}:F${titleRow.number}`);
+    // Aplica estilo al fondo del título solo a las celdas combinadas
+    const titleRange = worksheet.getCell(`A${titleRow.number}`);
+    titleRange.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+    // Aplica estilo al fondo del título solo a las celdas combinadas
+    titleRange.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
+    };
+    titleRow.height = 30;
 
-    // Iterar sobre los datos y agregarlos a la matriz
-    for (let i = 0; i < this.stockList.length; i++) {
-      const rowData = [
-        (this.currentPage - 1) * this.pageSize + i + 1,
-        this.stockList[i].codigoProducto,
-        this.stockList[i].nombreProducto,
-        this.stockList[i].cantidad,
-        this.stockList[i].nombreMedida,
+    // Estilo para los encabezados
+    const headerStyle = {
+      font: { bold: true, size: 12 },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
+      } as ExcelJS.Fill,
+    };
+
+    // Agrega encabezados con estilo y asigna anchos
+    const headers = [
+      { header: 'ID', key: '#' },
+      { header: 'CODIGO', key: 'sucursal' },
+      { header: 'PRODUCTO', key: 'fecha' },
+      { header: 'STOCK ACTUAL', key: 'fecha' },
+      { header: 'STOCK MINIMO PERMITIDO', key: 'fecha' },
+      { header: 'UNIDAD MEDIDA', key: 'monto' },
+    ];
+
+    // Ajusta la altura de la fila de encabezados
+    const headerRow = worksheet.addRow(headers.map((header) => header.header));
+    headerRow.height = 35; // Altura del header
+
+    headerRow.eachCell((cell, colNumber) => {
+      cell.fill = headerStyle.fill;
+      cell.font = headerStyle.font;
+
+      // Centra el texto en la celda
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    // Configura bordes para la fila de encabezados
+    headerRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+    // Configura el formato de la fila de encabezado
+    headerRow.alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+      wrapText: true, // Ajustar Texto
+    };
+
+    // Agrega datos
+    this.datosSTOCK.forEach((data: any) => {
+      const row = [
+        parseInt(data.producto_id),
+        data.codigoProducto,
+        data.nombreProducto,
+        parseInt(data.cantidad),
+        parseFloat(data.stock_minimo),
+        data.nombreMedida,
       ];
 
-      data.push(rowData);
-    }
+      const excelRow = worksheet.addRow(row);
+      excelRow.height = 20; // Altura del header
 
-    const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(data);
-
-    // Combinar celdas para header0
-    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
-
-    // Aplicar estilos a header0 para centrar
-    for (let i = 0; i < 5; i++) {
-      const cell = XLSX.utils.encode_cell({ r: 0, c: i });
-      if (!ws[cell]) {
-        ws[cell] = { s: {} }; // Crea la celda si no existe
-      }
-      Object.assign(ws[cell], {
-        s: { alignment: { horizontal: 'center' }, font: { bold: true } },
+      // Configura bordes para las celdas en la fila de datos
+      excelRow.eachCell((cell) => {
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
       });
-    }
 
-    // Aplicar estilos a los encabezados
-    ws['!cols'] = [
-      { width: 10 }, // A
-      { width: 20 }, // B
-      { width: 50 }, // C
-      { width: 15 }, // D
-      { width: 25 }, // E
+      // Centra las celdas específicas en la fila de datos
+      excelRow.getCell(1).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // ID
+      excelRow.getCell(2).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // CODIGO
+      excelRow.getCell(3).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; //PRODUCTO
+      excelRow.getCell(4).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // STOCK ACTUAL
+      excelRow.getCell(5).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // STOCK MINIMO PERMITIDO
+      excelRow.getCell(6).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // UNIDAD MEDIDA
+      // Configura el formato de la celda para la columna del monto
+      const montoCell1 = excelRow.getCell(4);
+      montoCell1.numFmt = '#,##0'; // Formato de número
+      const montoCell2 = excelRow.getCell(5);
+      montoCell2.numFmt = '#,##0.00'; // Formato de número con 2 decimales
+    });
+
+    // Ajustar el ancho de las columnas A, B y C
+    worksheet.getColumn('A').width = 10; // Ancho de la columna A
+    worksheet.getColumn('B').width = 15; // Ancho de la columna B
+    worksheet.getColumn('C').width = 50; // Ancho de la columna C
+    worksheet.getColumn('D').width = 14; // Ancho de la columna D
+    worksheet.getColumn('E').width = 18; // Ancho de la columna E
+    worksheet.getColumn('F').width = 22; // Ancho de la columna F
+
+    // Descargar el archivo Excel
+    workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
+      const blob = new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download =
+        'Reporte de Stock de productos de la sucursal ' +
+        this.nombreSucursal +
+        '.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
+  exportarStockMinExcel(): void {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(this.nombreSucursal);
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Agrega una fila para el título del reporte
+    const titleRow = worksheet.addRow(['REPORTE PRODUCTOS CON STOCK MINIMO']);
+    titleRow.font = { bold: true, size: 16 };
+    titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    worksheet.mergeCells(`A${titleRow.number}:F${titleRow.number}`);
+    // Aplica estilo al fondo del título solo a las celdas combinadas
+    const titleRange = worksheet.getCell(`A${titleRow.number}`);
+    titleRange.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+    // Aplica estilo al fondo del título solo a las celdas combinadas
+    titleRange.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
+    };
+    titleRow.height = 30;
+
+    // Estilo para los encabezados
+    const headerStyle = {
+      font: { bold: true, size: 12 },
+      fill: {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
+      } as ExcelJS.Fill,
+    };
+
+    // Agrega encabezados con estilo y asigna anchos
+    const headers = [
+      { header: 'ID', key: '#' },
+      { header: 'CODIGO', key: 'sucursal' },
+      { header: 'PRODUCTO', key: 'fecha' },
+      { header: 'STOCK ACTUAL', key: 'fecha' },
+      { header: 'STOCK MINIMO PERMITIDO', key: 'fecha' },
+      { header: 'UNIDAD MEDIDA', key: 'monto' },
     ];
-    // Iterar sobre las celdas de los encabezados para aplicar estilos individualmente
-    for (let i = 0; i < header.length; i++) {
-      const cell = XLSX.utils.encode_cell({ r: 1, c: i });
-      Object.assign(ws[cell], {
-        s: { alignment: { horizontal: 'center' }, font: { bold: true } },
+
+    // Ajusta la altura de la fila de encabezados
+    const headerRow = worksheet.addRow(headers.map((header) => header.header));
+    headerRow.height = 35; // Altura del header
+
+    headerRow.eachCell((cell, colNumber) => {
+      cell.fill = headerStyle.fill;
+      cell.font = headerStyle.font;
+
+      // Centra el texto en la celda
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    // Configura bordes para la fila de encabezados
+    headerRow.eachCell((cell) => {
+      cell.border = {
+        top: { style: 'thin' },
+        left: { style: 'thin' },
+        bottom: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+    });
+    // Configura el formato de la fila de encabezado
+    headerRow.alignment = {
+      vertical: 'middle',
+      horizontal: 'center',
+      wrapText: true, // Ajustar Texto
+    };
+
+    let row: any;
+    // Agrega datos
+    this.datosSTOCK.forEach((data: any) => {
+      if (parseInt(data.cantidad) <= parseFloat(data.stock_minimo)) {
+        const row = [
+          parseInt(data.producto_id),
+          data.codigoProducto,
+          data.nombreProducto,
+          parseInt(data.cantidad),
+          parseFloat(data.stock_minimo),
+          data.nombreMedida,
+        ];
+
+        const excelRow = worksheet.addRow(row);
+        excelRow.height = 20; // Altura del header
+
+        // Configura bordes para las celdas en la fila de datos
+        excelRow.eachCell((cell) => {
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+
+        // Centra las celdas específicas en la fila de datos
+        excelRow.getCell(1).alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+        }; // ID
+        excelRow.getCell(2).alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+        }; // CODIGO
+        excelRow.getCell(3).alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+        }; //PRODUCTO
+        excelRow.getCell(4).alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+        }; // STOCK ACTUAL
+        excelRow.getCell(5).alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+        }; // STOCK MINIMO PERMITIDO
+        excelRow.getCell(6).alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+        }; // UNIDAD MEDIDA
+        // Configura el formato de la celda para la columna del monto
+        const montoCell1 = excelRow.getCell(4);
+        montoCell1.numFmt = '#,##0'; // Formato de número
+        const montoCell2 = excelRow.getCell(5);
+        montoCell2.numFmt = '#,##0.00'; // Formato de número con 2 decimales
+      }
+    });
+
+    // Ajustar el ancho de las columnas A, B y C
+    worksheet.getColumn('A').width = 10; // Ancho de la columna A
+    worksheet.getColumn('B').width = 15; // Ancho de la columna B
+    worksheet.getColumn('C').width = 50; // Ancho de la columna C
+    worksheet.getColumn('D').width = 14; // Ancho de la columna D
+    worksheet.getColumn('E').width = 18; // Ancho de la columna E
+    worksheet.getColumn('F').width = 22; // Ancho de la columna F
+
+    // Descargar el archivo Excel
+    workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
+      const blob = new Blob([data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-    }
-
-    ws['!rows'] = [{ hpx: 20 }]; // Altura de la primera fila (encabezados)
-
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, this.nombreSucursal);
-    XLSX.writeFile(wb, 'Stock de Sucursal '+this.nombreSucursal+'.xlsx');
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download =
+        'Reporte de Productos con Stock Minimo de la Sucursal ' +
+        this.nombreSucursal +
+        '.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    });
   }
 }

@@ -11,6 +11,7 @@ export class VentasDetalleService {
 
   private dominioUrl = this.urlService.dominio;
   private apiUrl = `${this.dominioUrl}/clinico/venta/venta-detalle.php`;
+  private apiUrlReporte = `${this.dominioUrl}/clinico/venta/venta-detalle-reporte.php`;
 
   getVentasDetalleAll(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}`);
@@ -22,5 +23,17 @@ export class VentasDetalleService {
     });
     const params = new HttpParams({ fromObject: datos });
     return this.http.post<any>(this.apiUrl, params.toString(), { headers });
+  }
+
+  getVentaReporte(
+    proceso: string,
+    estado: string,
+    sucursal: string,
+    fechaInicio: string,
+    fechaFinal: string
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrlReporte}?proceso=${proceso}&estado=${estado}&sucursal=${sucursal}&fechaInicio=${fechaInicio}&fechaFinal=${fechaFinal}`
+    );
   }
 }

@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { pageSelection, Ventas } from 'src/app/shared/interfaces/farmacia';
 import { ClientesService } from 'src/app/shared/services/farmacia/clientes/clientes.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
+import { GeneralService } from 'src/app/shared/services/general.service';
 
 @Component({
   selector: 'app-ventas-index',
@@ -19,7 +20,8 @@ export class VentasIndexComponent implements OnInit {
   constructor(
     public ventasService: VentasService,
     public clientesService: ClientesService,
-    public sucursalService: SucursalService
+    public sucursalService: SucursalService,
+    public generalService: GeneralService
   ) {}
 
   public ventasList: Array<Ventas> = [];
@@ -42,6 +44,18 @@ export class VentasIndexComponent implements OnInit {
   ngOnInit(): void {
     this.clientesAll();
     this.sucursalAll();
+    this.usuariosAll();
+  }
+
+  datosUSER: any;
+  usuariosAll(): void{
+    this.generalService.getUsuariosAll().subscribe({
+      next: (datosUSER: any) => {
+        this.datosUSER = datosUSER;
+      },
+      error: () => {},
+      complete: () => {},
+    });
   }
 
   datosCLI: any;
@@ -90,10 +104,27 @@ export class VentasIndexComponent implements OnInit {
           if (sucursal) {
             venta.nombreSucursal = sucursal.suc_nombre;
           }
+
+          //PARA SUCURSALES
+          const usuario = this.datosUSER.find(
+            (user: any) => user.user_id === venta.usuario_id
+          );
+          if (usuario) {
+            venta.nombreUsuarioVenta = usuario.user_nombre;
+          }
+
+          /* this.generalService.getUsuario(venta.usuario_id).subscribe({
+            next: (response) => {
+              venta.nombreUsuarioVenta = response[0]?.user_nombre;
+            },
+            error: (errorData) => {},
+            complete: () => {},
+          }); */
+
           return venta;
         });
 
-        datosVENTA.map((res: Ventas, index: number) => {
+        this.datosVENTA.map((res: Ventas, index: number) => {
           const serialNumber = index + 1;
           if (index >= this.skip && serialNumber <= this.limit) {
             this.ventasList.push(res);

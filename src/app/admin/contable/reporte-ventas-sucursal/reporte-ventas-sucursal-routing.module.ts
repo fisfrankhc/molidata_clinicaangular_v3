@@ -18,8 +18,8 @@ const routes: Routes = [
     path: 'ventas-pagadas',
     loadChildren: () =>
       import(
-        './reporte-ventas-sucursal-pagadas/reporte-ventas-sucursal-pagadas.module'
-      ).then((m) => m.ReporteVentasSucursalPagadasModule),
+        './r-v-s-pagadas/r-v-s-pagadas.module'
+      ).then((m) => m.RVSPagadasModule),
   },
 ];
 

@@ -136,8 +136,8 @@
                                                             [routerLink]="['./ver', data.suc_id, data.fechaBusquedaInicio, data.fechaBusquedaFin ]"><i
                                                                 class="fa-solid fa-pen-to-square m-r-5"></i> VER
                                                             DETALLE</a>
-                                                        <a class="dropdown-item vista"><i class="fa fa-file-excel"
-                                                                aria-hidden="true"></i> REPORTE POR PRODUCTOS</a>
+                                                        <a class="dropdown-item vista" (click)="ventasExcelAll(data.suc_id, data.suc_nombre, data.fechaBusquedaInicio, data.fechaBusquedaFin)"><i class="fa fa-file-excel"
+                                                                aria-hidden="true"></i> &nbsp; REPORTE POR PRODUCTOS</a>
                                                     </div>
                                                 </div>
                                             </td>

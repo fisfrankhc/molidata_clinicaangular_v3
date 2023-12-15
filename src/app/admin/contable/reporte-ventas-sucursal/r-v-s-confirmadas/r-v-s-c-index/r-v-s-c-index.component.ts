@@ -71,6 +71,7 @@ export class RVSCIndexComponent implements OnInit {
         // Obtener la fecha seleccionada del formulario
         const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
         const fechaSeleccionadaFin = this.form.value.fechaventafin;
+        console.log(fechaSeleccionadaInicio, fechaSeleccionadaFin);
         // Asegurarse de que fechaSeleccionada no sea null ni undefined antes de llamar a sucursalesAll
         if (
           fechaSeleccionadaInicio !== null &&
@@ -78,6 +79,7 @@ export class RVSCIndexComponent implements OnInit {
           fechaSeleccionadaFin !== null &&
           fechaSeleccionadaFin !== undefined
         ) {
+          console.log(fechaSeleccionadaInicio, fechaSeleccionadaFin);
           this.sucursalesAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
         }
       },
@@ -95,6 +97,8 @@ export class RVSCIndexComponent implements OnInit {
     this.serialNumberArray = [];
     this.fechaVisualInicio = this.datePipe.transform(fechaInicio, 'dd/MM/yyyy');
     this.fechaVisualFin = this.datePipe.transform(fechaFin, 'dd/MM/yyyy');
+    console.log(fechaInicio, fechaFin);
+    console.log(this.fechaVisualInicio, this.fechaVisualFin );
     this.sucursalService.getSucursalAll().subscribe({
       next: (response: any) => {
         this.datosSUC = response;

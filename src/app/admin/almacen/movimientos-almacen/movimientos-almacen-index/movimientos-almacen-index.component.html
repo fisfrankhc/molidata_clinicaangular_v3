@@ -49,6 +49,41 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="col-12 col-md-6 col-xl-5">
+                                    <form [formGroup]="form" (ngSubmit)="verFecha()">
+                                        <div class="row" style="display: flex;flex-wrap: wrap; align-items: center;">
+                                            <div class="col-12 col-md-6 col-xl-4">
+                                                <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                    <label>DE: <span style="font-size: 10px;">MM/DD/YYYY</span></label>
+                                                    <input class="form-control datetimepicker" type="text"
+                                                        formControlName="fechaventainicio" matInput
+                                                        [matDatepicker]="picker1">
+                                                    <mat-datepicker #picker1></mat-datepicker>
+                                                    <mat-datepicker-toggle matIconSuffix
+                                                        [for]="picker1"></mat-datepicker-toggle>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-4">
+                                                <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                    <label>HASTA: <span
+                                                            style="font-size: 10px;">MM/DD/YYYY</span></label>
+                                                    <input class="form-control datetimepicker" type="text"
+                                                        formControlName="fechaventafin" matInput
+                                                        [matDatepicker]="picker2">
+                                                    <mat-datepicker #picker2></mat-datepicker>
+                                                    <mat-datepicker-toggle matIconSuffix
+                                                        [for]="picker2"></mat-datepicker-toggle>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-3">
+                                                <div class="doctor-submit">
+                                                    <button type="submit" [disabled]="form.invalid"
+                                                        class="btn btn-primary submit-list-form me-2">Buscar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                         <!-- /Table Header -->
@@ -66,7 +101,7 @@
                                         <th mat-sort-header="#">#</th>
                                         <th mat-sort-header="almacen_id">FECHA</th>
                                         <th mat-sort-header="producto_id">USUARIO</th>
-                                        <th></th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -80,7 +115,7 @@
                                             <td class="profile-image">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                                             <td>{{data.movimiento_fecha}}</td>
                                             <td>{{data.nombreUsuario}}</td>
-                                            <td class="text-end">
+<!--                                             <td class="text-end">
                                                 <div class="dropdown dropdown-action">
                                                     <a href="javascript:void(0);" class="action-icon dropdown-toggle"
                                                         data-bs-toggle="dropdown" aria-expanded="false"><i
@@ -91,12 +126,12 @@
                                                                 class="fa-solid fa-pen-to-square m-r-5"></i> EDITAR</a>
                                                     </div>
                                                 </div>
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     </ng-container>
                                     <ng-template #noResults>
                                         <tr>
-                                            <td colspan="5" class="text-center">No hay resultados en la tabla</td>
+                                            <td colspan="5" class="text-center">Seleccione una fecha inicial y una fecha limite válida.</td>
                                         </tr>
                                     </ng-template>
                                 </tbody>

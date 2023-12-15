@@ -626,4 +626,5 @@ export class RVSPVerComponent implements OnInit {
       window.URL.revokeObjectURL(url);
     });
   }
+
 }
