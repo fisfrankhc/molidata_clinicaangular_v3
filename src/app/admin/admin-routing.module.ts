@@ -53,6 +53,12 @@ const routes: Routes = [
           import('./contable/contable.module').then((m) => m.ContableModule),
         data: { expectedRoles: ['1', '3', '4'] } as any,
       },
+      {
+        path: 'administracion',
+        loadChildren: () =>
+          import('./administracion/administracion.module').then((m) => m.AdministracionModule),
+        data: { expectedRoles: ['1', '3', '4'] } as any,
+      },
     ],
   },
 ];

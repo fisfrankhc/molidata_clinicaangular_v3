@@ -1,0 +1,126 @@
+<div class="page-wrapper">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>CONTABLE </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.administracion_configurarcodigo">Configurar c&oacute;digo</a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Elija:</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card card-table show-entire">
+                    <div class="card-body">
+                        <!-- Table Header -->
+                        <div class="page-table-header mb-2">
+                            <div class="row align-items-center">
+                                <div class="col-12 col-md-12 col-xl-12">
+                                    <div class="doctor-table-blk">
+                                        <div>
+                                            <h3>Configurar c&oacute;digo de validaci&oacute;n de sucursal</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="--bs-gutter-x: -2rem; margin: 20px 5px;">
+                        <div class="col-12 col-md-12 col-xl-12" *ngFor="let data of dataSUC; let i = index">
+                            <div class="card text-center conf-codigo"
+                                style="max-width: 45rem;; padding: 10px; border: 1px solid #2e37a4; margin: auto;">
+                                <div class="card-header"
+                                    style="background-color: #2e37a4; color: white; font-weight: bold; border-radius: 10px;">
+                                    {{data.suc_nombre}}
+                                </div>
+                                <div class="card-body" style="padding: 10px 5px;">
+                                    <h5 class="card-title" style="margin-bottom: 0.125rem">Sucursal {{data.suc_id}}</h5>
+                                    <p class="card-text">{{ data.suc_direccion }}</p>
+                                    <p>Codigo:  <b>{{ ocultarCodigo(data.codigo_autorizacion) }}</b></p>
+                                    <a href="#" class="btn btn-outline-secondary" (click)="openEditModal(data)" data-bs-toggle="modal" data-bs-target="#modal_codigosucursal" style="cursor: pointer;">CAMBIAR C&Oacute;DIGO</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form class="invoices-form" [formGroup]="form" (ngSubmit)="actualizarCodigo()">
+                        <!-- Save Invoices Modal -->
+                        <div class="modal custom-modal fade" id="modal_codigosucursal" role="dialog">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-body">
+                                        <div class="form-header">
+                                            <h3>EDITAR C&Oacute;DIGO DE CONFIRMACI&Oacute;N</h3>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <input type="hidden" formControlName="idsucursal">
+                                                    <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                                        <label style="position: initial;">SUCURSAL: <span
+                                                                class="login-danger">*</span></label>
+                                                        <input class="form-control"
+                                                            style="text-align: center; background-color: rgba(87,87,87,0.2);"
+                                                            formControlName="sucursalNombre" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12">
+                                                    <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                                        <label style="position: initial;">DIRECCION: <span class="login-danger">*</span></label>
+                                                        <input class="form-control"
+                                                            style="text-align: center; background-color: rgba(87,87,87,0.2);"
+                                                            formControlName="sucursalDireccion" readonly>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <input type="hidden" formControlName="codigoAutorizacion">
+                                                    <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                                        <label style="position: initial;">C&Oacute;DIGO DE AUTORIZACI&Oacute;N ACTUAL: <span
+                                                                class="login-danger">*</span></label>
+                                                        <input class="form-control" type="text" step="1" style="text-align: center;"
+                                                            formControlName="codigoAutorizacionVeri">
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                                        <label style="position: initial;">NUEVO C&Oacute;DIGO DE AUTORIZACI&Oacute;N: <span class="login-danger">*</span></label>
+                                                        <input class="form-control" type="text" step="1" style="text-align: center;" formControlName="codigoAutorizacionNuevo">
+                                                    </div>
+                                                </div>
+                                            </div>
+                    
+                                        </div>
+                                        <div class="modal-btn delete-action">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                                        class="btn btn-primary paid-cancel-btn">Cancelar</a>
+                                                </div>
+                                                <div class="col-6">
+                                                    <button type="submit" [disabled]="form.invalid" data-bs-dismiss="modal"
+                                                        class="btn btn-primary paid-continue-btn" style="width: 100%;">GUARDAR</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Save Invoices Modal -->
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

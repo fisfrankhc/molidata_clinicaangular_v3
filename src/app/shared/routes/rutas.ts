@@ -130,6 +130,10 @@ export class rutas {
   public static get contable_reporteventasusuario(): string {
     return this.baseUrl + '/contable/reporte-ventas-por-suusuario';
   }
+
+  public static get administracion_configurarcodigo(): string {
+    return this.baseUrl + '/administracion/configurar-codigo-sucursal';
+  }
 }
   
   

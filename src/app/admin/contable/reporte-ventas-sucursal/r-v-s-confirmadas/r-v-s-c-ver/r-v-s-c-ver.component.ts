@@ -404,7 +404,7 @@ export class RVSCVerComponent implements OnInit {
     // Agrega una fila para el título del reporte
     const titleRow = worksheet.addRow([
       '',
-      'REPORTE DE VENTAS CONFIRMADAS POR SUCURSAL',
+      'REPORTE DETALLE DE VENTAS X CONFIMAR POR SUCURSAL',
     ]);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -585,7 +585,7 @@ export class RVSCVerComponent implements OnInit {
       const a = document.createElement('a');
       a.href = url;
       a.download =
-        'Reporte de Ventas Confirmadas de la Sucursal ' +
+        'Reporte detalle de Ventas por Confirmar de la Sucursal ' +
         this.datoNombreSucursal +
         ' del ' +
         this.fechaInicioFormato +

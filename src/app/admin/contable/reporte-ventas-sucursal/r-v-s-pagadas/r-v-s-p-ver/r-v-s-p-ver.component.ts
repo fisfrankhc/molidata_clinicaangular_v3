@@ -420,7 +420,7 @@ export class RVSPVerComponent implements OnInit {
     // Agrega una fila para el título del reporte
     const titleRow = worksheet.addRow([
       '',
-      'REPORTE DE VENTAS PAGADAS POR SUCURSAL',
+      'REPORTE DE VENTAS CONCRETADAS POR SUCURSAL',
     ]);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -615,7 +615,7 @@ export class RVSPVerComponent implements OnInit {
       const a = document.createElement('a');
       a.href = url;
       a.download =
-        'Reporte de Ventas Pagadas de la Sucursal ' +
+        'Reporte detalle de Ventas Concretadas de la Sucursal ' +
         this.datoNombreSucursal +
         ' del ' +
         this.fechaInicioFormato +

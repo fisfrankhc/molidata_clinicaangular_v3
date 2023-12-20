@@ -89,8 +89,8 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
     // Verificar si se han ingresado fechas para filtrar
     this.fechaVisualInicio = this.datePipe.transform(fechaInicio, 'dd/MM/yyyy');
     this.fechaVisualFin = this.datePipe.transform(fechaFin, 'dd/MM/yyyy');
-    console.log(fechaInicio, fechaFin);
-    console.log(this.fechaVisualInicio, this.fechaVisualFin);
+    //console.log(fechaInicio, fechaFin);
+    //console.log(this.fechaVisualInicio, this.fechaVisualFin);
     // Mostrar resultados solo si se han ingresado fechas
 
     this.movimientosAlmacenService.getMovimientosAll().subscribe({
@@ -135,7 +135,7 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
             this.serialNumberArray.push(serialNumber);
           }
         });
-        console.log(this.datosINGRESO);
+        //console.log(this.datosINGRESO);
       },
       error: (errorData) => {
         console.error(errorData);

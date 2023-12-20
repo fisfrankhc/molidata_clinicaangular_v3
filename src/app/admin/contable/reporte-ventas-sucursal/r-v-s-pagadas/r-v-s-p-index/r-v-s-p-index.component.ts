@@ -353,7 +353,7 @@ export class RVSPIndexComponent implements OnInit {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Agrega una fila para el título del reporte
-    const titleRow = worksheet.addRow(['REPORTE DE VENTAS POR SUCURSAL']);
+    const titleRow = worksheet.addRow(['REPORTE DE VENTAS CONCRETADAS POR SUCURSAL']);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
     worksheet.mergeCells(`A${titleRow.number}:E${titleRow.number}`);
@@ -482,7 +482,7 @@ export class RVSPIndexComponent implements OnInit {
       const a = document.createElement('a');
       a.href = url;
       a.download =
-        'Reporte de Ventas x Sucursal del ' +
+        'Reporte de Ventas Concretadas x Sucursal del ' +
         this.fechaVisualInicio +
         ' al ' +
         this.fechaVisualFin +
@@ -594,6 +594,7 @@ export class RVSPIndexComponent implements OnInit {
 
               responseVenta.codigoProducto = result[0][0]?.prod_codigo;
               responseVenta.nombreProducto = result[0][0]?.prod_nombre;
+              responseVenta.descripcionProducto = result[0][0]?.prod_descripcion;
               responseVenta.nombreCliente = result[1][0]?.cli_nombre;
               responseVenta.nombreUsuarioVenta = result[2][0]?.user_nombre;
 
@@ -734,6 +735,7 @@ export class RVSPIndexComponent implements OnInit {
     const headers = [
       { header: 'CODIGO DE PRODUCTO', key: 'codigoProducto' },
       { header: 'PRODUCTO NOMBRE', key: 'nombreProducto' },
+      { header: 'DESCRIPCION PRODUCTO', key: 'descripcionProducto' },
       { header: 'CODIGO DE VENTA', key: 'venta_id' },
       { header: 'CLIENTE NOMBRE', key: 'nombreCliente' },
       { header: 'FECHA DE VENTA', key: 'venta_fecha' },
@@ -780,6 +782,7 @@ export class RVSPIndexComponent implements OnInit {
       const row = [
         data.codigoProducto,
         data.nombreProducto,
+        data.descripcionProducto,
         parseInt(data.venta_id),
         data.nombreCliente,
         data.venta_fecha,
@@ -814,56 +817,61 @@ export class RVSPIndexComponent implements OnInit {
       }; // PRODUCTO NOMBRE
       excelRow.getCell(3).alignment = {
         vertical: 'middle',
-        horizontal: 'center',
-      }; // CODIGO DE VENTA
-      excelRow.getCell(4).alignment = {
+        horizontal: 'justify',
+      }; // DESCRIPCION DE PRPDUCTO
+       excelRow.getCell(4).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // CLIENTE NOMBRE
+      }; // CODIGO DE VENTA
       excelRow.getCell(5).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // FECHA DE VENTA
+      }; // CLIENTE NOMBRE
       excelRow.getCell(6).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // CANTIDAD DE VENTA
+      }; // FECHA DE VENTA
       excelRow.getCell(7).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // CANTIDAD DE VENTA
+      excelRow.getCell(8).alignment = {
         vertical: 'middle',
         horizontal: 'right',
         wrapText: true, // Habilitar ajuste de texto
         indent: 1, // Ajusta el valor según sea necesario
       }; // PRECIO DE VENTA
-      excelRow.getCell(8).alignment = {
-        vertical: 'middle',
-        horizontal: 'center',
-      }; // USUARIO DE VENTA
       excelRow.getCell(9).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // TIPO DE PAGO
+      }; // USUARIO DE VENTA
       excelRow.getCell(10).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // TIPO DE PAGO
+      excelRow.getCell(11).alignment = {
         vertical: 'middle',
         horizontal: 'center',
       }; // ESTADO DE VENTA
       // Configura el formato de la celda para la columna del monto
-      const montoCell1 = excelRow.getCell(6);
+      const montoCell1 = excelRow.getCell(7);
       montoCell1.numFmt = '#,##0'; // Formato de número
-      const montoCell2 = excelRow.getCell(7);
+      const montoCell2 = excelRow.getCell(8);
       montoCell2.numFmt = '#,##0.00'; // Formato de número con 2 decimales
     });
 
     // Ajustar el ancho de las columnas A, B y C
     worksheet.getColumn('A').width = 15; // Ancho de la columna A
     worksheet.getColumn('B').width = 40; // Ancho de la columna B
-    worksheet.getColumn('C').width = 30; // Ancho de la columna C
-    worksheet.getColumn('D').width = 40; // Ancho de la columna D
-    worksheet.getColumn('E').width = 20; // Ancho de la columna E
-    worksheet.getColumn('F').width = 17; // Ancho de la columna F
-    worksheet.getColumn('G').width = 15; // Ancho de la columna G
+    worksheet.getColumn('C').width = 45; // Ancho de la columna C
+    worksheet.getColumn('D').width = 20; // Ancho de la columna D
+    worksheet.getColumn('E').width = 40; // Ancho de la columna E
+    worksheet.getColumn('F').width = 20; // Ancho de la columna F
+    worksheet.getColumn('G').width = 17; // Ancho de la columna G
     worksheet.getColumn('H').width = 15; // Ancho de la columna H
-    worksheet.getColumn('I').width = 25; // Ancho de la columna I
-    worksheet.getColumn('J').width = 15; // Ancho de la columna J
+    worksheet.getColumn('I').width = 15; // Ancho de la columna I
+    worksheet.getColumn('J').width = 25; // Ancho de la columna J
+    worksheet.getColumn('K').width = 15; // Ancho de la columna K
 
     // Descargar el archivo Excel
     workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {

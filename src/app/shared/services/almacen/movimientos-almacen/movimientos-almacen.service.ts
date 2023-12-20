@@ -12,7 +12,7 @@ export class MovimientosAlmacenService {
   private dominioUrl = this.urlService.dominio;
 
   private apiUrl = `${this.dominioUrl}/clinico/logistica/movimiento.php`;
-
+  private apiUrl2 = `${this.dominioUrl}/clinico/logistica/movimiento-codigo.php`;
   getMovimientosAll(): Observable<Movimientos> {
     return this.http.get<Movimientos>(`${this.apiUrl}`);
   }
@@ -35,5 +35,15 @@ export class MovimientosAlmacenService {
     });
 
     return this.http.put(this.apiUrl, JSON.stringify(datos), { headers });
+  }
+
+  getMovimientoCodigo(
+    tipo: string,
+    origen: string,
+    codigo: string
+  ): Observable<Movimientos> {
+    return this.http.get<Movimientos>(
+      `${this.apiUrl2}?tipo=${tipo}&origen=${origen}&codigo=${codigo}`
+    );
   }
 }

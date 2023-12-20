@@ -191,6 +191,26 @@ export class DatanavService {
             },
           ],
         },
+
+        {
+          menuValue: 'Administracion',
+          rol: [
+            {
+              valor: '1',
+            },
+          ],
+          hasSubRoute: true,
+          showSubRoute: false,
+          base: 'blogs',
+          route: 'sucursal',
+          img: 'assets/img/icons/chat-icon-03.svg',
+          subMenus: [
+            {
+              menuValue: 'Configurar Codigo',
+              route: 'administracion/configurar-codigo-sucursal',
+            },
+          ],
+        },
       ],
     },
 

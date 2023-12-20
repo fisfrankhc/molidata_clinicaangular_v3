@@ -81,6 +81,7 @@ export interface Stock {
   unidad_medida: number;
   codigoProducto: string; // PARA VISTA
   nombreProducto: string; //PARA VISTA
+  descripcionProducto: string; //PARA VISTA
   nombreMedida: string; //PARA VISTA
   lineaRoja: boolean; //PARA COLOR EN STOCK
 }

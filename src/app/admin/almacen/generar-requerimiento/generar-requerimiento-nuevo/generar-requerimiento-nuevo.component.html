@@ -123,52 +123,56 @@
                             <div class="invoice-add-table" style="padding-top: 0px;">
                                 <h4>Productos para requerimiento</h4>
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-nowrap  mb-0 no-footer add-table-items">
+                                    <table class="table table-nowrap  mb-0 no-footer add-table-items">
                                         <thead>
                                             <tr style="text-align: center">
                                                 <th>#</th>
                                                 <th>C&Oacute;DIGO</th>
                                                 <th>PRODUCTO</th>
+                                                <th>DESCRIPCION</th>
                                                 <th>CANTIDAD</th>
                                                 <th>STOCK MIN.</th>
-                                                <!-- <th>SUBTOTAL</th> -->
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr class="add-row"
                                                 *ngFor="let producto of form.get('listaRequerimiento')?.value; let i = index">
-                                                <td style="width: 70px;">
+                                                <td style="width: 70px; padding: 0;">
                                                     <input type="hidden" class="form-control"
                                                         [value]="producto.idobtenido">
                                                     <input type="text" class="form-control" value="{{i+1}}"
-                                                        style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                        style="text-align: center;border: none;"
                                                         readonly>
                                                 </td>
-                                                <td style="max-width: 87px;">
+                                                <td style="max-width: 87px; padding: 0;">
                                                     <input type="text" class="form-control"
                                                         [value]="producto.codigoobtenido"
-                                                        style="background-color: var(--bs-secondary-bg);" readonly>
+                                                        style="border: none;" readonly>
                                                 </td>
-                                                <td>
+                                                <td style="padding: 0;">
                                                     <input type="hidden" class="form-control"
                                                         [value]="producto.nombreobtenido">
                                                     <input type="text" class="form-control"
                                                         [value]="producto.nombrepobtenido"
-                                                        style="background-color: var(--bs-secondary-bg);" readonly>
+                                                        style=" border: none;" readonly>
                                                 </td>
-                                                <td style="max-width: 100px;">
+                                                <td style="padding: 0;">
+                                                    <input type="text" class="form-control" [value]="producto.descripcionpro"
+                                                        style="border: none;" readonly>
+                                                </td>
+                                                <td style="max-width: 100px; padding: 0;">
                                                     <input type="text" class="form-control" [value]="producto.cantidad"
-                                                        style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                        style="text-align: center; border: none;"
                                                         readonly>
                                                 </td>
-                                                <td style="max-width: 100px;">
+                                                <td style="max-width: 100px; padding: 0;">
                                                     <input type="number" class="form-control"
                                                         [value]="producto.stockminimo"
-                                                        style="text-align: center; background-color: var(--bs-secondary-bg);"
+                                                        style="text-align: center; border: none;"
                                                         readonly>
                                                 </td>
-                                                <td class="add-remove text-end" style="width: 60px;">
+                                                <td class="add-remove text-end" style="width: 60px;" style="padding: 0;">
                                                     <a class="remove-btn" (click)="eliminarProducto(i)"><i
                                                             class="fa fa-trash-alt"></i></a>
                                                 </td>

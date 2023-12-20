@@ -74,6 +74,7 @@
                                         <th mat-sort-header="#">#</th>
                                         <th mat-sort-header="almacen_id">CODIGO</th>
                                         <th mat-sort-header="producto_id">PRODUCTO</th>
+                                        <th mat-sort-header="descripcionProducto">DESCRIPCION</th>
                                         <th mat-sort-header="cantidad">STOCK</th>
                                         <th mat-sort-header="stock_minimo">STOCK MINIMO</th>
                                         <th mat-sort-header="unidad_medida">UNIDAD MEDIDA</th>
@@ -93,6 +94,7 @@
                                         </td>
                                         <td [class.estilo-rojo]="data.lineaRoja"><span
                                                 [class.estilo-rojo]="data.lineaRoja">{{data.nombreProducto}}</span></td>
+                                                <td [class.estilo-rojo]="data.lineaRoja"><span [class.estilo-rojo]="data.lineaRoja">{{data.descripcionProducto}}</span></td>
                                         <td [class.estilo-rojo]="data.lineaRoja"><span
                                                 [class.estilo-rojo]="data.lineaRoja">{{data.cantidad}}</span></td>
                                         <td [class.estilo-rojo]="data.lineaRoja"><span

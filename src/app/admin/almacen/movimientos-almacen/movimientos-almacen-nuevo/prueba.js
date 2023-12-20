@@ -251,4 +251,196 @@ if (this.form.valid) {
                     condicion: 'REGISTRAR',
                   };
                   console.log(stockActualizar2);
+}
+                
+
+
+/* this.form
+                  .get('listaMovimiento')
+                  ?.value.forEach((productoLista: any) => {
+                    const productoEncontrado = this.dataPROCOMPRA.find(
+                      (productoCompra: any) =>
+                        productoCompra.producto_id === productoLista.producto
+                    );
+                    if (productoEncontrado) {
+                      // Aquí puedes realizar acciones comparativas o simplemente imprimir en la consola
+                      console.log(
+                        `Producto ${productoLista.nombrepobtenido} encontrado en la compra`
+                      );
+                    } else {
+                      console.log(
+                        `Producto ${productoLista.nombrepobtenido} no encontrado en la compra`
+                      );
+                    }
+                  }); */
+
+               this.comprasService.getCompra(valorCodigo).subscribe({
+            next: (response: any) => {
+              this.dataCOMPRA = response;
+              if (this.dataCOMPRA == 'no hay resultados') {
+                alert('LA COMPRA NO EXISTE');
+              } else {
+                this.dataCOMPRA = response[0];
+                console.log(this.dataCOMPRA);
+
+                this.comprasItemService
+                  .getCompraItems(this.dataCOMPRA.compra_id)
+                  .subscribe({
+                    next: (response: any) => {
+                      this.dataPROCOMPRA = response;
+                      console.log(this.dataPROCOMPRA);
+                    },
+                    error: (errorData) => {},
+                    complete: () => {},
+                  });
+                
+                const productosMovimiento =
+                  this.form.get('listaMovimiento')?.value;
+
+                // Verifica si todos los productos en listaMovimiento están presentes en this.dataPROCOMPRA
+                const todosProductosPresentes = productosMovimiento.every(
+                  (productoMovimiento: any) => {
+                    return (
+                      this.dataPROCOMPRA &&
+                      this.dataPROCOMPRA.some(
+                        (productoCompra: any) =>
+                          productoCompra.producto_id ===
+                          productoMovimiento.producto
+                      )
+                    );
+                  }
+                );
+                console.log(todosProductosPresentes);
+                if (todosProductosPresentes) {
+                  console.log(
+                    'Todos los productos están presentes en la compra'
+                  );
+                } else {
+                  console.log('¡Falta al menos un producto en la compra!');
+                  
                 }
+              }
+            },
+            error: (errorData) => {},
+            complete: () => {},
+               });   
+          
+
+
+//REVISAMOS CADA PRODUCTO
+productosMovimiento.forEach((productoLista: any) => {
+  const productoEncontrado = this.dataPROCOMPRA.find(
+    (productoCompra: any) =>
+      productoCompra.producto_id ===
+      productoLista.producto
+  );
+  if (productoEncontrado) {
+    if (
+      parseInt(productoEncontrado.cantidad) ===
+      parseInt(productoLista.cantidad)
+    ) {
+      console.log('LAS CANTIDADES COINCIDEN');
+    } else if (
+      parseInt(productoEncontrado.cantidad) <
+      parseInt(productoLista.cantidad)
+    ) {
+      cachesonsole.log(
+        'EL VALOR DEL PRODUCTO ' +
+          productoLista.nombrepobtenido +
+          'SUPERA A LA COMPRA EFECTUADA'
+      );
+    }
+  } else {
+  }
+});
+
+const todosProductosExcede = productosMovimiento.every(
+                        (productoMovimiento: any) => {
+                          return (
+                            this.dataPROCOMPRA.some(
+                              (productoCompra: any) =>
+                                productoCompra.producto_id ===
+                                  productoMovimiento.producto &&
+                                parseInt(productoCompra.cantidad) <
+                                  parseInt(productoMovimiento.cantidad)
+                            )
+                          );
+                        }
+                      );
+                      console.log(todosProductosExcede);
+                      if (todosProductosExcede) {
+                        console.log('PARA MENSAJE 1');
+                      } else {
+                        console.log('PARA MENSAJE 2');
+}
+                      
+
+const algunProductoSuperaMontoCompra =
+                        productosMovimiento.some((productoMovimiento: any) => {
+                          const productoCompra = this.dataPROCOMPRA.find(
+                            (producto: any) =>
+                              producto.producto_id ===
+                              productoMovimiento.producto
+                          );
+
+                          // Verificar si el productoCompra existe y si su cantidad es menor
+                          return (
+                            productoCompra &&
+                            productoMovimiento.cantidad >
+                              productoCompra.cantidad
+                          );
+                        });
+                      
+
+                      if (algunProductoSuperaMontoCompra) {
+                        console.log(
+                          'Al menos un producto supera al monto de compra'
+                        );
+                        Swal.fire({
+                          title:
+                            'Al menos un producto supera al monto de compra',
+                          icon: 'error',
+                          timer: 2500,
+                        });
+                      } else {
+                        console.log(
+                          'Las cantidades son iguales'
+                        );
+}
+                      
+
+const algunProductoSuperaMontoCompra =
+                        productosMovimiento.some((producto: any) => {
+                          const productoCompra = this.dataPROCOMPRA.find(
+                            (productoCompra: any) =>
+                              productoCompra.producto_id === producto.producto
+                          );
+
+                          // Verificar si el productoCompra existe y si su cantidad es menor
+                          producto.encontrado =
+                            productoCompra != null &&
+                            parseInt(producto.cantidad) <
+                              parseInt(productoCompra.cantidad);
+                          producto.cantidadMaximaCompra =
+                            productoCompra?.cantidad || 0;
+
+                          return (
+                            producto.encontrado === false ||
+                            parseInt(producto.cantidad) >
+                              parseInt(producto.cantidadMaximaCompra)
+                          );
+                        });
+
+                      if (algunProductoSuperaMontoCompra) {
+                        console.log(
+                          'Al menos un producto supera al monto de compra'
+                        );
+                        Swal.fire({
+                          title:
+                            'Al menos un producto supera al monto de compra',
+                          icon: 'error',
+                          timer: 2500,
+                        });
+                      } else {
+                        console.log('Las cantidades son iguales');
+                      }

@@ -122,6 +122,7 @@ export class StockSucursalIndexComponent implements OnInit {
           if (producto) {
             stock.codigoProducto = producto.prod_codigo;
             stock.nombreProducto = producto.prod_nombre;
+            stock.descripcionProducto = producto.prod_descripcion;
           }
           //PARA Medidas
           const medida = this.datosMED.find(
@@ -134,7 +135,7 @@ export class StockSucursalIndexComponent implements OnInit {
         });
 
         this.datosSTOCK.forEach((dataStockVer: any) => {
-          console.log(dataStockVer);
+          //console.log(dataStockVer);
           if (
             parseFloat(dataStockVer.cantidad) <=
             parseFloat(dataStockVer.stock_minimo)
@@ -142,7 +143,7 @@ export class StockSucursalIndexComponent implements OnInit {
             dataStockVer.lineaRoja = true;
           }
         });
-        console.log(this.datosSTOCK);
+        //console.log(this.datosSTOCK);
 
         this.datosSTOCK.map((res: Stock, index: number) => {
           const serialNumber = index + 1;
@@ -281,7 +282,7 @@ export class StockSucursalIndexComponent implements OnInit {
     const titleRow = worksheet.addRow(['REPORTE STOCK DE PRODUCTOS']);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
-    worksheet.mergeCells(`A${titleRow.number}:F${titleRow.number}`);
+    worksheet.mergeCells(`A${titleRow.number}:G${titleRow.number}`);
     // Aplica estilo al fondo del título solo a las celdas combinadas
     const titleRange = worksheet.getCell(`A${titleRow.number}`);
     titleRange.border = {
@@ -311,11 +312,12 @@ export class StockSucursalIndexComponent implements OnInit {
     // Agrega encabezados con estilo y asigna anchos
     const headers = [
       { header: 'ID', key: '#' },
-      { header: 'CODIGO', key: 'sucursal' },
-      { header: 'PRODUCTO', key: 'fecha' },
-      { header: 'STOCK ACTUAL', key: 'fecha' },
-      { header: 'STOCK MINIMO PERMITIDO', key: 'fecha' },
-      { header: 'UNIDAD MEDIDA', key: 'monto' },
+      { header: 'CODIGO', key: 'codigo' },
+      { header: 'PRODUCTO', key: 'producto' },
+      { header: 'DESCRIPCION', key: 'descripcion' },
+      { header: 'STOCK ACTUAL', key: 'stock_actual' },
+      { header: 'STOCK MINIMO PERMITIDO', key: 'stock_minimo' },
+      { header: 'UNIDAD MEDIDA', key: 'unidadmedida' },
     ];
 
     // Ajusta la altura de la fila de encabezados
@@ -352,6 +354,7 @@ export class StockSucursalIndexComponent implements OnInit {
         parseInt(data.producto_id),
         data.codigoProducto,
         data.nombreProducto,
+        data.descripcionProducto,
         parseInt(data.cantidad),
         parseFloat(data.stock_minimo),
         data.nombreMedida,
@@ -385,30 +388,35 @@ export class StockSucursalIndexComponent implements OnInit {
       }; //PRODUCTO
       excelRow.getCell(4).alignment = {
         vertical: 'middle',
-        horizontal: 'center',
-      }; // STOCK ACTUAL
+        horizontal: 'justify',
+      }; // DESCRIPCION PRODUCTO
       excelRow.getCell(5).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-      }; // STOCK MINIMO PERMITIDO
+      }; // STOCK ACTUAL
       excelRow.getCell(6).alignment = {
+        vertical: 'middle',
+        horizontal: 'center',
+      }; // STOCK MINIMO PERMITIDO
+      excelRow.getCell(7).alignment = {
         vertical: 'middle',
         horizontal: 'center',
       }; // UNIDAD MEDIDA
       // Configura el formato de la celda para la columna del monto
-      const montoCell1 = excelRow.getCell(4);
+      const montoCell1 = excelRow.getCell(5);
       montoCell1.numFmt = '#,##0'; // Formato de número
-      const montoCell2 = excelRow.getCell(5);
+      const montoCell2 = excelRow.getCell(6);
       montoCell2.numFmt = '#,##0.00'; // Formato de número con 2 decimales
     });
 
     // Ajustar el ancho de las columnas A, B y C
     worksheet.getColumn('A').width = 10; // Ancho de la columna A
     worksheet.getColumn('B').width = 15; // Ancho de la columna B
-    worksheet.getColumn('C').width = 50; // Ancho de la columna C
-    worksheet.getColumn('D').width = 14; // Ancho de la columna D
-    worksheet.getColumn('E').width = 18; // Ancho de la columna E
-    worksheet.getColumn('F').width = 22; // Ancho de la columna F
+    worksheet.getColumn('C').width = 45; // Ancho de la columna C
+    worksheet.getColumn('D').width = 50; // Ancho de la columna D
+    worksheet.getColumn('E').width = 14; // Ancho de la columna E
+    worksheet.getColumn('F').width = 18; // Ancho de la columna F
+    worksheet.getColumn('G').width = 22; // Ancho de la columna G
 
     // Descargar el archivo Excel
     workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
@@ -436,7 +444,7 @@ export class StockSucursalIndexComponent implements OnInit {
     const titleRow = worksheet.addRow(['REPORTE PRODUCTOS CON STOCK MINIMO']);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
-    worksheet.mergeCells(`A${titleRow.number}:F${titleRow.number}`);
+    worksheet.mergeCells(`A${titleRow.number}:G${titleRow.number}`);
     // Aplica estilo al fondo del título solo a las celdas combinadas
     const titleRange = worksheet.getCell(`A${titleRow.number}`);
     titleRange.border = {
@@ -466,11 +474,12 @@ export class StockSucursalIndexComponent implements OnInit {
     // Agrega encabezados con estilo y asigna anchos
     const headers = [
       { header: 'ID', key: '#' },
-      { header: 'CODIGO', key: 'sucursal' },
-      { header: 'PRODUCTO', key: 'fecha' },
-      { header: 'STOCK ACTUAL', key: 'fecha' },
-      { header: 'STOCK MINIMO PERMITIDO', key: 'fecha' },
-      { header: 'UNIDAD MEDIDA', key: 'monto' },
+      { header: 'CODIGO', key: 'codigo' },
+      { header: 'PRODUCTO', key: 'producto' },
+      { header: 'DESCRIPCION', key: 'descripcion' },
+      { header: 'STOCK ACTUAL', key: 'stock_actual' },
+      { header: 'STOCK MINIMO PERMITIDO', key: 'stock_minimo' },
+      { header: 'UNIDAD MEDIDA', key: 'unidadmedida' },
     ];
 
     // Ajusta la altura de la fila de encabezados
@@ -509,6 +518,7 @@ export class StockSucursalIndexComponent implements OnInit {
           parseInt(data.producto_id),
           data.codigoProducto,
           data.nombreProducto,
+          data.descripcionProducto,
           parseInt(data.cantidad),
           parseFloat(data.stock_minimo),
           data.nombreMedida,
@@ -542,20 +552,24 @@ export class StockSucursalIndexComponent implements OnInit {
         }; //PRODUCTO
         excelRow.getCell(4).alignment = {
           vertical: 'middle',
-          horizontal: 'center',
-        }; // STOCK ACTUAL
+          horizontal: 'justify',
+        }; // DESCRIPCION PRODUCTO
         excelRow.getCell(5).alignment = {
           vertical: 'middle',
           horizontal: 'center',
-        }; // STOCK MINIMO PERMITIDO
+        }; // STOCK ACTUAL
         excelRow.getCell(6).alignment = {
+          vertical: 'middle',
+          horizontal: 'center',
+        }; // STOCK MINIMO PERMITIDO
+        excelRow.getCell(7).alignment = {
           vertical: 'middle',
           horizontal: 'center',
         }; // UNIDAD MEDIDA
         // Configura el formato de la celda para la columna del monto
-        const montoCell1 = excelRow.getCell(4);
+        const montoCell1 = excelRow.getCell(5);
         montoCell1.numFmt = '#,##0'; // Formato de número
-        const montoCell2 = excelRow.getCell(5);
+        const montoCell2 = excelRow.getCell(6);
         montoCell2.numFmt = '#,##0.00'; // Formato de número con 2 decimales
       }
     });
@@ -563,10 +577,11 @@ export class StockSucursalIndexComponent implements OnInit {
     // Ajustar el ancho de las columnas A, B y C
     worksheet.getColumn('A').width = 10; // Ancho de la columna A
     worksheet.getColumn('B').width = 15; // Ancho de la columna B
-    worksheet.getColumn('C').width = 50; // Ancho de la columna C
-    worksheet.getColumn('D').width = 14; // Ancho de la columna D
-    worksheet.getColumn('E').width = 18; // Ancho de la columna E
-    worksheet.getColumn('F').width = 22; // Ancho de la columna F
+    worksheet.getColumn('C').width = 45; // Ancho de la columna C
+    worksheet.getColumn('D').width = 50; // Ancho de la columna D
+    worksheet.getColumn('E').width = 14; // Ancho de la columna E
+    worksheet.getColumn('F').width = 18; // Ancho de la columna F
+    worksheet.getColumn('G').width = 22; // Ancho de la columna G
 
     // Descargar el archivo Excel
     workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {

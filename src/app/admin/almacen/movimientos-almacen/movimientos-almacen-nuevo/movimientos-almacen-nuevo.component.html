@@ -33,7 +33,7 @@
                                 <div formGroupName="movimientoDetalle">
                                     <div class="row">
                                         <input type="hidden" formControlName="idsucursal_origen">
-                                        <div class="col-12 col-md-6 col-xl-1">
+                                        <div class="col-12 col-md-6 col-xl-2">
                                             <div class="form-group local-forms">
                                                 <label>SUCURSAL </label>
                                                 <input class="form-control" formControlName="sucursal_origen"
@@ -204,7 +204,7 @@
                                         </thead>
                                         <tbody>
                                             <tr class="add-row"
-                                                *ngFor="let producto of form.get('listaMovimiento')?.value; let i = index">
+                                                *ngFor="let producto of form.get('listaMovimiento')?.value; let i = index" [ngClass]="{'producto-no-encontrado': producto.encontrado === false}" [ngClass]="{'producto-mayor': producto.estilo === 'producto-mayor'}">
                                                 <td style="max-width: 90px;">
                                                     <input type="hidden" class="form-control"
                                                         [value]="producto.idobtenido">

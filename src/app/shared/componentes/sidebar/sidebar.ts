@@ -7,8 +7,15 @@ export interface SubMenu {
  
 }
 
+export interface SideBarData {
+  tittle: string;
+  showAsTab: boolean;
+  separateRoute: boolean;
+  menu: MenuItem[];
+}
+
 export interface MenuItem {
-rol: { valor: string; }[];
+  rol: { valor: string }[];
   menuValue: string;
   hasSubRoute: boolean;
   showSubRoute: boolean;
@@ -18,11 +25,18 @@ rol: { valor: string; }[];
   icon?: string;
   faIcon?: boolean;
   subMenus: SubMenu[];
-}
+} 
 
-export interface SideBarData {
-  tittle: string;
-  showAsTab: boolean;
-  separateRoute: boolean;
-  menu: MenuItem[];
-}
+/* export interface MenuItem {
+  menuValue: string;
+  rol?: { valor: string }[] | undefined;
+  hasSubRoute: boolean;
+  showSubRoute: boolean;
+  base: string;
+  base2?: string;
+  icon?: string;
+  faIcon?: boolean;
+  route?: string;
+  subMenus: MenuItem[];
+  img?: string;
+} */

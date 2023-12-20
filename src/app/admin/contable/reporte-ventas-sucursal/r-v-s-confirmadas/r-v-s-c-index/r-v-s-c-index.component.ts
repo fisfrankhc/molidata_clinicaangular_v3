@@ -318,7 +318,7 @@ export class RVSCIndexComponent implements OnInit {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Agrega una fila para el título del reporte
-    const titleRow = worksheet.addRow(['REPORTE DE VENTAS POR SUCURSAL']);
+    const titleRow = worksheet.addRow(['REPORTE DE VENTAS POR CONFIRMAR POR SUCURSAL']);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
     worksheet.mergeCells(`A${titleRow.number}:E${titleRow.number}`);
@@ -457,7 +457,7 @@ export class RVSCIndexComponent implements OnInit {
       const a = document.createElement('a');
       a.href = url;
       a.download =
-        'Reporte de Ventas x Sucursal del ' +
+        'Reporte de Ventas x confirmar x Sucursal del ' +
         this.fechaVisualInicio +
         ' al ' +
         this.fechaVisualFin +
