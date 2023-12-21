@@ -27,7 +27,7 @@
                                       ? 'd-block'
                                       : 'd-none'
                                   ">
-                                        <a [routerLink]="subMenus.route" [class.active]="currentUrl === subMenus.base">
+                                        <a *ngIf="checkUserRole(subMenus.rol)" [routerLink]="subMenus.route" [class.active]="currentUrl === subMenus.base">
                                             {{ subMenus.menuValue | titlecase }}
                                         </a>
                                     </li>

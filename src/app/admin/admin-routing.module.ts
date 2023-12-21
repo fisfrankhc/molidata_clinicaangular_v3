@@ -15,7 +15,7 @@ const routes: Routes = [
         path: 'dashboard',
         loadChildren: () =>
           import('./dashboard/dashboard.module').then((m) => m.DashboardModule),
-        data: { expectedRoles: ['1', '2', '3', '4'] },
+        data: { expectedRoles: ['1', '2', '3', '4', '6'] },
       },
       {
         path: 'roles',
@@ -39,7 +39,7 @@ const routes: Routes = [
         path: 'farmacia',
         loadChildren: () =>
           import('./farmacia/farmacia.module').then((m) => m.FarmaciaModule),
-        data: { expectedRoles: ['1', '2', '3', '4'] } as any,
+        data: { expectedRoles: ['1', '2', '3', '4', '6'] } as any,
       },
       {
         path: 'almacen',
@@ -56,7 +56,9 @@ const routes: Routes = [
       {
         path: 'administracion',
         loadChildren: () =>
-          import('./administracion/administracion.module').then((m) => m.AdministracionModule),
+          import('./administracion/administracion.module').then(
+            (m) => m.AdministracionModule
+          ),
         data: { expectedRoles: ['1', '3', '4'] } as any,
       },
     ],

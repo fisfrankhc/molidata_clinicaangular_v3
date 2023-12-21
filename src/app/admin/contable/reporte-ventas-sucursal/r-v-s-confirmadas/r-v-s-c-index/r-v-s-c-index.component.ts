@@ -92,13 +92,17 @@ export class RVSCIndexComponent implements OnInit {
   sumatotal = 0;
   resultadoMostrar: any;
 
+  fechaI: any;
+  fechaF: any;
   sucursalesAll(fechaInicio: string, fechaFin: string) {
     this.sucursalVentasList = [];
     this.serialNumberArray = [];
     this.fechaVisualInicio = this.datePipe.transform(fechaInicio, 'dd/MM/yyyy');
     this.fechaVisualFin = this.datePipe.transform(fechaFin, 'dd/MM/yyyy');
-    console.log(fechaInicio, fechaFin);
-    console.log(this.fechaVisualInicio, this.fechaVisualFin );
+    this.fechaI = this.datePipe.transform(fechaInicio, 'yyyy-MM-dd');
+    this.fechaF = this.datePipe.transform(fechaFin, 'yyyy-MM-dd');
+    console.log(this.fechaI, this.fechaF);
+    console.log(this.fechaVisualInicio, this.fechaVisualFin);
     this.sucursalService.getSucursalAll().subscribe({
       next: (response: any) => {
         this.datosSUC = response;
@@ -110,8 +114,8 @@ export class RVSCIndexComponent implements OnInit {
         const observables = this.datosSUC.map((sucursal: any) => {
           const dataSucursal = this.datosVenta.filter(
             (vent: any) =>
-              vent.venta_fecha >= fechaInicio &&
-              vent.venta_fecha <= fechaFin &&
+              vent.venta_fecha >= this.fechaI &&
+              vent.venta_fecha <= this.fechaF &&
               vent.venta_proceso == 'CONFIRMADO' &&
               vent.sucursal_id === sucursal.suc_id
           );
@@ -138,14 +142,14 @@ export class RVSCIndexComponent implements OnInit {
                   });
                 });
                 sucursal.montotal = sumaCantidaPrecio;
-                sucursal.fechaBusquedaInicio = fechaInicio;
-                sucursal.fechaBusquedaFin = fechaFin;
+                sucursal.fechaBusquedaInicio = this.fechaI;
+                sucursal.fechaBusquedaFin = this.fechaF;
                 return sucursal;
               })
             );
           } else {
-            sucursal.fechaBusquedaInicio = fechaInicio;
-            sucursal.fechaBusquedaFin = fechaFin;
+            sucursal.fechaBusquedaInicio = this.fechaI;
+            sucursal.fechaBusquedaFin = this.fechaF;
             sucursal.montotal = 0;
             return of(sucursal);
           }
@@ -318,7 +322,9 @@ export class RVSCIndexComponent implements OnInit {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Agrega una fila para el título del reporte
-    const titleRow = worksheet.addRow(['REPORTE DE VENTAS POR CONFIRMAR POR SUCURSAL']);
+    const titleRow = worksheet.addRow([
+      'REPORTE DE VENTAS POR CONFIRMAR POR SUCURSAL',
+    ]);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
     worksheet.mergeCells(`A${titleRow.number}:E${titleRow.number}`);
@@ -467,4 +473,3 @@ export class RVSCIndexComponent implements OnInit {
     });
   }
 }
-

@@ -25,7 +25,17 @@ export class DatanavService {
           base: 'dashboard',
           route: 'dashboard',
           img: 'assets/img/icons/menu-icon-01.svg',
-          subMenus: [],
+          subMenus: [
+            {
+              menuValue: '',
+              route: '',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
+            },
+          ],
         },
 
         {
@@ -40,13 +50,24 @@ export class DatanavService {
           base: 'doctor',
           route: 'roles',
           img: 'assets/img/icons/menu-icon-02.svg',
-          subMenus: [],
+          subMenus: [
+            {
+              menuValue: '',
+              route: '',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
+            },
+          ],
         },
-
         {
           menuValue: 'Sucursal',
           rol: [
             {
+              menuValue: '',
+              route: '',
               valor: '1',
             },
           ],
@@ -57,7 +78,15 @@ export class DatanavService {
           icon: 'fa-columns',
           faIcon: true,
           route: 'sucursal',
-          subMenus: [],
+          subMenus: [
+            {
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
+            },
+          ],
         },
 
         {
@@ -76,26 +105,56 @@ export class DatanavService {
             {
               menuValue: 'Categorias',
               route: 'logistica/categoria',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Compras',
               route: 'logistica/compra',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Productos',
               route: 'logistica/producto',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Proveedores',
               route: 'logistica/proveedores',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'requerimientos',
               route: 'logistica/requerimientos',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Stock',
               route: 'logistica/stock',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
           ],
         },
@@ -109,6 +168,9 @@ export class DatanavService {
             {
               valor: '2',
             },
+            {
+              valor: '6',
+            },
           ],
           hasSubRoute: true,
           showSubRoute: false,
@@ -118,22 +180,62 @@ export class DatanavService {
             {
               menuValue: 'Ventas',
               route: 'farmacia/venta',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '6',
+                },
+              ],
             },
             {
               menuValue: 'Clientes',
               route: 'farmacia/cliente',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '6',
+                },
+              ],
             },
             {
               menuValue: 'caja',
               route: 'farmacia/caja',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '8',
+                },
+              ],
             },
             {
               menuValue: 'Reporte de Caja',
               route: 'farmacia/reportecaja',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Inicio/cierre de Operaciones',
               route: 'farmacia/inicio-cierre-operaciones',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '6',
+                },
+              ],
             },
           ],
         },
@@ -152,14 +254,29 @@ export class DatanavService {
             {
               menuValue: 'Generar Requerimiento',
               route: 'almacen/generar-requerimiento',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Movimientos de Almacen',
               route: 'almacen/movimientos-almacen',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Stock Sucursal',
               route: 'almacen/stock-sucursal',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
           ],
         },
@@ -180,14 +297,29 @@ export class DatanavService {
             {
               menuValue: 'Comprobantes',
               route: 'contable/comprobantes',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Reporte de Ventas - Sucursal',
               route: 'contable/reporte-ventas-por-sucursal',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
             {
               menuValue: 'Reporte de Ventas - Usuario',
               route: 'contable/reporte-ventas-por-usuario',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
           ],
         },
@@ -208,6 +340,11 @@ export class DatanavService {
             {
               menuValue: 'Configurar Codigo',
               route: 'administracion/configurar-codigo-sucursal',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
             },
           ],
         },

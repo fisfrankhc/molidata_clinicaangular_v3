@@ -5,8 +5,6 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 export const authGuard: CanActivateFn = (route, state) => {
-
-
   //console.log("Se ejecuta el guard, usuario autenticado")
   const authService = inject(AuthloginService);
   const router = inject(Router);
@@ -36,5 +34,4 @@ export const authGuard: CanActivateFn = (route, state) => {
   console.log('Redireccionando a /login');
   return router.parseUrl('/login');
   //return true;
-
 };

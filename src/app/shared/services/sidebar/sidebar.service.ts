@@ -7,6 +7,7 @@ interface MainMenu {
   menu: MenuItem[];
 }
 interface MenuItem {
+  subMenus: any;
   menuValue: string;
   showSubRoute: boolean;
 }
@@ -14,7 +15,6 @@ interface MenuItem {
 @Injectable({
   providedIn: 'root',
 })
-  
 export class SidebarService {
   public toggleSideBar: BehaviorSubject<string> = new BehaviorSubject<string>(
     localStorage.getItem('isMiniSidebar') || 'false'
@@ -31,7 +31,7 @@ export class SidebarService {
 
   constructor(private data: DatanavService) {}
 
-  public switchSideMenuPosition(): void {
+  /*   public switchSideMenuPosition(): void {
     if (localStorage.getItem('isMiniSidebar')) {
       this.toggleSideBar.next('false');
       localStorage.removeItem('isMiniSidebar');
@@ -41,6 +41,31 @@ export class SidebarService {
           if (menuValue && menuValue == resMenu.menuValue) {
             resMenu.showSubRoute = true;
           }
+        });
+      });
+    } else {
+      this.toggleSideBar.next('true');
+      localStorage.setItem('isMiniSidebar', 'true');
+      this.data.sideBar.map((mainMenus: MainMenu) => {
+        mainMenus.menu.map((resMenu: MenuItem) => {
+          resMenu.showSubRoute = false;
+        });
+      });
+    }
+  } */
+
+  public switchSideMenuPosition(): void {
+    if (localStorage.getItem('isMiniSidebar')) {
+      this.toggleSideBar.next('false');
+      localStorage.removeItem('isMiniSidebar');
+      this.data.sideBar.map((mainMenus: MainMenu) => {
+        mainMenus.menu.map((resMenu: MenuItem) => {
+          resMenu.subMenus.map((subMenu: MenuItem) => {
+            const menuValue = sessionStorage.getItem('menuValue');
+            if (menuValue && menuValue == subMenu.menuValue) {
+              subMenu.showSubRoute = true;
+            }
+          });
         });
       });
     } else {

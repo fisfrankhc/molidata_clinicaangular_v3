@@ -31,6 +31,7 @@ export class AdminComponent {
     public router: Router,
     private data: DatanavService
   ) {
+   
     this.sideBar.toggleSideBar.subscribe((res: string) => {
       if (res == 'true') {
         this.miniSidebar = 'true';
@@ -50,14 +51,14 @@ export class AdminComponent {
     this.sideBar.expandSideBar.subscribe((res: string) => {
       this.expandMenu = res;
       if (res == 'false' && this.miniSidebar == 'true') {
-        this.data.sideBar.map((mainMenus: SideBarData) => {
+        this.data.sideBar.map((mainMenus: any) => {
           mainMenus.menu.map((resMenu: MenuItem) => {
             resMenu.showSubRoute = false;
           });
         });
       }
       if (res == 'true' && this.miniSidebar == 'true') {
-        this.data.sideBar.map((mainMenus: SideBarData) => {
+        this.data.sideBar.map((mainMenus: any) => {
           mainMenus.menu.map((resMenu: MenuItem) => {
             const menuValue = sessionStorage.getItem('menuValue');
             if (menuValue && menuValue == resMenu.menuValue) {

@@ -4,8 +4,34 @@ import { NavigationEnd, Router } from '@angular/router';
 
 import { SidebarService } from '../../services/sidebar/sidebar.service';
 import { DatanavService } from './datanav.service';
-import { MenuItem, SideBarData } from './sidebar';
+//import { MenuItem, SideBarData } from './sidebar';
 import { OutloginService } from 'src/app/auth/services/outlogin.service';
+
+interface SubMenu {
+  menuValue: string;
+  route?: string;
+  base?: string;
+}
+
+interface SideBarData {
+  tittle: string;
+  showAsTab: boolean;
+  separateRoute: boolean;
+  menu: MenuItem[];
+}
+
+interface MenuItem {
+  rol?: { valor: any }[];
+  menuValue: string;
+  hasSubRoute: boolean;
+  showSubRoute: boolean;
+  base?: string;
+  route?: string;
+  img?: string;
+  icon?: string;
+  faIcon?: boolean;
+  subMenus: MenuItem[];
+} 
 
 @Component({
   selector: 'app-sidebar',
@@ -19,7 +45,7 @@ export class SidebarComponent {
   public classAdd = false;
 
   public multilevel: Array<boolean> = [false, false, false];
-  public sidebarData: Array<SideBarData> = [];
+  public sidebarData: Array<any> = [];
 
   constructor(
     private data: DatanavService,
@@ -27,7 +53,7 @@ export class SidebarComponent {
     private sideBar: SidebarService,
     private outloginService: OutloginService
   ) {
-    this.sidebarData = this.data.sideBar;
+    this.sidebarData = this.data?.sideBar || [];
     //console.log(this.sidebarData);
     router.events.subscribe((event: object) => {
       //console.log(event)
@@ -47,6 +73,12 @@ export class SidebarComponent {
         } else {
           resMenu.showSubRoute = false;
         }
+
+        // Considerar roles dentro de subMenus
+        resMenu.subMenus.map((subMenu: MenuItem) => {
+          //console.log(subMenu);
+          subMenu.showSubRoute = false;
+        });
       });
     });
   }
@@ -73,7 +105,7 @@ export class SidebarComponent {
 
   checkUserRole(roles: Array<{ valor: string }>): boolean {
     const userRol = localStorage.getItem('userrol');
-    if (userRol) {
+    if (userRol && roles) {
       return roles.some((role) => role.valor === userRol);
     }
     return false;
