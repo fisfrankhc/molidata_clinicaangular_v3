@@ -19,6 +19,27 @@ export class DatanavService {
             {
               valor: '1',
             },
+            {
+              valor: '2',
+            },
+            {
+              valor: '3',
+            },
+            {
+              valor: '4',
+            },
+            {
+              valor: '5',
+            },
+            {
+              valor: '6',
+            },
+            {
+              valor: '7',
+            },
+            {
+              valor: '8',
+            },
           ],
           hasSubRoute: false,
           showSubRoute: false,
@@ -32,6 +53,27 @@ export class DatanavService {
               rol: [
                 {
                   valor: '1',
+                },
+                {
+                  valor: '2',
+                },
+                {
+                  valor: '3',
+                },
+                {
+                  valor: '4',
+                },
+                {
+                  valor: '5',
+                },
+                {
+                  valor: '6',
+                },
+                {
+                  valor: '7',
+                },
+                {
+                  valor: '8',
                 },
               ],
             },
@@ -95,6 +137,9 @@ export class DatanavService {
             {
               valor: '1',
             },
+            {
+              valor: '2',
+            },
           ],
           hasSubRoute: true,
           showSubRoute: false,
@@ -109,6 +154,9 @@ export class DatanavService {
                 {
                   valor: '1',
                 },
+                {
+                  valor: '2',
+                },
               ],
             },
             {
@@ -117,6 +165,9 @@ export class DatanavService {
               rol: [
                 {
                   valor: '1',
+                },
+                {
+                  valor: '2',
                 },
               ],
             },
@@ -127,6 +178,9 @@ export class DatanavService {
                 {
                   valor: '1',
                 },
+                {
+                  valor: '2',
+                },
               ],
             },
             {
@@ -135,6 +189,9 @@ export class DatanavService {
               rol: [
                 {
                   valor: '1',
+                },
+                {
+                  valor: '2',
                 },
               ],
             },
@@ -145,6 +202,9 @@ export class DatanavService {
                 {
                   valor: '1',
                 },
+                {
+                  valor: '2',
+                },
               ],
             },
             {
@@ -153,6 +213,9 @@ export class DatanavService {
               rol: [
                 {
                   valor: '1',
+                },
+                {
+                  valor: '2',
                 },
               ],
             },
@@ -169,7 +232,13 @@ export class DatanavService {
               valor: '2',
             },
             {
+              valor: '5',
+            },
+            {
               valor: '6',
+            },
+            {
+              valor: '7',
             },
           ],
           hasSubRoute: true,
@@ -183,6 +252,9 @@ export class DatanavService {
               rol: [
                 {
                   valor: '1',
+                },
+                {
+                  valor: '5',
                 },
                 {
                   valor: '6',
@@ -209,6 +281,12 @@ export class DatanavService {
                   valor: '1',
                 },
                 {
+                  valor: '6',
+                },
+                {
+                  valor: '7',
+                },
+                {
                   valor: '8',
                 },
               ],
@@ -221,7 +299,10 @@ export class DatanavService {
                   valor: '1',
                 },
                 {
-                  valor: '1',
+                  valor: '6',
+                },
+                {
+                  valor: '7',
                 },
               ],
             },
@@ -245,6 +326,9 @@ export class DatanavService {
             {
               valor: '1',
             },
+            {
+              valor: '8',
+            },
           ],
           hasSubRoute: true,
           showSubRoute: false,
@@ -258,6 +342,9 @@ export class DatanavService {
                 {
                   valor: '1',
                 },
+                {
+                  valor: '8',
+                },
               ],
             },
             {
@@ -267,6 +354,9 @@ export class DatanavService {
                 {
                   valor: '1',
                 },
+                {
+                  valor: '8',
+                },
               ],
             },
             {
@@ -275,6 +365,9 @@ export class DatanavService {
               rol: [
                 {
                   valor: '1',
+                },
+                {
+                  valor: '8',
                 },
               ],
             },
@@ -286,6 +379,9 @@ export class DatanavService {
           rol: [
             {
               valor: '1',
+            },
+            {
+              valor: '3',
             },
           ],
           hasSubRoute: true,
@@ -301,6 +397,9 @@ export class DatanavService {
                 {
                   valor: '1',
                 },
+                {
+                  valor: '3',
+                },
               ],
             },
             {
@@ -310,6 +409,9 @@ export class DatanavService {
                 {
                   valor: '1',
                 },
+                {
+                  valor: '3',
+                },
               ],
             },
             {
@@ -318,6 +420,9 @@ export class DatanavService {
               rol: [
                 {
                   valor: '1',
+                },
+                {
+                  valor: '3',
                 },
               ],
             },
@@ -329,6 +434,9 @@ export class DatanavService {
           rol: [
             {
               valor: '1',
+            },
+            {
+              valor: '5',
             },
           ],
           hasSubRoute: true,
@@ -343,6 +451,9 @@ export class DatanavService {
               rol: [
                 {
                   valor: '1',
+                },
+                {
+                  valor: '5',
                 },
               ],
             },

@@ -19,10 +19,15 @@ import { GenerarRequerimientoService } from 'src/app/shared/services/almacen/gen
 
 import { GenerarRequerimientoItemService } from 'src/app/shared/services/almacen/generar-requerimiento/generar-requerimiento-item.service';
 import { DatePipe } from '@angular/common';
-
+import { RequerimientoService } from 'src/app/shared/services/logistica/requerimiento/requerimiento.service';
 import { Requerimiento_Detalle } from 'src/app/shared/interfaces/almacen';
 
 import * as ExcelJS from 'exceljs';
+import Swal from 'sweetalert2';
+
+interface data {
+  value: string;
+}
 
 @Component({
   selector: 'app-requerimientos-ver',
@@ -35,6 +40,7 @@ export class RequerimientosVerComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private fb: FormBuilder,
     private sucursalService: SucursalService,
     private productoService: ProductoService,
@@ -42,6 +48,7 @@ export class RequerimientosVerComponent implements OnInit {
     private generalService: GeneralService,
     private generarRequerimientoService: GenerarRequerimientoService,
     private generarRequerimientoItemService: GenerarRequerimientoItemService,
+    private requerimientoService: RequerimientoService,
     private datePipe: DatePipe
   ) {}
 
@@ -70,8 +77,12 @@ export class RequerimientosVerComponent implements OnInit {
         user_nombre: ['', Validators.required],
         fecha: ['', Validators.required],
       }),
-
       listaRequerimiento: this.fb.array([]), // FormArray para la lista de compra
+      atencionRequerimiento: this.fb.group({
+        proceso: ['', Validators.required],
+        radioDecision: ['NO', Validators.required],
+        observaciones: [''],
+      }),
     });
 
     // Asignar el formulario
@@ -167,6 +178,9 @@ export class RequerimientosVerComponent implements OnInit {
           this.form
             .get('requerimientoDetalle.fecha')
             ?.setValue(fechaformateada);
+          this.form
+            .get('atencionRequerimiento.proceso')
+            ?.setValue(this.datoREQUERIMIENTO[0]['requerimiento_proceso']);
         },
         error: (errorData) => {
           console.error('Error al obtener los datos de la venta: ', errorData);
@@ -195,6 +209,8 @@ export class RequerimientosVerComponent implements OnInit {
               if (producto) {
                 requerimientoDetalle.nombreProducto = producto.prod_nombre;
                 requerimientoDetalle.codigoProducto = producto.prod_codigo;
+                requerimientoDetalle.descripcionProducto =
+                  producto.prod_descripcion;
               }
               return requerimientoDetalle;
             }
@@ -402,6 +418,49 @@ export class RequerimientosVerComponent implements OnInit {
         '.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
+    });
+  }
+
+  selectedListRequerimiento: data[] = [
+    { value: 'Seleccione' },
+    { value: 'SOLICITUD' },
+    { value: 'REVISADO' },
+    { value: 'ATENDIDO' },
+  ];
+
+  actualizarRequerimiento() {
+    const dataRequerimiento = {
+      id: this.requerimientoId,
+      proceso: this.form.get('atencionRequerimiento.proceso')?.value,
+      observaciones: this.form.get('atencionRequerimiento.observaciones')
+        ?.value,
+      condicion: 'ATENCION-REQUERIMIENTO',
+    };
+    this.requerimientoService.updateRequerimiento(dataRequerimiento).subscribe({
+      next: (response) => {
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 2000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          },
+        });
+        Toast.fire({
+          icon: 'success',
+          html:
+            '<div style="font-size: 14px; font-weight: 700">Requerimiento ' +
+            response +
+            ' ha sido actualizado con &eacute;xito. </div>',
+        });
+      },
+      error: (errorData) => {},
+      complete: () => {
+        this.router.navigate(['/logistica/requerimientos']);
+      },
     });
   }
 }

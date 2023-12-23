@@ -36,5 +36,6 @@ export interface Requerimiento_Detalle {
   unidad_medida: number;
   nombreProducto: string; //PARA VISTA
   codigoProducto: string; //PARA VISTA
+  descripcionProducto: string; //PARA VISTA
   nombreMedida: string; //PARA VISTA
 }

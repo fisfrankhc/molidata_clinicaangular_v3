@@ -408,8 +408,6 @@ export class VentasIndexComponent implements OnInit {
       }
       const row = [
         +data.venta_id,
-
-        
         data.venta_fecha,
         data.nombreCliente,
         data.venta_proceso,

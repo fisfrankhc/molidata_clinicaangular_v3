@@ -4,6 +4,12 @@ import {
   pageSelection,
   Requerimientos,
 } from 'src/app/shared/interfaces/almacen';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 import { GenerarRequerimientoService } from 'src/app/shared/services/almacen/generar-requerimiento/generar-requerimiento.service';
@@ -40,6 +46,7 @@ export class RequerimientosIndexComponent {
   public totalPages = 0;
 
   constructor(
+    private fb: FormBuilder,
     public generarRequerimientoService: GenerarRequerimientoService,
     public generalService: GeneralService,
     private sucursalService: SucursalService,
@@ -49,10 +56,11 @@ export class RequerimientosIndexComponent {
   fechaActual = new Date();
   fechaFormateada = this.datePipe.transform(
     this.fechaActual,
-    'yyyy/MM/dd HH:mm'
+    'dd/MM/yyyy HH:mm'
   );
 
   ngOnInit(): void {
+    this.fechaVisual = this.fechaFormateada;
     this.sucursalAll();
     this.userAll();
   }
@@ -62,7 +70,6 @@ export class RequerimientosIndexComponent {
     this.sucursalService.getSucursalAll().subscribe({
       next: (datosSUC: any) => {
         this.datosSUC = datosSUC;
-        //this.requerimientosAll();
       },
       error: () => {},
       complete: () => {},
@@ -74,25 +81,71 @@ export class RequerimientosIndexComponent {
     this.generalService.getUsuariosAll().subscribe({
       next: (datosUSUARIOS: any) => {
         this.datosUSUARIOS = datosUSUARIOS;
-        this.requerimientosAll();
+
+        // Obtener la fecha seleccionada del formulario
+        const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
+        const fechaSeleccionadaFin = this.form.value.fechaventafin;
+        console.log(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+        // Asegurarse de que fechaSeleccionada no sea null ni undefined antes de llamar a sucursalesAll
+        if (
+          fechaSeleccionadaInicio !== null &&
+          fechaSeleccionadaInicio !== undefined &&
+          fechaSeleccionadaFin !== null &&
+          fechaSeleccionadaFin !== undefined
+        ) {
+          console.log(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+          this.requerimientosAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+        }
       },
       error: () => {},
       complete: () => {},
     });
   }
 
-  private requerimientosAll(): void {
+  form = this.fb.group({
+    fechaventainicio: ['', Validators.required],
+    fechaventafin: ['', Validators.required],
+  });
+
+  fechaVisual: any;
+  fechaVisualInicio: any;
+  fechaVisualFin: any;
+  fechaI: any;
+  fechaF: any;
+  resultadoMostrar: any;
+  private requerimientosAll(fechaInicio: string, fechaFin: string): void {
     this.requerimientosList = [];
     this.serialNumberArray = [];
+
+    this.fechaVisualInicio = this.datePipe.transform(fechaInicio, 'dd/MM/yyyy');
+    this.fechaVisualFin = this.datePipe.transform(fechaFin, 'dd/MM/yyyy');
+    this.fechaI =
+      this.datePipe.transform(fechaInicio, 'yyyy-MM-dd') + ' 00:00:00';
+    this.fechaF = this.datePipe.transform(fechaFin, 'yyyy-MM-dd') + ' 23:59.59';
+    console.log(this.fechaI, this.fechaF);
     this.generarRequerimientoService.getRequerimientosAll().subscribe({
       next: (datosREQUERIMIENTOS: any) => {
         this.datosREQUERIMIENTOS = datosREQUERIMIENTOS;
-        this.totalData = this.datosREQUERIMIENTOS.length;
 
-        if (datosREQUERIMIENTOS === 'no hay resultados') {
+        /* if (datosREQUERIMIENTOS === 'no hay resultados') {
+          this.totalData = 0;
+        } */
+        if (fechaInicio && fechaFin) {
+          this.resultadoMostrar = true;
+          console.log(this.resultadoMostrar);
+        }
+        const dataRequeFinal = this.datosREQUERIMIENTOS.filter(
+          (req: any) =>
+            req.requerimiento_fecha >= this.fechaI &&
+            req.requerimiento_fecha <= this.fechaF
+        );
+        if (dataRequeFinal) {
+          this.datosREQUERIMIENTOS = dataRequeFinal;
+          this.totalData = this.datosREQUERIMIENTOS.length;
+        }
+        if (dataRequeFinal.length === 0) {
           this.totalData = 0;
         }
-
         // Mapea los nombres de datos de ventas
         this.datosREQUERIMIENTOS = this.datosREQUERIMIENTOS.map(
           (requerimiento: Requerimientos) => {
@@ -115,8 +168,9 @@ export class RequerimientosIndexComponent {
             return requerimiento;
           }
         );
-
-        datosREQUERIMIENTOS.map((res: Requerimientos, index: number) => {
+        console.log(this.datosREQUERIMIENTOS);
+        console.log(this.totalData);
+        this.datosREQUERIMIENTOS.map((res: Requerimientos, index: number) => {
           const serialNumber = index + 1;
           if (index >= this.skip && serialNumber <= this.limit) {
             this.requerimientosList.push(res);
@@ -169,10 +223,19 @@ export class RequerimientosIndexComponent {
       this.limit -= this.pageSize;
       this.skip = this.pageSize * this.pageIndex;
     }
-    this.requerimientosAll();
+    const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
+    const fechaSeleccionadaFin = this.form.value.fechaventafin;
+    if (
+      fechaSeleccionadaInicio !== null &&
+      fechaSeleccionadaInicio !== undefined &&
+      fechaSeleccionadaFin !== null &&
+      fechaSeleccionadaFin !== undefined
+    ) {
+      this.requerimientosAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+    }
     this.dataSource = new MatTableDataSource<Requerimientos>(
       this.requerimientosList
-    ); // Agregar esta línea
+    );
   }
 
   public moveToPage(pageNumber: number): void {
@@ -184,7 +247,16 @@ export class RequerimientosIndexComponent {
     } else if (pageNumber < this.currentPage) {
       this.pageIndex = pageNumber + 1;
     }
-    this.requerimientosAll();
+    const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
+    const fechaSeleccionadaFin = this.form.value.fechaventafin;
+    if (
+      fechaSeleccionadaInicio !== null &&
+      fechaSeleccionadaInicio !== undefined &&
+      fechaSeleccionadaFin !== null &&
+      fechaSeleccionadaFin !== undefined
+    ) {
+      this.requerimientosAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+    }
   }
 
   public PageSize(): void {
@@ -192,7 +264,17 @@ export class RequerimientosIndexComponent {
     this.limit = this.pageSize;
     this.skip = 0;
     this.currentPage = 1;
-    this.requerimientosAll();
+    //
+    const fechaSeleccionadaInicio = this.form.value.fechaventainicio;
+    const fechaSeleccionadaFin = this.form.value.fechaventafin;
+    if (
+      fechaSeleccionadaInicio !== null &&
+      fechaSeleccionadaInicio !== undefined &&
+      fechaSeleccionadaFin !== null &&
+      fechaSeleccionadaFin !== undefined
+    ) {
+      this.requerimientosAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+    }
   }
 
   private calculateTotalPages(totalData: number, pageSize: number): void {
@@ -210,76 +292,56 @@ export class RequerimientosIndexComponent {
     }
   }
 
-  /* 
-  exportToExcel(): void {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Sheet1');
+  verFecha() {
+    const fechaInicio = this.datePipe.transform(
+      this.form.value.fechaventainicio,
+      'yyyy-MM-dd'
+    );
+    const fechaFin = this.datePipe.transform(
+      this.form.value.fechaventafin,
+      'yyyy-MM-dd'
+    );
 
-    // Estilo para los encabezados
-    const headerStyle = {
-      font: { bold: true, size: 12 },
-      fill: {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFFF00' }, // Color de fondo amarillo (puedes cambiarlo según tus preferencias)
-      } as ExcelJS.Fill,
-    };
-
-    // Agrega encabezados con estilo y asigna anchos
-    const headers = [
-      { header: 'ID', key: 'id', width: 10 },
-      { header: 'Fecha', key: 'fecha', width: 25 },
-      { header: 'Usuario', key: 'usuario', width: 30 },
-      { header: 'Proceso', key: 'proceso', width: 15 },
-      { header: 'Agencia', key: 'agencia', width: 40 },
-    ];
-
-    // Añade los encabezados en la siguiente fila
-    const headerRow = worksheet.addRow(headers.map((header) => header.header));
-    headerRow.height = 30; // Puedes ajustar la altura según tus preferencias
-    headerRow.eachCell((cell, colNumber) => {
-      cell.fill = headerStyle.fill;
-      cell.font = headerStyle.font;
-
-      // Configura el ancho de la columna
-      worksheet.getColumn(colNumber).width = headers[colNumber - 1].width;
-
-      // Centra el texto en la celda
-      cell.alignment = { vertical: 'middle', horizontal: 'center' };
-    });
-
-    // Agrega datos
-    this.requerimientosList.forEach((data) => {
-      const row = [
-        (this.currentPage - 1) * this.pageSize +
-          this.requerimientosList.indexOf(data) +
-          1,
-        data.requerimiento_fecha,
-        data.nombreUsuario,
-        data.requerimiento_proceso,
-        data.nombreSucursal,
-      ];
-      worksheet.addRow(row);
-    });
-
-    // Descargar el archivo Excel
-    workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
-      const blob = new Blob([data], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'table-export.xlsx';
-      a.click();
-      window.URL.revokeObjectURL(url);
-    });
+    if (
+      fechaInicio !== null &&
+      fechaInicio !== undefined &&
+      fechaFin !== null &&
+      fechaFin !== undefined
+    ) {
+      // Realizar la lógica de filtrado según el rango de fechas (fechaInicio y fechaFin)
+      this.requerimientosAll(fechaInicio, fechaFin);
+    }
   }
- */
 
   exportToExcel(): void {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sheet1');
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Agrega una fila para el título del reporte
+    const titleRow = worksheet.addRow([
+      'LISTA DE REQUERIMIENTOS DEL ' +
+        this.fechaVisualInicio +
+        ' AL ' +
+        this.fechaVisualFin,
+    ]);
+    titleRow.font = { bold: true, size: 16 };
+    titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
+    worksheet.mergeCells(`A${titleRow.number}:E${titleRow.number}`);
+    // Aplica estilo al fondo del título solo a las celdas combinadas
+    const titleRange = worksheet.getCell(`A${titleRow.number}`);
+    titleRange.border = {
+      top: { style: 'thin' },
+      left: { style: 'thin' },
+      bottom: { style: 'thin' },
+      right: { style: 'thin' },
+    };
+    titleRow.height = 40;
+    // Aplica estilo al fondo del título solo a las celdas combinadas
+    titleRange.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
+    };
 
     // Estilo para los encabezados
     const headerStyle = {
@@ -293,11 +355,11 @@ export class RequerimientosIndexComponent {
 
     // Agrega encabezados con estilo y asigna anchos
     const headers = [
-      { header: 'ID', key: 'id', width: 10 },
-      { header: 'Fecha', key: 'fecha', width: 25 },
-      { header: 'Usuario', key: 'usuario', width: 30 },
-      { header: 'Proceso', key: 'proceso', width: 20 },
-      { header: 'Agencia', key: 'agencia', width: 40 },
+      { header: 'ID', key: 'id' },
+      { header: 'Fecha', key: 'fecha' },
+      { header: 'Usuario', key: 'usuario' },
+      { header: 'Proceso', key: 'proceso' },
+      { header: 'Agencia', key: 'agencia' },
     ];
 
     // Ajusta la altura de la fila de encabezados
@@ -307,9 +369,6 @@ export class RequerimientosIndexComponent {
     headerRow.eachCell((cell, colNumber) => {
       cell.fill = headerStyle.fill;
       cell.font = headerStyle.font;
-
-      // Configura el ancho de la columna
-      worksheet.getColumn(colNumber).width = headers[colNumber - 1].width;
 
       // Centra el texto en la celda
       cell.alignment = { vertical: 'middle', horizontal: 'center' };
@@ -326,11 +385,10 @@ export class RequerimientosIndexComponent {
     });
 
     // Agrega datos
+    //(this.currentPage - 1) * this.pageSize + this.requerimientosList.indexOf(data) + 1;
     this.requerimientosList.forEach((data) => {
       const row = [
-        (this.currentPage - 1) * this.pageSize +
-          this.requerimientosList.indexOf(data) +
-          1,
+        +data.requerimiento_id,
         data.requerimiento_fecha,
         data.nombreUsuario,
         data.requerimiento_proceso,
@@ -357,9 +415,11 @@ export class RequerimientosIndexComponent {
       }; // ID
       excelRow.getCell(2).alignment = {
         vertical: 'middle',
+        horizontal: 'center',
       }; // FECHA
       excelRow.getCell(3).alignment = {
         vertical: 'middle',
+        horizontal: 'center',
       }; // USUARIO
       excelRow.getCell(4).alignment = {
         vertical: 'middle',
@@ -369,7 +429,16 @@ export class RequerimientosIndexComponent {
         vertical: 'middle',
         horizontal: 'center',
       }; // AGENCIA
+      const montoCell1 = excelRow.getCell(1);
+      montoCell1.numFmt = '#,##0'; // Formato de número
     });
+
+    // Ajustar el ancho de las columnas
+    worksheet.getColumn('A').width = 8; // Ancho de la columna A
+    worksheet.getColumn('B').width = 25; // Ancho de la columna B
+    worksheet.getColumn('C').width = 35; // Ancho de la columna C
+    worksheet.getColumn('D').width = 20; // Ancho de la columna D
+    worksheet.getColumn('E').width = 30; // Ancho de la columna E
 
     // Descargar el archivo Excel
     workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
@@ -379,7 +448,12 @@ export class RequerimientosIndexComponent {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'Lista de Requerimientos ' + this.fechaFormateada + '.xlsx';
+      a.download =
+        'Lista de Requerimientos del ' +
+        this.fechaVisualInicio +
+        ' al ' +
+        this.fechaVisualFin +
+        '.xlsx';
       a.click();
       window.URL.revokeObjectURL(url);
     });

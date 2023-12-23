@@ -23,3 +23,8 @@
     background-color: #2e37a4;
     color: #fff;
 }
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+}
