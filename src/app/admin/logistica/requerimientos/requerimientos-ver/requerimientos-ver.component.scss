@@ -1,0 +1,17 @@
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-color-type: #fff;
+    --bs-table-bg-type: #fffffff;
+}
+
+.invoices-form .form-control {
+    border: 1px solid #ffffff;
+    background-color: #ffffff;
+}
+
+.invoices-form .form-control.requerimiento {
+    border: 1px solid #e5e5e5;
+}
+
+.table.requerimientos>tbody>tr>td {
+    padding: 2px;
+}

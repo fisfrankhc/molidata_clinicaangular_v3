@@ -1,0 +1,265 @@
+<div class="page-wrapper">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>LOG&Iacute;STICA </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.logistica_stock">STOCK </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Lista</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card card-table show-entire">
+                    <div class="card-body">
+
+                        <!-- Table Header -->
+                        <div class="page-table-header mb-2">
+                            <div class="row align-items-center">
+                                <div class="col-12 col-md-6 col-xl-7">
+                                    <div class="doctor-table-blk">
+                                        <h3>Stock</h3>
+                                        <div class="doctor-search-blk">
+                                            <div class="top-nav-search table-search-blk">
+                                                <input class="form-control" placeholder="Escribe aqui"
+                                                    [(ngModel)]="searchDataValue"
+                                                    (ngModelChange)="searchData(searchDataValue)">
+                                                <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
+                                            </div>
+                                            <div class="add-group">
+                                                <!--                                                 <a [routerLink]="ruta.logistica_proveedor_nuevo"
+                                                    class="btn btn-primary add-pluss ms-2"><img
+                                                        src="assets/img/icons/plus.svg" alt=""></a> -->
+                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"
+                                                    (click)="actualizarStock()"><img src="assets/img/icons/re-fresh.svg"
+                                                        alt=""></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-5" style="padding: 5px;     margin-top: 10px;">
+                                    <form [formGroup]="form">
+                                        <div class="row">
+                                            <div class="col-12 col-md-6 offset-md-2 col-xl-6">
+                                                <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                    <label>SUCURSAL </label>
+                                                    <mat-select formControlName="sucursalid" class="form-control select"
+                                                        placeholder="Seleccione una sucursal">
+                                                        <mat-option *ngFor="let option of datosSUC"
+                                                            [value]="option.suc_id">
+                                                            {{option.suc_nombre}}
+                                                        </mat-option>
+                                                    </mat-select>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-2">
+                                                <div class="doctor-submit">
+                                                    <a type="submit" (click)="verSucursal()"
+                                                        class="btn btn-primary submit-list-form me-2">BUSCAR</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Table Header -->
+
+                        <div class="table-responsive">
+                            <table matSort (matSortChange)="sortData($event)"
+                                class="table border-0 custom-table comman-table datatable mb-0">
+                                <thead>
+                                    <tr>
+                                        <th mat-sort-header="checkbox">
+                                            <div class="form-check check-tables">
+                                                <input class="form-check-input" type="checkbox" value="something">
+                                            </div>
+                                        </th>
+                                        <th mat-sort-header="#">#</th>
+                                        <th mat-sort-header="almacen_id">CODIGO</th>
+                                        <th mat-sort-header="producto_id">PRODUCTO</th>
+                                        <th mat-sort-header="cantidad">STOCK</th>
+                                        <th mat-sort-header="stock_minimo">STOCK MIN.</th>
+                                        <th mat-sort-header="unidad_medida">UNIDAD MEDIDA</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let data of stockList; let i = index">
+                                        <td>
+                                            <div class="form-check check-tables">
+                                                <input class="form-check-input" type="checkbox" value="">
+                                            </div>
+                                        </td>
+                                        <td class="profile-image">{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                                        <td>{{data.codigoProducto}}</td>
+                                        <td>{{data.nombreProducto}}</td>
+                                        <td>{{data.cantidad}}</td>
+                                        <td>{{data.stock_minimo}}</td>
+                                        <td>{{data.nombreMedida}}</td>
+                                        <td class="text-end">
+                                            <div class="dropdown dropdown-action">
+                                                <a href="javascript:void(0);" class="action-icon dropdown-toggle"
+                                                    data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                        class="fa fa-ellipsis-v"></i></a>
+                                                <div class="dropdown-menu dropdown-menu-end">
+                                                    <!-- <a class="dropdown-item"
+                                                        [routerLink]="['./editar', data.stock_id]"><i
+                                                            class="fa-solid fa-pen-to-square m-r-5"></i> EDITAR STOCK
+                                                        MIN.</a> -->
+                                                        <a class="dropdown-item edit-link" (click)="openEditModal(data)" data-bs-toggle="modal" data-bs-target="#modal_stock" style="cursor: pointer;">
+                                                            <i class="fa-solid fa-pen-to-square m-r-5"></i> EDITAR STOCK MIN.
+                                                        </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="table_footer">
+                                <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info">
+                                        Mostrando de {{ serialNumberArray[0] }} a
+                                        {{ serialNumberArray[serialNumberArray.length - 1] }} de
+                                        {{ totalData }} registros
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 col-md-7">
+                                    <div class="pagination_section">
+                                        <ul class="pagination">
+                                            <li class="page-item" [ngClass]="{
+                                          disabled: currentPage === 1
+                                        }">
+                                                <a (click)="getMoreData('previous')" class="page-link"
+                                                    href="javascript:void(0);" tabindex="-1">Previous</a>
+                                            </li>
+
+                                            <ng-container *ngFor="let item of pageNumberArray; let i = index">
+                                                <li class="page-item" [class.active]="item === currentPage" [ngClass]="
+                                            (pageNumberArray[currentPage - 2] > item &&
+                                              item !== 1 &&
+                                              pageNumberArray.length > 6) ||
+                                            (pageNumberArray[currentPage] < item &&
+                                              item !== 1 &&
+                                              pageNumberArray.length > 6 &&
+                                              pageNumberArray.length !== item)
+                                              ? 'hide-page-no'
+                                              : 'show-page-no'
+                                          ">
+                                                    <a (click)="moveToPage(item)" class="page-link"
+                                                        href="javascript:void(0);">
+                                                        {{ item }}
+                                                    </a>
+                                                </li>
+                                                <li class="page-item" *ngIf="
+                                            i === 0 &&
+                                            pageNumberArray.length > 6 &&
+                                            currentPage > 2
+                                          " [hidden]="currentPage === 1" (click)="moveToPage(currentPage - 2)">
+                                                    <a class="page-link" href="javascript:void(0);">
+                                                        ...
+                                                    </a>
+                                                </li>
+                                                <li *ngIf="
+                                            i === pageNumberArray.length - 2 &&
+                                            pageNumberArray.length > 6
+                                          " [hidden]="
+                                            currentPage >=
+                                              pageNumberArray[pageNumberArray.length - 2] ||
+                                            totalData <
+                                              serialNumberArray[serialNumberArray.length - 1]
+                                          " class="page-item" (click)="moveToPage(currentPage + 2)">
+                                                    <a class="page-link" href="javascript:void(0);">
+                                                        ...
+                                                    </a>
+                                                </li>
+                                            </ng-container>
+
+                                            <li class="page-item" [ngClass]="{
+                                          disabled:
+                                            currentPage ===
+                                              pageNumberArray[pageNumberArray.length - 1] ||
+                                              stockList.length === 0
+                                        }">
+                                                <a (click)="getMoreData('next')" class="page-link"
+                                                    href="javascript:void(0);">Next
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form class="invoices-form" [formGroup]="form2" (ngSubmit)="updatedStock()">
+            <!-- Save Invoices Modal -->
+            <div class="modal custom-modal fade" id="modal_stock" role="dialog">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="form-header">
+                                <h3>EDITAR STOCK MINIMO</h3>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <input type="hidden" formControlName="idstock">
+                                        <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                            <label style="position: initial;">PRODUCTO: <span
+                                                    class="login-danger">*</span></label>
+                                            <input class="form-control" style="text-align: center; background-color: rgba(87,87,87,0.2);"
+                                                formControlName="productoNombre" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                            <label style="position: initial;">STOCK: <span
+                                                    class="login-danger">*</span></label>
+                                            <input class="form-control" style="text-align: center; background-color: rgba(87,87,87,0.2);"
+                                                formControlName="stock" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-group local-forms" style="margin-bottom: 15px;">
+                                            <label style="position: initial;">STOCK MINIMO: <span
+                                                    class="login-danger">*</span></label>
+                                            <input class="form-control" type="number" step="1"  style="text-align: center;"
+                                                formControlName="stockMinimo" >
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-btn delete-action">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                            class="btn btn-primary paid-cancel-btn">Cancelar</a>
+                                    </div>
+                                    <div class="col-6">
+                                        <button type="submit" [disabled]="form.invalid"
+                                            data-bs-dismiss="modal" class="btn btn-primary paid-continue-btn"
+                                            style="width: 100%;">GUARDAR</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Save Invoices Modal -->
+        </form>
+    </div>
+</div>

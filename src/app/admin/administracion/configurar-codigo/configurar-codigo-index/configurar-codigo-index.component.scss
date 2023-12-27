@@ -1,0 +1,10 @@
+.conf-codigo {
+    background-color: #ffffff;
+    transition: background 2s ease;
+    /* Transición suave para un efecto más agradable */
+}
+
+.conf-codigo:hover {
+    background: linear-gradient(to top, #2e37a41f, rgba(0, 0, 0, 0));
+    /* Degradado para el hover */
+}

@@ -1,0 +1,245 @@
+<div class="page-wrapper">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>CONTABLE </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventassucursal">Reporte de
+                                Ventas por Sucursal</a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_reporteventassucursal_pagadas">Ventas
+                                Concretadas</a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Lista</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card card-table show-entire">
+                    <div class="card-body">
+
+                        <!-- Table Header -->
+                        <div class="page-table-header mb-2">
+                            <div class="row align-items-center">
+                                <div class="col-12 col-md-6 col-xl-6">
+                                    <div class="doctor-table-blk">
+                                        <div>
+                                            <h3>Reporte de Ventas Concretadas x Sucursal</h3>
+                                            <span style="font-size: 12px;">Fecha: <span
+                                                    *ngIf="resultadoMostrar"><b>{{this.fechaVisualInicio}}</b> al
+                                                    <b>{{this.fechaVisualFin}}</b></span></span>
+                                        </div>
+                                        <div class="doctor-search-blk">
+                                            <div class="top-nav-search table-search-blk">
+                                                <input class="form-control" placeholder="Escribe aqu&iacute;"
+                                                    [(ngModel)]="searchDataValue"
+                                                    (ngModelChange)="searchData(searchDataValue)">
+                                                <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
+                                            </div>
+                                            <div class="add-group">
+                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"><img
+                                                        src="assets/img/icons/re-fresh.svg" alt=""></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-xl-5">
+                                    <form [formGroup]="form" (ngSubmit)="verFecha()">
+                                        <div class="row" style="display: flex;flex-wrap: wrap; align-items: center;">
+                                            <div class="col-12 col-md-6 col-xl-4">
+                                                <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                    <label>DE: <span style="font-size: 10px;">MM/DD/YYYY</span></label>
+                                                    <input class="form-control datetimepicker" type="text"
+                                                        formControlName="fechaventainicio" matInput
+                                                        [matDatepicker]="picker1">
+                                                    <mat-datepicker #picker1></mat-datepicker>
+                                                    <mat-datepicker-toggle matIconSuffix
+                                                        [for]="picker1"></mat-datepicker-toggle>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-4">
+                                                <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                    <label>HASTA: <span
+                                                            style="font-size: 10px;">MM/DD/YYYY</span></label>
+                                                    <input class="form-control datetimepicker" type="text"
+                                                        formControlName="fechaventafin" matInput
+                                                        [matDatepicker]="picker2">
+                                                    <mat-datepicker #picker2></mat-datepicker>
+                                                    <mat-datepicker-toggle matIconSuffix
+                                                        [for]="picker2"></mat-datepicker-toggle>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-xl-3">
+                                                <div class="doctor-submit">
+                                                    <button type="submit" [disabled]="form.invalid"
+                                                        class="btn btn-primary submit-list-form me-2">Buscar</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="col-1 text-end float-end ms-auto download-grp">
+                                    <a (click)="exportToExcel()" href="javascript:;"
+                                        [class.disabled]="!resultadoMostrar"><img src="assets/img/icons/pdf-icon-04.svg"
+                                            alt=""><span style="font-size: 10px;">Reporte</span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Table Header -->
+
+                        <div class="table-responsive">
+                            <table matSort (matSortChange)="sortData($event)"
+                                class="table border-0 custom-table comman-table datatable mb-0">
+                                <thead>
+                                    <tr>
+                                        <th mat-sort-header="checkbox">
+                                            <div class="form-check check-tables">
+                                                <input class="form-check-input" type="checkbox" value="something">
+                                            </div>
+                                        </th>
+                                        <th mat-sort-header="sucursal_id">SUCURSAL</th>
+                                        <th mat-sort-header="venta_fecha_inicio">FECHA INICIO</th>
+                                        <th mat-sort-header="venta_fecha_fin">FECHA FIN</th>
+                                        <th mat-sort-header="monto_pago">MONTO</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngIf="resultadoMostrar; else noResults">
+                                        <tr *ngFor="let data of sucursalVentasList">
+                                            <td>
+                                                <div class="form-check check-tables">
+                                                    <input class="form-check-input" type="checkbox" value="">
+                                                </div>
+                                            </td>
+                                            <td>{{ data.suc_nombre }}</td>
+                                            <td>{{ data.fechaBusquedaInicio | date: 'dd-MM-yyyy' }}</td>
+                                            <td>{{ data.fechaBusquedaFin | date: 'dd-MM-yyyy' }}</td>
+                                            <td>{{ data.montotal | number:'1.2-2' }} </td>
+                                            <td class="text-end">
+                                                <div class="dropdown dropdown-action">
+                                                    <a href="javascript:void(0);" class="action-icon dropdown-toggle"
+                                                        data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                            class="fa fa-ellipsis-v"></i></a>
+                                                    <div class="dropdown-menu dropdown-menu-end">
+                                                        <a class="dropdown-item vista"
+                                                            [routerLink]="['./ver', data.suc_id, data.fechaBusquedaInicio, data.fechaBusquedaFin ]"><i
+                                                                class="fa-solid fa-pen-to-square m-r-5"></i> VER
+                                                            DETALLE</a>
+                                                        <a class="dropdown-item vista" (click)="ventasExcelAll(data.suc_id, data.suc_nombre, data.fechaBusquedaInicio, data.fechaBusquedaFin)"><i class="fa fa-file-excel"
+                                                                aria-hidden="true"></i> &nbsp; REPORTE POR PRODUCTOS</a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <!-- <td class="text-end">
+                                                <a type="button" class="btn btn-outline-primary"
+                                                    [routerLink]="['./ver', data.suc_id, data.fechaBusquedaInicio, data.fechaBusquedaFin ]"><i
+                                                        class="fa fa-eye" aria-hidden="true"></i>
+                                                    Ver</a>
+                                            </td> -->
+                                        </tr>
+                                    </ng-container>
+                                    <ng-template #noResults>
+                                        <tr>
+                                            <td colspan="5" class="text-center">Especifique un rango de fecha</td>
+                                        </tr>
+                                    </ng-template>
+                                </tbody>
+                            </table>
+
+                            <div class="table_footer">
+                                <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info">
+                                        Mostrando de {{ serialNumberArray[0] }} a
+                                        {{ serialNumberArray[serialNumberArray.length - 1] }} de
+                                        {{ totalData }} registros
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 col-md-7">
+                                    <div class="pagination_section">
+                                        <ul class="pagination">
+                                            <li class="page-item" [ngClass]="{
+                                                                      disabled: currentPage === 1
+                                                                    }">
+                                                <a (click)="getMoreData('previous')" class="page-link"
+                                                    href="javascript:void(0);" tabindex="-1">Previous</a>
+                                            </li>
+
+                                            <ng-container *ngFor="let item of pageNumberArray; let i = index">
+                                                <li class="page-item" [class.active]="item === currentPage" [ngClass]="
+                                                                        (pageNumberArray[currentPage - 2] > item &&
+                                                                          item !== 1 &&
+                                                                          pageNumberArray.length > 6) ||
+                                                                        (pageNumberArray[currentPage] < item &&
+                                                                          item !== 1 &&
+                                                                          pageNumberArray.length > 6 &&
+                                                                          pageNumberArray.length !== item)
+                                                                          ? 'hide-page-no'
+                                                                          : 'show-page-no'
+                                                                      ">
+                                                    <a (click)="moveToPage(item)" class="page-link"
+                                                        href="javascript:void(0);">
+                                                        {{ item }}
+                                                    </a>
+                                                </li>
+                                                <li class="page-item" *ngIf="
+                                                                        i === 0 &&
+                                                                        pageNumberArray.length > 6 &&
+                                                                        currentPage > 2
+                                                                      " [hidden]="currentPage === 1"
+                                                    (click)="moveToPage(currentPage - 2)">
+                                                    <a class="page-link" href="javascript:void(0);">
+                                                        ...
+                                                    </a>
+                                                </li>
+                                                <li *ngIf="
+                                                                        i === pageNumberArray.length - 2 &&
+                                                                        pageNumberArray.length > 6
+                                                                      " [hidden]="
+                                                                        currentPage >=
+                                                                          pageNumberArray[pageNumberArray.length - 2] ||
+                                                                        totalData <
+                                                                          serialNumberArray[serialNumberArray.length - 1]
+                                                                      " class="page-item"
+                                                    (click)="moveToPage(currentPage + 2)">
+                                                    <a class="page-link" href="javascript:void(0);">
+                                                        ...
+                                                    </a>
+                                                </li>
+                                            </ng-container>
+
+                                            <li class="page-item" [ngClass]="{
+                                                                      disabled:
+                                                                        currentPage ===
+                                                                          pageNumberArray[pageNumberArray.length - 1] ||
+                                                                          sucursalVentasList.length === 0
+                                                                    }">
+                                                <a (click)="getMoreData('next')" class="page-link"
+                                                    href="javascript:void(0);">Next
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

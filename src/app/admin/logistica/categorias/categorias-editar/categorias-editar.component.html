@@ -1,0 +1,85 @@
+<div class="page-wrapper">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>LOG&Iacute;STICA </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.logistica_categoria">CATEGORIAS </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Editar Categor&iacute;a</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card">
+                    <div class="card-body" *ngIf="datoCategoria">
+                        <form [formGroup]="form"  (ngSubmit)="actualizarCategoria()">
+
+                            <div class="row" >
+                                <div class="col-12">
+                                    <div class="form-heading">
+                                        <h4>Información de la Categor&iacute;a</h4>
+                                        <h2></h2>
+                                    </div>
+                                </div>
+                                <input class="form-control" formControlName="id" type="hidden">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="form-group local-forms">
+                                            <label>NOMBRE <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="nombre" (input)="transformarAMayusculasNombre($event)" type="text" [ngClass]="{
+                        'is-invalid': f['nombre'].touched && f['nombre'].invalid
+                      }">
+                                            <div *ngIf="f['nombre'].touched && f['nombre'].invalid"
+                                                class="invalid-feedback">
+                                                <div *ngIf="f['nombre'].errors && f['nombre'].errors['required']">
+                                                    Es necesario que asigne un nombre a la categor&iacute;a.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-sm-12">
+                                        <div class="form-group local-forms">
+                                            <label>DESCRIPCI&Oacute;N <span class="login-danger">*</span></label>
+                                            <textarea class="form-control" formControlName="descripcion" (input)="transformarAMayusculasDescripcion($event)" rows="3"
+                                                cols="30" [ngClass]="{
+                        'is-invalid':
+                          f['descripcion'].touched && f['descripcion'].invalid
+                      }"></textarea>
+                                            <div *ngIf="f['descripcion'].touched && f['descripcion'].invalid"
+                                                class="invalid-feedback">
+                                                <div
+                                                    *ngIf="f['descripcion'].errors && f['descripcion'].errors['required']">
+                                                    Campo "descripcion" esta vac&iacute;o.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="doctor-submit text-end">
+                                        <button type="submit" class="btn btn-primary submit-form me-2"
+                                            [disabled]="form.invalid">ACTUALIZAR</button>
+                                        <a class="btn btn-primary cancel-form"
+                                            [routerLink]="ruta.logistica_categoria">Cancelar</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,107 @@
+<div class="page-wrapper">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>CONTABLE </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_asignacionserie">ASIGNACION DE SERIE
+                            </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Nueva Serie</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card">
+                    <div class="card-body">
+                        <form [formGroup]="form" (ngSubmit)="registrarSerie()">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-heading">
+                                        <h4>Detallar nuevo serie</h4>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-12 col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>SELECCIONE UNA SEDE: <span class="login-danger">*</span></label>
+                                            <mat-select formControlName="sede" class="form-control select"
+                                                placeholder="Seleccione">
+                                                <mat-option *ngFor="let option of sucursales" [value]="option.suc_id">
+                                                    {{option.suc_nombre}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-12 col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>TIPO DE COMPROBANTE: <span class="login-danger">*</span></label>
+                                            <mat-select formControlName="tipo" class="form-control select"
+                                                placeholder="Seleccione">
+                                                <mat-option *ngFor="let option of comprobantesTipos"
+                                                    [value]="option.tipo_id ">
+                                                    {{option.tipo_nombre}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="form-group local-forms">
+                                            <label>NUMERO DE SERIE: <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="serie" type="string"
+                                                placeholder="" [ngClass]="{
+                        'is-invalid': f['serie'].touched && f['serie'].invalid
+                      }">
+                                            <div *ngIf="f['serie'].touched && f['serie'].invalid"
+                                                class="invalid-feedback">
+                                                <div *ngIf="f['serie'].errors && f['serie'].errors['required']">
+                                                    Es necesario que asigne una serie.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="form-group local-forms">
+                                            <label>NUMERO: <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="numero" type="number"
+                                                placeholder="" [ngClass]="{
+                        'is-invalid': f['numero'].touched && f['numero'].invalid
+                      }">
+                                            <div *ngIf="f['numero'].touched && f['numero'].invalid"
+                                                class="invalid-feedback">
+                                                <div *ngIf="f['numero'].errors && f['numero'].errors['required']">
+                                                    Es necesario que asigne un numero.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="doctor-submit text-end">
+                                        <button class="btn btn-primary submit-form me-2"
+                                            [disabled]="form.invalid">REGISTRAR
+                                            SERIE</button>
+                                        <a class="btn btn-primary cancel-form"
+                                            [routerLink]="ruta.logistica_producto">Cancelar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
