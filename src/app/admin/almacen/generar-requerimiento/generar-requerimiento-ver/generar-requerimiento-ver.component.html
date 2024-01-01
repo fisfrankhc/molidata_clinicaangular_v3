@@ -50,8 +50,35 @@
                                         <input type="hidden" formControlName="idsucursal_origen">
                                         <div class="col-12 col-md-6 col-xl-3">
                                             <div class="form-group local-forms">
-                                                <label>SUCURSAL </label>
+                                                <label>SUCURSAL: </label>
                                                 <input class="form-control" formControlName="sucursal_origen"
+                                                    style="background-color: #ffffff; border: 0;" type="text" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-2">
+                                            <div class="form-group local-forms">
+                                                <label>ESTADO: </label>
+                                                <!-- <input class="form-control" formControlName="estado"
+                                                    style="background-color: #ffffff; border: 0;" type="text" readonly> -->
+                                                <!-- Mostrar etiqueta según el valor de estado -->
+                                                <span
+                                                    *ngIf="datoREQUERIMIENTO[0]['requerimiento_proceso'] === 'SOLICITUD'"
+                                                    class="badge badge-secondary"
+                                                    style="height: 30px; margin: 15px 0 0 12px; padding: 8px 15px; background-color: gray;">{{datoREQUERIMIENTO[0]['requerimiento_proceso']}}</span>
+                                                <span
+                                                    *ngIf="datoREQUERIMIENTO[0]['requerimiento_proceso'] === 'REVISADO'"
+                                                    class="badge badge-warning"
+                                                    style="height: 30px; margin: 15px 0 0 12px; padding: 8px 15px;">{{datoREQUERIMIENTO[0]['requerimiento_proceso']}}</span>
+                                                <span
+                                                    *ngIf="datoREQUERIMIENTO[0]['requerimiento_proceso'] === 'ATENDIDO'"
+                                                    class="badge badge-success"
+                                                    style="height: 30px; margin: 15px 0 0 12px; padding: 8px 15px;">{{datoREQUERIMIENTO[0]['requerimiento_proceso']}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-3">
+                                            <div class="form-group local-forms">
+                                                <label>OBSERVACIONES: </label>
+                                                <input class="form-control" formControlName="observaciones"
                                                     style="background-color: #ffffff; border: 0;" type="text" readonly>
                                             </div>
                                         </div>
@@ -71,7 +98,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                             <tr class="add-row"
+                                            <tr class="add-row"
                                                 *ngFor="let producto of datosProductosDetalle; let i = index">
                                                 <td style="width: 70px;">
                                                     <input type="hidden" class="form-control"
@@ -91,7 +118,8 @@
                                                         style="background-color: var(--bs-secondary-bg);" readonly>
                                                 </td>
                                                 <td style="max-width: 100px;">
-                                                    <input type="text" class="form-control" [value]="producto.requerimiento_cantidad"
+                                                    <input type="text" class="form-control"
+                                                        [value]="producto.requerimiento_cantidad"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>

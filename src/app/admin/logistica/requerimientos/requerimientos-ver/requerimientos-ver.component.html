@@ -21,12 +21,22 @@
             <div class="col-md-12">
                 <div class="card invoices-add-card">
                     <div class="card-body">
-                        <form class="invoices-form" [formGroup]="form" >
+                        <form class="invoices-form" [formGroup]="form">
                             <div class="invoices-main-form" style="margin-bottom: 8px; padding-bottom: 0px;">
                                 <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-12 col-md-auto">
                                         <div class="form-heading">
-                                            <h4>Detalles del Requerimiento</h4>
+                                            <h4 style="margin-bottom: 15px;">Detalles del Requerimiento</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-3"
+                                        style="top: -12px; position: relative; margin-bottom: 10px;">
+                                        <div class="form-group mb-0">
+                                            <a href="javascript:void(0);" data-bs-toggle="modal"
+                                                data-bs-target="#pasa_a_ser_cancelada"
+                                                class="btn btn-primary save-invoice-btn" style="margin: 5px;">
+                                                ATENDER REQUERIMIENTO
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -48,22 +58,14 @@
                                         </div>
                                         <input type="hidden" formControlName="idsucursal_origen">
                                         <div class="col-12 col-md-6 col-xl-3">
-                                            <div class="form-group local-forms">
+                                            <div class="form-group local-forms" style="margin-bottom: 10px;">
                                                 <label>SUCURSAL </label>
                                                 <input class="form-control" formControlName="sucursal_origen"
                                                     style="background-color: #ffffff; border: 0;" type="text" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-xl-3">
-                                            <div class="form-group mb-0">
-                                                <a href="javascript:void(0);" data-bs-toggle="modal"
-                                                    data-bs-target="#pasa_a_ser_cancelada"
-                                                    class="btn btn-primary save-invoice-btn" style="margin: 5px;">
-                                                    ATENDER REQUERIMIENTO
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="col-2 text-end float-end ms-auto download-grp">
+                                        <div class="col-12 col-md-6 col-xl-2 text-center float-end ms-auto download-grp"
+                                            style="padding: 0px 15px 15px 15px;">
                                             <a (click)="exportToExcel()" href="javascript:;"><img
                                                     src="assets/img/icons/pdf-icon-04.svg" alt=""><span
                                                     style="font-size: 10px;">Descargar reporte</span></a>
@@ -145,7 +147,8 @@
                                                             <label style="position: initial;">Estado del requerimiento:
                                                                 <span class="login-danger">*</span></label>
                                                             <mat-select formControlName="proceso"
-                                                                class="form-control select requerimiento" placeholder="Seleccione">
+                                                                class="form-control select requerimiento"
+                                                                placeholder="Seleccione">
                                                                 <mat-option
                                                                     *ngFor="let option of selectedListRequerimiento"
                                                                     [value]="option.value">
@@ -167,9 +170,10 @@
                                                             <div class="col-12 col-md-6 col-xl-2">
                                                                 <div class="form-check" style="text-align: justify;">
                                                                     <input class="form-check-input" type="radio"
-                                                                        formControlName="radioDecision" id="exampleRadios1"
-                                                                        value="NO">
-                                                                    <label class="form-check-label" for="exampleRadios1">
+                                                                        formControlName="radioDecision"
+                                                                        id="exampleRadios1" value="NO">
+                                                                    <label class="form-check-label"
+                                                                        for="exampleRadios1">
                                                                         NO
                                                                     </label>
                                                                 </div>
@@ -177,19 +181,25 @@
                                                             <div class="col-12 col-md-6 col-xl-2">
                                                                 <div class="form-check" style="text-align: justify;">
                                                                     <input class="form-check-input" type="radio"
-                                                                        formControlName="radioDecision" id="exampleRadios2"
-                                                                        value="SI">
-                                                                    <label class="form-check-label" for="exampleRadios2">
+                                                                        formControlName="radioDecision"
+                                                                        id="exampleRadios2" value="SI">
+                                                                    <label class="form-check-label"
+                                                                        for="exampleRadios2">
                                                                         SI
                                                                     </label>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-12" *ngIf="form.get('atencionRequerimiento.radioDecision')?.value === 'SI'">
-                                                        <div class="form-group local-forms" style="margin-bottom: 15px;">
-                                                            <label style="position: initial;">Observaciones: <span class="login-danger">*</span></label>
-                                                            <input class="form-control requerimiento" style="text-align: center;" formControlName="observaciones">
+                                                    <div class="col-12"
+                                                        *ngIf="form.get('atencionRequerimiento.radioDecision')?.value === 'SI'">
+                                                        <div class="form-group local-forms"
+                                                            style="margin-bottom: 15px;">
+                                                            <label style="position: initial;">Observaciones: <span
+                                                                    class="login-danger">*</span></label>
+                                                            <input class="form-control requerimiento"
+                                                                style="text-align: center;"
+                                                                formControlName="observaciones">
                                                         </div>
                                                     </div>
                                                 </div>

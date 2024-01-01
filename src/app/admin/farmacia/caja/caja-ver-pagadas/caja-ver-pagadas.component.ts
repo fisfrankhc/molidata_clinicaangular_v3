@@ -16,6 +16,8 @@ import { MediosPagoService } from 'src/app/shared/services/farmacia/caja/medios-
 import { OperacionService } from 'src/app/shared/services/farmacia/caja/operacion.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 import { GeneralService } from 'src/app/shared/services/general.service';
+import { ComprobanteTipoService } from 'src/app/shared/services/contable/asignacion-serie/comprobante-tipo.service';
+import { ComprobanteNumeracionService } from 'src/app/shared/services/contable/asignacion-serie/comprobante-numeracion.service';
 
 import { jsPDF } from 'jspdf';
 import { DatePipe } from '@angular/common';
@@ -46,7 +48,9 @@ export class CajaVerPagadasComponent implements OnInit {
     public operacionService: OperacionService,
     private datePipe: DatePipe,
     public medidaService: MedidaService,
-    public generalService: GeneralService
+    public generalService: GeneralService,
+    private comprobanteTipoService: ComprobanteTipoService,
+    private comprobanteNumeracionService: ComprobanteNumeracionService
   ) {}
   ventaId: number | null = null;
   public ruta = rutas;
@@ -63,6 +67,8 @@ export class CajaVerPagadasComponent implements OnInit {
     this.clientesAll();
     this.productosAll();
     this.medidasAll();
+    this.comprobantesNumeracionAll();
+    this.comprobantesTiposAll();
 
     this.mediosPagoService.getMediosPagoAll().subscribe((data: any) => {
       this.mediosPago = data;
@@ -126,6 +132,27 @@ export class CajaVerPagadasComponent implements OnInit {
     });
   }
 
+  datosComproNumeracion: any;
+  comprobantesNumeracionAll(): void {
+    this.comprobanteNumeracionService.getComprobanteNumeracionAll().subscribe({
+      next: (response: any) => {
+        this.datosComproNumeracion = response;
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
+  datosTiposComp: any;
+  comprobantesTiposAll(): void {
+    this.comprobanteTipoService.getComprobanteTiposAll().subscribe({
+      next: (response: any) => {
+        this.datosTiposComp = response;
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
+
   datoVenta: any = {};
   clienteTipoDocumento: string = '';
   ventaDetalle(ventaId: any) {
@@ -153,6 +180,23 @@ export class CajaVerPagadasComponent implements OnInit {
             this.clienteTipoDocumento = cliente.tipo_documento; //PARA VALIDAR DNI O RUC
           }
         }
+
+        const compNumeracion = this.datosComproNumeracion.filter(
+          (cnum: any) => cnum.sede_id === this.datoVenta[0]['sucursal_id']
+        );
+        if (compNumeracion) {
+          compNumeracion.forEach((datacompnum: any) => {
+            if (datacompnum.comprobante_tipo === '1') {
+              this.BSerie = datacompnum.serie;
+              this.BNumero = datacompnum.numero;
+            } else if (datacompnum.comprobante_tipo === '2') {
+              this.FSerie = datacompnum.serie;
+              this.FNumero = datacompnum.numero;
+            }
+          });
+        }
+
+        console.log(compNumeracion);
 
         this.form
           .get('clienteDetalle.id')
@@ -375,7 +419,12 @@ export class CajaVerPagadasComponent implements OnInit {
     }
   }
 
-  generarBOLETA() {
+  BSerie: any;
+  BNumero: any;
+  FSerie: any;
+  FNumero: any;
+
+  generarBOLETAA4() {
     const pdf = new jsPDF({
       unit: 'mm',
       format: 'a4',
@@ -383,7 +432,30 @@ export class CajaVerPagadasComponent implements OnInit {
     });
 
     // Obtén el contenido del div
-    const contenidoDiv = document.getElementById('boletaEmitir');
+    const contenidoDiv = document.getElementById('boletaA4Emitir');
+
+    // Verifica que el div exista antes de continuar
+    if (contenidoDiv) {
+      pdf.html(contenidoDiv, {
+        callback: (pdf) => {
+          // Guarda el PDF después de cargar el contenido
+          pdf.output('dataurlnewwindow');
+        },
+      });
+    } else {
+      console.error('Elemento no encontrado:', contenidoDiv);
+    }
+  }
+
+  generarBOLETATicket() {
+    const pdf = new jsPDF({
+      unit: 'mm',
+      format: 'a7',
+      orientation: 'portrait',
+    });
+
+    // Obtén el contenido del div
+    const contenidoDiv = document.getElementById('boletaTicketEmitir');
 
     // Verifica que el div exista antes de continuar
     if (contenidoDiv) {

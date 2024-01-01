@@ -137,10 +137,42 @@
                                         <div class="modal-body">
                                             <div class="form-header">
                                                 <h2>¿Que desea emitir?</h2>
-                                                <a href="javascript:void(0);" (click)="generarBOLETA()"
-                                                    class="btn btn-outline-info"
-                                                    style="width: 100%; padding: 10px 20px; margin: 5px;">Boleta
-                                                    Electr&oacute;nica</a>
+                                                <div class="accordion accordion-flush" id="accordionFlushExample"
+                                                    style="border: 2px solid #2e37a4;">
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#flush-collapseOne"
+                                                                aria-expanded="false" aria-controls="flush-collapseOne">
+                                                                <span style="right: -30%; position: relative;">Boleta
+                                                                    Electr&oacute;nica</span>
+                                                            </button>
+                                                        </h2>
+                                                        <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                                            data-bs-parent="#accordionFlushExample">
+                                                            <div class="accordion-body">
+                                                                <div class="row">
+                                                                    <div class="col-12 col-lg-6">
+                                                                        <a href="javascript:void(0);"
+                                                                            (click)="generarBOLETAA4()"
+                                                                            class="btn btn-outline-primary"
+                                                                            style="width: 100%; padding: 10px 20px; margin: 5px;">Formato
+                                                                            A4</a>
+                                                                    </div>
+                                                                    <div class="col-12 col-lg-6">
+                                                                        <a href="javascript:void(0);"
+                                                                            (click)="generarBOLETATicket()"
+                                                                            class="btn btn-outline-secondary"
+                                                                            style="width: 100%; padding: 10px 20px; margin: 5px;">Formato
+                                                                            Ticket</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 <button *ngIf="clienteTipoDocumento === 'RUC'" type="button"
                                                     class="btn btn-outline-dark"
                                                     style="width: 100%; padding: 10px 20px; margin: 5px;">Factura
@@ -148,15 +180,15 @@
                                             </div>
                                             <div class="modal-btn delete-action">
                                                 <div class="row">
-                                                    <div class="col-6">
+                                                    <div class="col-auto" style="margin: 0 auto;">
                                                         <a href="javascript:void(0);" data-bs-dismiss="modal"
-                                                            class="btn btn-primary paid-cancel-btn">Cancelar</a>
+                                                            class="btn btn-primary paid-cancel-btn">SALIR</a>
                                                     </div>
-                                                    <div class="col-6">
+                                                    <!--                                                     <div class="col-6">
                                                         <button type="submit" data-bs-dismiss="modal"
                                                             class="btn btn-primary paid-continue-btn"
                                                             style="width: 100%;">EMITIR</button>
-                                                    </div>
+                                                    </div> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -164,12 +196,12 @@
                                 </div>
                             </div>
                             <!-- /Modal Pregunta de Emitir -->
-                            <!-- Modal Boleta -->
+                            <!-- Modal Boleta A4-->
                             <div class="modal custom-modal fade" id="boletaElectronica" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-body">
-                                            <div id="boletaEmitir" style="text-align: center">
+                                            <div id="boletaA4Emitir" style="text-align: center">
                                                 <div class="row"
                                                     style="padding-top: 5px; padding-left: 20px; width: 220px; padding-bottom: 5px; padding-right: 5px;">
                                                     <table *ngIf="datosEMP">
@@ -234,7 +266,8 @@
                                                                                     ELECTR&Oacute;NICA</td>
                                                                             </tr>
                                                                             <tr>
-                                                                                <td style="border: none; ">N° B002-46
+                                                                                <td style="border: none; ">N°
+                                                                                    {{this.BSerie}}-{{this.BNumero}}
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>
@@ -378,7 +411,130 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- /Modal Boleta -->
+                            <!-- /Modal Boleta A4-->
+                            <!-- Modal Boleta Ticket -->
+                            <div class="modal custom-modal fade" id="ticket" role="dialog">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <div id="boletaTicketEmitir" style="letter-spacing: 0.012em; width: 74px">
+                                                <div *ngIf="datosEMP"
+                                                    style="text-align: center; padding-top: 2px; font-size: 2px;">
+                                                    <img src="assets/img/logo.png" width="5" height="5" alt="">
+                                                    <br><span style="top: -0.6em; position: relative;">{{
+                                                        datosEMP.nombre_comercial
+                                                        }}</span>
+                                                    <br><span style="top: -1em; position: relative;">BOLETA DE VENTA
+                                                        ELECTRÓNICA</span>
+                                                    <br><span
+                                                        style="font-weight: bold ; top: -1.2em; position: relative;">{{this.BSerie}}-{{this.BNumero}}</span>
+                                                    <br><span style="top: -1.4em; position: relative;">{{
+                                                        datosEMP.razon_social }}</span>
+                                                    <br><span style="top: -1.6em; position: relative;">RUC: {{
+                                                        datosEMP.empresa_ruc }}</span>
+                                                    <br><span style="top: -1.8em; position: relative;">{{
+                                                        datosEMP.empresa_direccion }}</span>
+                                                    <br><span style="top: -2em; position: relative;">-</span>
+                                                    <br><span style="top: -2.2em; position: relative;">TEL&Eacute;FONO:
+                                                        964
+                                                        622 000</span>
+                                                </div>
+                                                <div
+                                                    style="font-size: 2px; padding: 0 2px; top: -2.2em; position: relative;">
+                                                    <table>
+                                                        <thead>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </thead>
+                                                        <tbody style="text-align: justify;">
+                                                            <tr>
+                                                                <td style="padding: 0; width: 25px;">FECHA</td>
+                                                                <td style="padding: 0;">: 2023-03-29</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">DNI</td>
+                                                                <td style="padding: 0;">: {{
+                                                                    form.get('clienteDetalle.documento')?.value }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">SEÑOR (A)</td>
+                                                                <td style="padding: 0;">: {{
+                                                                    form.get('clienteDetalle.nombrecliente')?.value }}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">DIRECCION</td>
+                                                                <td style="padding: 0;">: {{
+                                                                    form.get('clienteDetalle.direccioncliente')?.value
+                                                                    }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">FECHA EMISION</td>
+                                                                <td style="padding: 0;">: 29-03-2023</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div
+                                                    style="font-size: 2px; padding: 0 2px; top: -1.6em; position: relative; text-align: center;">
+                                                    <table style="width: 100%;">
+                                                        <thead>
+                                                            <th>CANT.</th>
+                                                            <th>UM.</th>
+                                                            <th>DESCRIPCION</th>
+                                                            <th>P. UN.</th>
+                                                            <th>IMP.</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr
+                                                                *ngFor="let data of datosProductosDetalle, let i = index">
+                                                                <td style="padding: 0;">{{ data.cantidad_venta }}</td>
+                                                                <td style="padding: 0;">{{ data.medidaProducto }}</td>
+                                                                <td style="padding: 0;">{{ data.nombreProducto }}</td>
+                                                                <td style="padding: 0;">{{ data.precio_venta }}</td>
+                                                                <td style="padding: 0; text-align: right;">{{
+                                                                    calcularSubtotal(data) | number:'1.2-2' }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="5" style="padding: 0;">
+                                                                    TOTAL: <span style="font-weight: bold;">S/.
+                                                                        {{calcularSubtotalTotal() |
+                                                                        number:'1.2-2'}}</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="textoMonto">
+                                                                <td colspan="5" style="padding-top: 0; ">
+                                                                    SON:
+                                                                    {{totalEnTexto()}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div
+                                                    style="font-size: 2px; padding: 0 2px; top: -1.4em; position: relative; text-align: center;">
+                                                    <p style="margin-bottom: 0;">VENDEDOR: {{ this.usernombre }}</p>
+                                                    <p style="margin-bottom: 0;">Telefono: </p>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-btn delete-action">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                                            class="btn btn-primary paid-cancel-btn">Cancelar</a>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button type="submit" data-bs-dismiss="modal"
+                                                            class="btn btn-primary paid-continue-btn"
+                                                            style="width: 100%;">EMITIR</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Modal Boleta Ticket -->
                             <!-- Modal Ticket -->
                             <div class="modal custom-modal fade" id="ticket" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered">

@@ -19,9 +19,7 @@ import { GenerarRequerimientoService } from 'src/app/shared/services/almacen/gen
 import { GenerarRequerimientoItemService } from 'src/app/shared/services/almacen/generar-requerimiento/generar-requerimiento-item.service';
 import { DatePipe } from '@angular/common';
 
-
 import { Requerimiento_Detalle } from 'src/app/shared/interfaces/almacen';
-
 
 @Component({
   selector: 'app-generar-requerimiento-ver',
@@ -30,7 +28,7 @@ import { Requerimiento_Detalle } from 'src/app/shared/interfaces/almacen';
 })
 export class GenerarRequerimientoVerComponent implements OnInit {
   public ruta = rutas;
-  form: FormGroup = new FormGroup({}); // Declaración con valor inicial;
+  //form: FormGroup = new FormGroup({}); // Declaración con valor inicial;
 
   constructor(
     private route: ActivatedRoute,
@@ -53,25 +51,39 @@ export class GenerarRequerimientoVerComponent implements OnInit {
       }
     });
 
-    const initialForm = this.fb.group({
+    /* const initialForm = this.fb.group({
       requerimientoDetalle: this.fb.group({
         idsucursal_origen: ['', Validators.required],
         sucursal_origen: ['', Validators.required],
         user_nombre: ['', Validators.required],
         fecha: ['', Validators.required],
+        estado: ['', Validators.required],
+        observaciones: ['', Validators.required],
       }),
 
       listaRequerimiento: this.fb.array([]), // FormArray para la lista de compra
-    });
+    }); 
 
     // Asignar el formulario
-    this.form = initialForm;
+    this.form = initialForm;*/
 
     this.medidasAll();
     this.sucursalAll();
     this.usuariosAll();
     this.productosAll();
   }
+
+  form = this.fb.group({
+    requerimientoDetalle: this.fb.group({
+      idsucursal_origen: ['', Validators.required],
+      sucursal_origen: ['', Validators.required],
+      user_nombre: ['', Validators.required],
+      fecha: ['', Validators.required],
+      estado: ['', Validators.required],
+      observaciones: ['', Validators.required],
+    }),
+    listaRequerimiento: this.fb.array([]), // FormArray para la lista de compra
+  });
 
   datosPRO: any;
   productosAll() {
@@ -157,6 +169,14 @@ export class GenerarRequerimientoVerComponent implements OnInit {
           this.form
             .get('requerimientoDetalle.fecha')
             ?.setValue(fechaformateada);
+          this.form
+            .get('requerimientoDetalle.estado')
+            ?.setValue(this.datoREQUERIMIENTO[0]['requerimiento_proceso']);
+          this.form
+            .get('requerimientoDetalle.observaciones')
+            ?.setValue(
+              this.datoREQUERIMIENTO[0]['requerimiento_observaciones']
+            );
         },
         error: (errorData) => {
           console.error('Error al obtener los datos de la venta: ', errorData);

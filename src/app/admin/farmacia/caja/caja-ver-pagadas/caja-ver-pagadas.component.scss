@@ -20,3 +20,9 @@
 .textoMonto td:not(::first-letter) {
     text-transform: lowercase;
 }
+
+.degradado-borde {
+    box-shadow: inset 0px 0.008em 0px 0px #000000;
+    // padding-bottom: 1px;
+    /* Ajusta este valor según el espacio que desees para el degradado */
+}
