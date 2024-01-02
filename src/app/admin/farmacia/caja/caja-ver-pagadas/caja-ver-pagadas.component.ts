@@ -30,6 +30,9 @@ import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 (pdfMake as any).vfs = pdfFonts.pdfMake.vfs;
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 
+import emailjs from '@emailjs/browser';
+import { EmailService } from 'src/app/shared/services/email.service';
+
 @Component({
   selector: 'app-caja-ver-pagadas',
   templateUrl: './caja-ver-pagadas.component.html',
@@ -50,7 +53,8 @@ export class CajaVerPagadasComponent implements OnInit {
     public medidaService: MedidaService,
     public generalService: GeneralService,
     private comprobanteTipoService: ComprobanteTipoService,
-    private comprobanteNumeracionService: ComprobanteNumeracionService
+    private comprobanteNumeracionService: ComprobanteNumeracionService,
+    private emailService: EmailService
   ) {}
   ventaId: number | null = null;
   public ruta = rutas;
@@ -94,6 +98,9 @@ export class CajaVerPagadasComponent implements OnInit {
     listaCompra: this.fb.array([]), // FormArray para la lista de compra
     ventaMedioPago: this.fb.group({
       medio_pago: ['', Validators.required],
+    }),
+    datoEnvioBoleta: this.fb.group({
+      correoBoleta: ['', Validators.email],
     }),
   });
 
@@ -425,48 +432,212 @@ export class CajaVerPagadasComponent implements OnInit {
   FNumero: any;
 
   generarBOLETAA4() {
-    const pdf = new jsPDF({
-      unit: 'mm',
-      format: 'a4',
-      orientation: 'portrait',
-    });
+    const datoEmailBoleta =
+      this.form.get('datoEnvioBoleta')?.value.correoBoleta;
+    if (datoEmailBoleta) {
+      const correoBoletaControl = this.form.get('datoEnvioBoleta.correoBoleta');
 
-    // Obtén el contenido del div
-    const contenidoDiv = document.getElementById('boletaA4Emitir');
+      if (correoBoletaControl?.invalid) {
+        if (correoBoletaControl.hasError('email')) {
+          console.log('Correo electrónico inválido');
+          alert('El campo ingresado no es un correo electrónico válido.');
+        } else {
+          alert('HAY UN ERROR');
+        }
+      } else {
+        //PASAMOS A EJECUTAR EL CODIGO
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        });
 
-    // Verifica que el div exista antes de continuar
-    if (contenidoDiv) {
-      pdf.html(contenidoDiv, {
-        callback: (pdf) => {
-          // Guarda el PDF después de cargar el contenido
-          pdf.output('dataurlnewwindow');
-        },
-      });
+        // Obtén el contenido del div
+        const contenidoDiv = document.getElementById('boletaA4Emitir');
+
+        // Verifica que el div exista antes de continuar
+        if (contenidoDiv) {
+          pdf.html(contenidoDiv, {
+            callback: (pdf) => {
+              // Guarda el PDF después de cargar el contenido
+              //const pdfBase64 = pdf.output('datauristring');
+              // Envia el PDF por correo electrónico
+              //this.enviarCorreoElectronico(pdfBase64);
+              // Guarda el PDF después de cargar el contenido
+              pdf.output('dataurlnewwindow');
+
+              // Obtiene el PDF en formato base64
+              const pdfBase64 = pdf.output('datauristring').split(',')[1];
+              // Llama al servicio para enviar el correo electrónico con el PDF adjunto
+              const formData = new FormData();
+              formData.append('to_email', datoEmailBoleta);
+              formData.append('subject', 'Boleta Electronica QARA');
+              formData.append(
+                'message',
+                'Buen dia, se envia una copia de su boleta electrónica'
+              );
+              formData.append('attachment', pdfBase64);
+
+              this.emailService.enviarEmail(formData).subscribe({
+                next: (response) => {
+                  console.log(
+                    'Correo electrónico enviado con éxito:',
+                    response
+                  );
+                },
+                error: (errorData) => {
+                  console.error(
+                    'Error al enviar el correo electrónico:',
+                    errorData
+                  );
+                },
+                complete: () => {},
+              });
+            },
+          });
+        } else {
+          console.error('Elemento no encontrado:', contenidoDiv);
+        }
+      }
     } else {
-      console.error('Elemento no encontrado:', contenidoDiv);
+      //SE EJECUTA DE FORMA NORMAL EL CODIGO DE PDF
+      const pdf = new jsPDF({
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait',
+      });
+
+      // Obtén el contenido del div
+      const contenidoDiv = document.getElementById('boletaA4Emitir');
+
+      // Verifica que el div exista antes de continuar
+      if (contenidoDiv) {
+        pdf.html(contenidoDiv, {
+          callback: (pdf) => {
+            // Guarda el PDF después de cargar el contenido
+            pdf.output('dataurlnewwindow');
+          },
+        });
+      } else {
+        console.error('Elemento no encontrado:', contenidoDiv);
+      }
     }
   }
 
+  enviarCorreoElectronico(pdfBase64: string) {
+    // Configura tus credenciales y configuración de emailjs-com
+    emailjs.init('Wh1xUauFDsJtWNwdI');
+
+    // Configura el servicio de correo electrónico y la plantilla
+    const serviceID = 'service_wi78nka';
+    const templateID = 'template_3a1nypl';
+
+    // Configura los parámetros del correo electrónico
+    const emailParams = {
+      to_email: 'wesaxak955@vasteron.com',
+      subject: 'Asunto del correo electrónico',
+      message: 'Cuerpo del correo electrónico',
+      attachment: pdfBase64,
+    };
+
+    // Envía el correo electrónico
+    emailjs.send(serviceID, templateID, emailParams).then(
+      (response) => {
+        console.log('Correo electrónico enviado con éxito:', response);
+      },
+      (error) => {
+        console.error('Error al enviar el correo electrónico:', error);
+      }
+    );
+  }
+
   generarBOLETATicket() {
-    const pdf = new jsPDF({
-      unit: 'mm',
-      format: 'a7',
-      orientation: 'portrait',
-    });
+    const datoEmailBoleta =
+      this.form.get('datoEnvioBoleta')?.value.correoBoleta;
+    if (datoEmailBoleta) {
+      const correoBoletaControl = this.form.get('datoEnvioBoleta.correoBoleta');
 
-    // Obtén el contenido del div
-    const contenidoDiv = document.getElementById('boletaTicketEmitir');
+      if (correoBoletaControl?.invalid) {
+        if (correoBoletaControl.hasError('email')) {
+          console.log('Correo electrónico inválido');
+          alert('El campo ingresado no es un correo electrónico válido.');
+        } else {
+          alert('HAY UN ERROR');
+        }
+      } else {
+        //SI HAY CORREO, ENVIAMOS AL CORREO
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: 'a7',
+          orientation: 'portrait',
+        });
 
-    // Verifica que el div exista antes de continuar
-    if (contenidoDiv) {
-      pdf.html(contenidoDiv, {
-        callback: (pdf) => {
-          // Guarda el PDF después de cargar el contenido
-          pdf.output('dataurlnewwindow');
-        },
+        // Obtén el contenido del div
+        const contenidoDiv = document.getElementById('boletaTicketEmitir');
+
+        // Verifica que el div exista antes de continuar
+        if (contenidoDiv) {
+          pdf.html(contenidoDiv, {
+            callback: (pdf) => {
+              // Guarda el PDF después de cargar el contenido
+              pdf.output('dataurlnewwindow');
+
+              // Obtiene el PDF en formato base64
+              const pdfBase64 = pdf.output('datauristring').split(',')[1];
+              // Llama al servicio para enviar el correo electrónico con el PDF adjunto
+              const formData = new FormData();
+              formData.append('to_email', datoEmailBoleta);
+              formData.append('subject', 'Boleta Electronica QARA');
+              formData.append(
+                'message',
+                'Buen dia, se envia una copia de su boleta electrónica'
+              );
+              formData.append('attachment', pdfBase64);
+
+              this.emailService.enviarEmail(formData).subscribe({
+                next: (response) => {
+                  console.log(
+                    'Correo electrónico enviado con éxito:',
+                    response
+                  );
+                },
+                error: (errorData) => {
+                  console.error(
+                    'Error al enviar el correo electrónico:',
+                    errorData
+                  );
+                },
+                complete: () => {},
+              });
+            },
+          });
+        } else {
+          console.error('Elemento no encontrado:', contenidoDiv);
+        }
+      }
+    }
+    //SI NO HAY CORREO, SOLO LO ABRIMOS EN UNA NUEVA PESTAÑA
+    else {
+      const pdf = new jsPDF({
+        unit: 'mm',
+        format: 'a7',
+        orientation: 'portrait',
       });
-    } else {
-      console.error('Elemento no encontrado:', contenidoDiv);
+
+      // Obtén el contenido del div
+      const contenidoDiv = document.getElementById('boletaTicketEmitir');
+
+      // Verifica que el div exista antes de continuar
+      if (contenidoDiv) {
+        pdf.html(contenidoDiv, {
+          callback: (pdf) => {
+            // Guarda el PDF después de cargar el contenido
+            pdf.output('dataurlnewwindow');
+          },
+        });
+      } else {
+        console.error('Elemento no encontrado:', contenidoDiv);
+      }
     }
   }
 }
