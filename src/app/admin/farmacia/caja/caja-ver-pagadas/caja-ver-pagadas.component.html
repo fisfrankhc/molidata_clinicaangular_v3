@@ -44,12 +44,22 @@
                                             </div>
                                             <div class="col-12 col-md-6 col-xl-4"
                                                 style="place-self: center; text-align: right;">
-                                                <a href="javascript:void(0);" data-bs-toggle="modal"
-                                                    data-bs-target="#pregunta_emitir" class="btn btn-success" style="padding: 8px 30px; margin: 5px; color: white
-">EMITIR C.P.</a>
+                                                <a href="javascript:void(0);"
+                                                    *ngIf="datosCOMPROBANTES =='No hay resultados' || datosCOMPROBANTES === undefined"
+                                                    data-bs-toggle="modal" data-bs-target="#pregunta_emitir"
+                                                    class="btn btn-warning"
+                                                    style="padding: 8px 30px; margin: 5px; color: white ">EMITIR
+                                                    C.P.</a>
+                                                <a href="javascript:void(0);"
+                                                    *ngIf="datosCOMPROBANTES != 'No hay resultados' && datosCOMPROBANTES != undefined"
+                                                    data-bs-toggle="modal" data-bs-target="#pregunta_descargar"
+                                                    class="btn btn-success"
+                                                    style="padding: 8px 30px; margin: 5px; color: white "> <i
+                                                        class="fa-solid fa-download"></i> DESCARGAR
+                                                    C.P.</a>
                                                 <a href="javascript:void(0);" (click)="generarTICKET()"
-                                                    data-bs-toggle="modal" class="btn btn-info" style="padding: 8px 30px; margin: 5px; color: white;
-">TICKET</a><!-- data-bs-target="#ticket" -->
+                                                    data-bs-toggle="modal" class="btn btn-info"
+                                                    style="padding: 8px 30px; margin: 5px; color: white; ">TICKET</a>
                                             </div>
                                         </div>
                                     </div>
@@ -138,6 +148,63 @@
                                         <div class="modal-body">
                                             <div class="form-header">
                                                 <h2>¿Que desea emitir?</h2>
+                                                <div class="row">
+                                                    <div class="col-auto"
+                                                        style="margin: 0 auto; border: 1px solid black; padding: 5px 50px; border-radius: 15px;">
+                                                        <div class="form-check"
+                                                            style="padding: 10px 0 5px; right: -10px; position: relative;"
+                                                            [ngStyle]="obtenerEstilos('BOLETA')">
+                                                            <input class="form-check-input" type="radio"
+                                                                formControlName="tipoBoleta" id="exampleRadios1"
+                                                                value="BOLETA" [(ngModel)]="opcionSeleccionada">
+                                                            <label class="form-check-label" for="exampleRadios1"
+                                                                style="font-size: 14px;">
+                                                                BOLETA ELECTR&Oacute;NICA
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check"
+                                                            style="padding: 5px 0 10px;  right: -10px; position: relative;"
+                                                            *ngIf="clienteTipoDocumento === 'RUC'"
+                                                            [ngStyle]="obtenerEstilos('FACTURA')">
+                                                            <input class="form-check-input" type="radio"
+                                                                formControlName="tipoBoleta" id="exampleRadios2"
+                                                                value="FACTURA" [(ngModel)]="opcionSeleccionada">
+                                                            <label class="form-check-label" for="exampleRadios2"
+                                                                style="font-size: 14px;">
+                                                                FACTURA ELECTR&Oacute;NICA
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-btn delete-action">
+                                                <div class="row">
+                                                    <div class="col-auto" style="margin: 0 auto;">
+                                                        <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                                            class="btn btn-primary paid-cancel-btn">SALIR</a>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <a href="javascript:void(0);" (click)="emitirComprobante()"
+                                                            class="btn btn-primary paid-continue-btn"
+                                                            style="width: 100%;">EMITIR</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Modal Pregunta de Emitir -->
+
+                            <!-- Modal VER Boleta/Factura -->
+                            <div class="modal custom-modal fade" id="pregunta_descargar" role="dialog"
+                                formGroupName="datoVerBoleta">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <div class="form-header">
+                                                <h2>¿Que desea observar?</h2>
+
                                                 <div class="accordion accordion-flush" id="accordionFlushExample"
                                                     style="border: 2px solid #2e37a4;">
                                                     <div class="accordion-item">
@@ -153,30 +220,101 @@
                                                         <div id="flush-collapseOne" class="accordion-collapse collapse"
                                                             data-bs-parent="#accordionFlushExample">
                                                             <div class="accordion-body">
-                                                                <div class="row">
-                                                                    <div class="col-12 col-lg-10" style="margin: auto;">
-                                                                        <label for="validationCustomUsername">Correo al
-                                                                            que desea enviar:</label>
-                                                                        <div class="input-group">
-                                                                            <div class="input-group-prepend">
-                                                                                <span class="input-group-text"
-                                                                                    id="inputGroupPrepend"><i
-                                                                                        class="fa-solid fa-envelope"></i></span>
-                                                                            </div>
-                                                                            <input type="email"
-                                                                                formControlName="correoBoleta"
-                                                                                style="border-radius: 2px 10px 10px 2px; height: 45px;"
-                                                                                class="form-control"
-                                                                                placeholder="correo@correo.com">
+                                                                <div class="row"
+                                                                    style="margin: auto; place-content: center; ">
+                                                                    <div class="col-auto"
+                                                                        style="padding: 10px 5px; border-radius: 10px;"
+                                                                        [ngClass]="{'selected-email': form.get('datoVerBoleta.envioOpcion')?.value === 'email'}">
+                                                                        <input type="radio" class="form-check-input"
+                                                                            formControlName="envioOpcion" value="email"
+                                                                            id="emailOption" />
+                                                                        <label for="emailOption"> Correo
+                                                                            Electr&oacute;nico</label>
+                                                                    </div>
+                                                                    <div class="col-auto"
+                                                                        style="padding: 10px 5px; border-radius: 10px;"
+                                                                        [ngClass]="{'selected-whatsapp': form.get('datoVerBoleta.envioOpcion')?.value === 'whatsapp'}">
+                                                                        <input type="radio" class="form-check-input"
+                                                                            formControlName="envioOpcion"
+                                                                            value="whatsapp" id="whatsappOption" />
+                                                                        <label for="whatsappOption"> WhatsApp</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row fade-in-out-down"
+                                                                    *ngIf="form.get('datoVerBoleta.envioOpcion')?.value === 'email'">
+                                                                    <div class="row" style="margin: auto;">
+                                                                        <div class="col-12">
+                                                                            <label for="validationCustomUsername">Correo
+                                                                                al
+                                                                                que desea enviar:</label>
                                                                         </div>
-                                                                        <div style="color: red; padding: 5px;font-size: 12px"
-                                                                            *ngIf="form.get('datoEnvioBoleta.correoBoleta')?.hasError('email')">
-                                                                            Ingrese un correo electr&oacute;nico
-                                                                            v&aacute;lido.
-                                                                            <!-- Asegúrate de que este mensaje se imprima en la consola -->
+                                                                        <div class="col-12 col-lg-9"
+                                                                            style="padding-right: 0;">
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-prepend">
+                                                                                    <span class="input-group-text"
+                                                                                        id="inputGroupPrepend"><i
+                                                                                            class="fa-solid fa-envelope"></i></span>
+                                                                                </div>
+                                                                                <input type="email"
+                                                                                    formControlName="correoBoleta"
+                                                                                    style="border-radius: 2px 10px 10px 2px; height: 45px;"
+                                                                                    class="form-control"
+                                                                                    placeholder="correo@correo.com">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-auto"
+                                                                            style="align-self: center; padding-left: 0; max-width: 90px;">
+                                                                            <a href="javascript:void(0);"
+                                                                                (click)="enviarACorreo()"
+                                                                                class="btn btn-secondary"
+                                                                                style="padding: 7px 20px;">ENVIAR</a>
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <div style="color: red; padding: 5px;font-size: 12px"
+                                                                                class="fade-in-out"
+                                                                                *ngIf="form.get('datoVerBoleta.correoBoleta')?.hasError('email')">
+                                                                                Ingrese un correo electr&oacute;nico
+                                                                                v&aacute;lido.
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
+
+                                                                <div class="row fade-in-out-down"
+                                                                    *ngIf="form.get('datoVerBoleta.envioOpcion')?.value === 'whatsapp'">
+
+                                                                    <div class="row" style="margin: auto;">
+                                                                        <div class="col-12">
+                                                                            <label
+                                                                                for="validationCustomUsername">Ingrese
+                                                                                un n&uacute;mero: </label>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-9"
+                                                                            style="padding-right: 0;">
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-prepend">
+                                                                                    <span class="input-group-text"
+                                                                                        id="inputGroupPrepend"><i
+                                                                                            class="fas fa-phone"></i></span>
+                                                                                </div>
+                                                                                <input type="text"
+                                                                                    formControlName="whatsappBoleta"
+                                                                                    style="border-radius: 2px 10px 10px 2px; height: 45px;"
+                                                                                    class="form-control" placeholder="">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-auto"
+                                                                            style="align-self: center; padding-left: 0; max-width: 90px;">
+                                                                            <a href="javascript:void(0);"
+                                                                                (click)="enviarAWhatsApp()"
+                                                                                class="btn btn-secondary"
+                                                                                style="padding: 7px 20px;">ENVIAR</a>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                                <br>
                                                                 <div class="row">
                                                                     <div class="col-12 col-lg-6">
                                                                         <a href="javascript:void(0);"
@@ -198,10 +336,6 @@
                                                     </div>
                                                 </div>
 
-                                                <button *ngIf="clienteTipoDocumento === 'RUC'" type="button"
-                                                    class="btn btn-outline-dark"
-                                                    style="width: 100%; padding: 10px 20px; margin: 5px;">Factura
-                                                    Electr&oacute;nica</button>
                                             </div>
                                             <div class="modal-btn delete-action">
                                                 <div class="row">
@@ -209,27 +343,22 @@
                                                         <a href="javascript:void(0);" data-bs-dismiss="modal"
                                                             class="btn btn-primary paid-cancel-btn">SALIR</a>
                                                     </div>
-                                                    <!--                                                     <div class="col-6">
-                                                        <button type="submit" data-bs-dismiss="modal"
-                                                            class="btn btn-primary paid-continue-btn"
-                                                            style="width: 100%;">EMITIR</button>
-                                                    </div> -->
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- /Modal Pregunta de Emitir -->
+                            <!-- /Modal Modal VER Boleta/Factura -->
                             <!-- Modal Boleta A4-->
                             <div class="modal custom-modal fade" id="boletaElectronica" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-body">
-                                            <div id="boletaA4Emitir" style="text-align: center">
+                                            <div id="boletaA4Emitir" style="text-align: center; ">
                                                 <div class="row"
                                                     style="padding-top: 5px; padding-left: 20px; width: 220px; padding-bottom: 5px; padding-right: 5px;">
-                                                    <table *ngIf="datosEMP">
+                                                    <table *ngIf="infoEmpresa && datosCOMPROBANTES">
                                                         <tr>
                                                             <td><img src="assets/img/logo.png" width="20" height="20"
                                                                     alt="" style="position: relative; ">
@@ -241,24 +370,26 @@
                                                                         <tr>
                                                                             <td
                                                                                 style="border: none; font-weight: bold; font-size: 6px; padding-bottom: 0;">
-                                                                                {{ datosEMP.nombre_comercial }}</td>
+                                                                                {{ infoEmpresa.nombre_comercial }}</td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td
                                                                                 style="border: none; font-weight: bold; font-size: 4.5px; padding-bottom: 0; ">
-                                                                                {{ datosEMP.razon_social }}</td>
+                                                                                {{ infoEmpresa.razon_social }}</td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td
                                                                                 style="border: none; font-size: 4px; font-style: oblique; padding-bottom: 0;">
-                                                                                Dirección: {{ datosEMP.empresa_direccion
+                                                                                Dirección: {{
+                                                                                infoEmpresa.empresa_direccion
                                                                                 }}
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
                                                                             <td
                                                                                 style="border: none; font-size: 4px; font-style: oblique; padding-bottom: 0;">
-                                                                                TELÉFONO: 964 622 000
+                                                                                TELÉFONO: {{
+                                                                                infoEmpresa.empresa_telefono }}
                                                                             </td>
                                                                         </tr>
                                                                         <tr>
@@ -278,7 +409,7 @@
                                                                         <tbody>
                                                                             <tr>
                                                                                 <td style="border: none; ">R.U.C. N° {{
-                                                                                    datosEMP.empresa_ruc }}
+                                                                                    infoEmpresa.empresa_ruc }}
                                                                                 </td>
                                                                             </tr>
                                                                             <tr>
@@ -292,7 +423,9 @@
                                                                             </tr>
                                                                             <tr>
                                                                                 <td style="border: none; ">N°
-                                                                                    {{this.BSerie}}-{{this.BNumero}}
+                                                                                    {{
+                                                                                    datosCOMPROBANTES.comprobante_serie
+                                                                                    }}-{{datosCOMPROBANTES.comprobante_numero}}
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>
@@ -303,7 +436,7 @@
                                                         </tr>
                                                     </table>
                                                 </div>
-                                                <div class="row"
+                                                <div class="row" *ngIf="datosCOMPROBANTES"
                                                     style="padding-left: 20px; width: 212px; padding-bottom: 5px;">
                                                     <table style="border: 1px solid #000; font-size: 3.8px;">
                                                         <thead>
@@ -313,32 +446,34 @@
                                                         <tbody style="text-align: left;">
                                                             <tr>
                                                                 <td style="width: 25px;"> &nbsp;CLIENTE</td>
-                                                                <td>: {{
-                                                                    form.get('clienteDetalle.nombrecliente')?.value }}
+                                                                <td style="letter-spacing: 0.15px">: {{
+                                                                    datosCOMPROBANTES.cliente_razon_social }}
                                                                 </td>
                                                                 <td></td>
                                                                 <td></td>
                                                             </tr>
                                                             <tr>
                                                                 <td> &nbsp;DIRECCION</td>
-                                                                <td>: {{
-                                                                    form.get('clienteDetalle.direccioncliente')?.value
+                                                                <td>: {{ datosCOMPROBANTES.cliente_direccion
                                                                     }}</td>
                                                                 <td></td>
                                                                 <td></td>
                                                             </tr>
                                                             <tr>
-                                                                <td> &nbsp;DNI</td>
-                                                                <td>: {{
-                                                                    form.get('clienteDetalle.documento')?.value }}</td>
+                                                                <td> &nbsp;{{ datosCOMPROBANTES.cliente_documento_tipo
+                                                                    }}</td>
+                                                                <td>: {{ datosCOMPROBANTES.cliente_documento_numero }}
+                                                                </td>
                                                                 <td style="width: 40px;"> &nbsp;FECHA DE EMISION</td>
-                                                                <td style="width: 40px;">: 2023-12-18</td>
+                                                                <td style="width: 40px;">: {{
+                                                                    datosCOMPROBANTES.fecha_emision }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td> &nbsp;CODIGO</td>
                                                                 <td>: </td>
                                                                 <td> &nbsp;FECHA DE VMTO</td>
-                                                                <td>: 2023-12-18</td>
+                                                                <td>: {{
+                                                                    datosCOMPROBANTES.fecha_emision}}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td> &nbsp;TELEFONO</td>
@@ -370,36 +505,36 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr *ngFor="let data of datosProductosDetalle, let i = index"
-                                                                style="border-bottom: 1px solid #313131">
+                                                            <tr *ngFor="let data of infoItemsComprobantes, let i = index"
+                                                                style="border-bottom: 1px solid #313131;">
                                                                 <td style="padding: 0; padding-bottom: 1px;">{{ i+1 }}
                                                                 </td>
                                                                 <td style="padding: 0; padding-bottom: 1px;">{{
                                                                     data.cantidad_venta }}</td>
                                                                 <td style="padding: 0; padding-bottom: 1px;">{{
-                                                                    data.medidaProducto }}</td>
+                                                                    data.medida }}</td>
                                                                 <td style="padding: 0; padding-bottom: 1px;">{{
-                                                                    data.nombreProducto }}</td>
+                                                                    data.producto_nombre }}</td>
                                                                 <td style="padding: 0; padding-bottom: 1px;">{{
                                                                     data.precio_venta }}</td>
                                                                 <td
                                                                     style="padding: 0; padding-bottom: 1px; text-align: right;">
                                                                     {{
-                                                                    calcularSubtotal(data) | number:'1.2-2' }}</td>
+                                                                    calcularSubtotalItem(data) | number:'1.2-2' }}</td>
                                                             </tr>
                                                             <br>
                                                             <tr class="textoMonto">
                                                                 <td colspan="4"
                                                                     style="padding-top: 0; border: 1px solid #313131;">
                                                                     SON:
-                                                                    {{totalEnTexto()}}</td>
+                                                                    {{totalEnTextoItem()}}</td>
                                                                 <td
                                                                     style="border-top: 1px solid #313131; border-bottom: 1px solid #313131;">
                                                                     TOTAL:</td>
                                                                 <td style="border: 1px solid #313131;"><span
                                                                         style="font-weight: bold;">
                                                                         S/.
-                                                                        {{calcularSubtotalTotal() |
+                                                                        {{calcularTotalItem() |
                                                                         number:'1.2-2'}}</span></td>
                                                             </tr>
                                                             <tr>
@@ -443,28 +578,27 @@
                                     <div class="modal-content">
                                         <div class="modal-body">
                                             <div id="boletaTicketEmitir" style="letter-spacing: 0.012em; width: 74px">
-                                                <div *ngIf="datosEMP"
+                                                <div *ngIf="infoEmpresa && datosCOMPROBANTES"
                                                     style="text-align: center; padding-top: 2px; font-size: 2px;">
                                                     <img src="assets/img/logo.jpg" width="5px" height="5px" alt="">
                                                     <br><span style="top: -0.6em; position: relative;">{{
-                                                        datosEMP.nombre_comercial
+                                                        infoEmpresa.nombre_comercial
                                                         }}</span>
                                                     <br><span style="top: -1em; position: relative;">BOLETA DE VENTA
                                                         ELECTRÓNICA</span>
                                                     <br><span
-                                                        style="font-weight: bold ; top: -1.2em; position: relative;">{{this.BSerie}}-{{this.BNumero}}</span>
+                                                        style="font-weight: bold ; top: -1.2em; position: relative;">{{datosCOMPROBANTES.comprobante_serie}}-{{datosCOMPROBANTES.comprobante_numero}}</span>
                                                     <br><span style="top: -1.4em; position: relative;">{{
-                                                        datosEMP.razon_social }}</span>
+                                                        infoEmpresa.razon_social }}</span>
                                                     <br><span style="top: -1.6em; position: relative;">RUC: {{
-                                                        datosEMP.empresa_ruc }}</span>
+                                                        infoEmpresa.empresa_ruc }}</span>
                                                     <br><span style="top: -1.8em; position: relative;">{{
-                                                        datosEMP.empresa_direccion }}</span>
+                                                        infoEmpresa.empresa_direccion }}</span>
                                                     <br><span style="top: -2em; position: relative;">-</span>
                                                     <br><span style="top: -2.2em; position: relative;">TEL&Eacute;FONO:
-                                                        964
-                                                        622 000</span>
+                                                        {{ infoEmpresa.empresa_telefono }}</span>
                                                 </div>
-                                                <div
+                                                <div *ngIf="datosCOMPROBANTES"
                                                     style="font-size: 2px; padding: 0 2px; top: -2.2em; position: relative;">
                                                     <table>
                                                         <thead>
@@ -477,60 +611,66 @@
                                                                 <td style="padding: 0;">: 2023-03-29</td>
                                                             </tr>
                                                             <tr>
-                                                                <td style="padding: 0;">DNI</td>
+                                                                <td style="padding: 0;">{{
+                                                                    datosCOMPROBANTES.cliente_documento_tipo
+                                                                    }}</td>
                                                                 <td style="padding: 0;">: {{
-                                                                    form.get('clienteDetalle.documento')?.value }}</td>
+                                                                    datosCOMPROBANTES.cliente_documento_numero }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="padding: 0;">SEÑOR (A)</td>
                                                                 <td style="padding: 0;">: {{
-                                                                    form.get('clienteDetalle.nombrecliente')?.value }}
+                                                                    datosCOMPROBANTES.cliente_razon_social }}
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="padding: 0;">DIRECCION</td>
                                                                 <td style="padding: 0;">: {{
-                                                                    form.get('clienteDetalle.direccioncliente')?.value
-                                                                    }}</td>
+                                                                    datosCOMPROBANTES.cliente_direccion }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="padding: 0;">FECHA EMISION</td>
-                                                                <td style="padding: 0;">: 29-03-2023</td>
+                                                                <td style="padding: 0;">: {{
+                                                                    datosCOMPROBANTES.fecha_emision }}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
                                                 </div>
                                                 <div
-                                                    style="font-size: 2px; padding: 0 2px; top: -1.6em; position: relative; text-align: center;">
+                                                    style="font-size: 1.7px; padding: 0 2px; top: -1.6em; position: relative; text-align: center;">
                                                     <table style="width: 100%;">
                                                         <thead>
                                                             <th>CANT.</th>
                                                             <th>UM.</th>
                                                             <th>DESCRIPCION</th>
-                                                            <th>P. UN.</th>
+                                                            <th style="width: 10px;">P. UN.</th>
                                                             <th>IMP.</th>
                                                         </thead>
                                                         <tbody>
                                                             <tr
-                                                                *ngFor="let data of datosProductosDetalle, let i = index">
-                                                                <td style="padding: 0;">{{ data.cantidad_venta }}</td>
-                                                                <td style="padding: 0;">{{ data.medidaProducto }}</td>
-                                                                <td style="padding: 0;">{{ data.nombreProducto }}</td>
-                                                                <td style="padding: 0;">{{ data.precio_venta }}</td>
-                                                                <td style="padding: 0; text-align: right;">{{
-                                                                    calcularSubtotal(data) | number:'1.2-2' }}</td>
+                                                                *ngFor="let data of infoItemsComprobantes, let i = index">
+                                                                <td style="padding: 0; letter-spacing: 0.012em;">{{
+                                                                    data.cantidad_venta }}</td>
+                                                                <td style="padding: 0;">{{ data.medida }}</td>
+                                                                <td style="padding: 0;">{{ data.producto_nombre }}</td>
+                                                                <td style="padding: 0; letter-spacing: 0.012em;">{{
+                                                                    data.precio_venta }}</td>
+                                                                <td
+                                                                    style="padding: 0; text-align: right; letter-spacing: 0.012em;">
+                                                                    {{
+                                                                    calcularSubtotalItem(data) | number:'1.2-2' }}</td>
                                                             </tr>
                                                             <tr>
                                                                 <td colspan="5" style="padding: 0;">
                                                                     TOTAL: <span style="font-weight: bold;">S/.
-                                                                        {{calcularSubtotalTotal() |
+                                                                        {{calcularTotalItem() |
                                                                         number:'1.2-2'}}</span>
                                                                 </td>
                                                             </tr>
                                                             <tr class="textoMonto">
                                                                 <td colspan="5" style="padding-top: 0; ">
                                                                     SON:
-                                                                    {{totalEnTexto()}}</td>
+                                                                    {{totalEnTextoItem()}}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>

@@ -457,11 +457,11 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                           );
                         if (algunProductoSuperaMontoCompra) {
                           console.log(
-                            'Al menos un producto supera al monto de compra'
+                            'Al menos un producto supera la cantidad de stock'
                           );
                           Swal.fire({
                             title:
-                              'Al menos un producto supera al monto de compra',
+                              'Al menos un producto supera la cantidad de stock',
                             icon: 'error',
                             timer: 2500,
                           });

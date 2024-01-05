@@ -26,3 +26,44 @@
     // padding-bottom: 1px;
     /* Ajusta este valor según el espacio que desees para el degradado */
 }
+
+@keyframes fadeInOutDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+        /* Mueve hacia arriba */
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        /* Vuelve a la posición original */
+    }
+}
+
+.fade-in-out-down {
+    animation: fadeInOutDown 0.5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in-out {
+    animation: fadeInOut 0.5s ease-in-out;
+}
+
+.selected-email {
+    background-color: #73b8ff;
+}
+
+.selected-whatsapp {
+    background-color: #58c506;
+    color: white;
+}
