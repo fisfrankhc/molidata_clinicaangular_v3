@@ -9,10 +9,10 @@ import {
 } from '@angular/forms';
 import { rutas } from 'src/app/shared/routes/rutas';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
-import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.service';
-import { VentasItemService } from 'src/app/shared/services/farmacia/ventas/ventas-item.service';
-import { ClientesService } from 'src/app/shared/services/farmacia/clientes/clientes.service';
-import { OperacionService } from 'src/app/shared/services/farmacia/caja/operacion.service';
+import { VentasService } from 'src/app/shared/services/despacho/ventas/ventas.service';
+import { VentasItemService } from 'src/app/shared/services/despacho/ventas/ventas-item.service';
+import { ClientesService } from 'src/app/shared/services/despacho/clientes/clientes.service';
+import { OperacionService } from 'src/app/shared/services/despacho/caja/operacion.service';
 import { GeneralService } from 'src/app/shared/services/general.service';
 import { DatePipe } from '@angular/common';
 import { mergeMap } from 'rxjs/operators';
@@ -597,4 +597,3 @@ export class RVSCVerComponent implements OnInit {
     });
   }
 }
-

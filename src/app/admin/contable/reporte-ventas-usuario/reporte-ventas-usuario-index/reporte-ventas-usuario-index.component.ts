@@ -9,9 +9,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { pageSelection, Ventas } from 'src/app/shared/interfaces/farmacia';
-import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.service';
-import { VentasItemService } from 'src/app/shared/services/farmacia/ventas/ventas-item.service';
+import { pageSelection, Ventas } from 'src/app/shared/interfaces/despacho';
+import { VentasService } from 'src/app/shared/services/despacho/ventas/ventas.service';
+import { VentasItemService } from 'src/app/shared/services/despacho/ventas/ventas-item.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 import { GeneralService } from 'src/app/shared/services/general.service';
 import { forkJoin, of } from 'rxjs';

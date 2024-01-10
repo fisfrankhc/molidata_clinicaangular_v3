@@ -25,6 +25,7 @@ export interface Comprobantes {
   cod_tipo_motivo: string;
   nota_desc_motivo: string;
   venta_id: number;
+  nombreCOMPROBTIPO: string; //PARA VISTA
 }
 
 export interface ComprobantesDetalles {

@@ -6,11 +6,11 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a>LOG&Iacute;STICA </a></li>
+                        <li class="breadcrumb-item"><a>DESPACHO</a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.logistica_proveedor">PROVEEDORES </a></li>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.despacho_cliente">CLIENTE </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item active">Nuevo Proveedor</li>
+                        <li class="breadcrumb-item active">Editar Cliente</li>
                     </ul>
                 </div>
             </div>
@@ -21,13 +21,14 @@
 
                 <div class="card">
                     <div class="card-body">
-                        <form [formGroup]="form" (ngSubmit)="registrarProveedor()">
+                        <form [formGroup]="form" (ngSubmit)="editarCliente()">
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-heading">
-                                        <h4>Detallar nuevo Proveedor</h4>
+                                        <h4>Editar Cliente</h4>
                                     </div>
                                 </div>
+                                <input class="form-control" formControlName="id" type="hidden">
                                 <div class="row">
                                     <div class="col-12 col-md-6 col-xl-3">
                                         <div class="form-group local-forms">
@@ -43,57 +44,41 @@
                                     <div class="col-12 col-md-6 col-xl-4">
                                         <div class="form-group local-forms">
                                             <label>NUMERO DE DOCUMENTO<span class="login-danger">*</span></label>
-                                            <input class="form-control" formControlName="numero" type="text"
-                                                (input)="validarNumeroDocumento($event)" placeholder="">
+                                            <input class="form-control" formControlName="numero" type="number"
+                                                placeholder="">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-xl-6">
                                     <div class="form-group local-forms">
-                                        <label>RAZON SOCIAL <span class="login-danger">*</span></label>
-                                        <input class="form-control" formControlName="nombre" (input)="mayusc('nombre')"
-                                            type="text" placeholder="">
+                                        <label>NOMBRE COMPLETO <span class="login-danger">*</span></label>
+                                        <input class="form-control" formControlName="nombre" type="text" placeholder="">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-12">
+                                    <div class="form-group local-forms">
+                                        <label>DIRECCION <span class="login-danger">*</span></label>
+                                        <textarea class="form-control" formControlName="direccion" rows="3"
+                                            cols="30"></textarea>
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-xl-4">
                                     <div class="form-group local-forms">
                                         <label>CORREO ELECTR&Oacute;NICO <span class="login-danger">*</span></label>
-                                        <input class="form-control" formControlName="email" type="email"
-                                            (input)="mayusc('email')" placeholder="">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-12 col-xl-12">
-                                    <div class="form-group local-forms">
-                                        <label>DIRECCI&Oacute;N <span class="login-danger">*</span></label>
-                                        <input class="form-control" formControlName="direccion"
-                                            (input)="mayusc('direccion')" type="text" placeholder="">
-                                    </div>
-                                </div>
-                                <div class="col-12 col-sm-12">
-                                    <div class="form-group local-forms">
-                                        <label>DESCRIPCI&Oacute;N <span class="login-danger">*</span></label>
-                                        <textarea class="form-control" formControlName="descripcion" rows="3"
-                                            (input)="mayusc('descripcion')" cols="30"></textarea>
-                                    </div>
-                                </div>
-                                <div class="col-12 col-md-6 col-xl-4">
-                                    <div class="form-group local-forms">
-                                        <label>REPRESENTANTE DE VENTAS <span class="login-danger">*</span></label>
-                                        <input class="form-control" formControlName="representante" type="text"
-                                            (input)="mayusc('representante')" placeholder="">
+                                        <input class="form-control" formControlName="email" type="email" placeholder="">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6 col-xl-3">
                                     <div class="form-group local-forms">
                                         <label>TEL&Eacute;FONO <span class="login-danger">*</span></label>
-                                        <input class="form-control" formControlName="telefono" type="text"
-                                            (input)="validarTelefono($event)" placeholder="">
+                                        <input class="form-control" formControlName="telefono" type="number"
+                                            placeholder="">
                                     </div>
                                 </div>
                                 <div class="col-12">
                                     <div class="doctor-submit text-end">
                                         <button type="submit" class="btn btn-primary submit-form me-2"
-                                            [disabled]="form.invalid">REGISTRAR</button>
+                                            [disabled]="form.invalid">GUARDAR</button>
                                         <a class="btn btn-primary cancel-form"
                                             [routerLink]="ruta.despacho_cliente">Cancelar</a>
                                     </div>

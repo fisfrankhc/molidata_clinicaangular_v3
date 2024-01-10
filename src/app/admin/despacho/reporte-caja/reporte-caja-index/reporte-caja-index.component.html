@@ -6,9 +6,9 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a>CONTABLE </a></li>
+                        <li class="breadcrumb-item"><a>DESPACHO </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.contable_comprobante">Comprobantes </a>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.despacho_reportecaja">Reporte de Caja </a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item active">Lista</li>
@@ -27,15 +27,9 @@
                         <!-- Table Header -->
                         <div class="page-table-header mb-2">
                             <div class="row align-items-center">
-                                <div class="col-12 col-md-6 col-xl-6">
+                                <div class="col-5">
                                     <div class="doctor-table-blk">
-                                        <div>
-                                            <h3>Comprobantes</h3>
-                                            <span style="font-size: 12px;">Fecha: <span
-                                                    *ngIf="resultadoMostrar"><b>{{this.fechaVisualInicio}}</b> al
-                                                    <b>{{this.fechaVisualFin}}</b></span></span>
-                                        </div>
-
+                                        <h3>CAJA | Reporte de Caja</h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
                                                 <input class="form-control" placeholder="Escribe aqu&iacute;"
@@ -53,48 +47,41 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-12 col-md-6 col-xl-5">
-                                    <form [formGroup]="form" (ngSubmit)="verFecha()">
-                                        <div class="row" style="display: flex;flex-wrap: wrap; align-items: center;">
-                                            <div class="col-12 col-md-6 col-xl-4">
-                                                <div class="form-group local-forms" style="margin-bottom: 0;">
-                                                    <label>DE: <span style="font-size: 10px;">MM/DD/YYYY</span>
-                                                    </label>
-                                                    <input class="form-control datetimepicker" type="text"
-                                                        formControlName="fechaemisioninicio" matInput
-                                                        [matDatepicker]="picker1">
-                                                    <mat-datepicker #picker1></mat-datepicker>
-                                                    <mat-datepicker-toggle matIconSuffix
-                                                        [for]="picker1"></mat-datepicker-toggle>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-md-6 col-xl-4">
-                                                <div class="form-group local-forms" style="margin-bottom: 0;">
-                                                    <label>HASTA: <span style="font-size: 10px;">MM/DD/YYYY</span>
-                                                    </label>
-                                                    <input class="form-control datetimepicker" type="text"
-                                                        formControlName="fechaemisionfin" matInput
-                                                        [matDatepicker]="picker2">
-                                                    <mat-datepicker #picker2></mat-datepicker>
-                                                    <mat-datepicker-toggle matIconSuffix
-                                                        [for]="picker2"></mat-datepicker-toggle>
-                                                </div>
-                                            </div>
-                                            <div class="col-12 col-md-6 col-xl-3">
-                                                <div class="doctor-submit">
-                                                    <button type="submit" [disabled]="form.invalid"
-                                                        class="btn btn-primary submit-list-form me-2">Buscar</button>
-                                                </div>
+                                <!-- <div class="col-5">
+                                    <div class="row" style="display: flex;flex-wrap: wrap; align-items: center;">
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                <label>De </label>
+                                                <input class="form-control datetimepicker" type="text" matInput [matDatepicker]="picker1">
+                                                <mat-datepicker #picker1></mat-datepicker>
+                                                <mat-datepicker-toggle matIconSuffix [for]="picker1"></mat-datepicker-toggle>
                                             </div>
                                         </div>
-                                    </form>
-                                </div>
-                                <div class="col-1 text-end float-end ms-auto download-grp">
-                                    <a (click)="exportToExcel()" [class.disabled]="!resultadoMostrar"
-                                        href="javascript:;">
-                                        <img src="assets/img/icons/pdf-icon-04.svg" alt="">
-                                        <span style="font-size: 10px;">Reporte</span>
-                                    </a>
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms" style="margin-bottom: 0;">
+                                                <label>Hasta </label>
+                                                <input class="form-control datetimepicker" type="text" matInput [matDatepicker]="picker">
+                                                <mat-datepicker #picker></mat-datepicker>
+                                                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="doctor-submit">
+                                                <button type="submit" class="btn btn-primary submit-list-form me-2">Buscar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> -->
+                                <div class="col-2 text-end float-end ms-auto download-grp">
+                                    <!-- <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-01.svg"
+                                            alt=""></a>
+                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-02.svg"
+                                            alt=""></a>
+                                    <a href="javascript:;" class=" me-2"><img src="assets/img/icons/pdf-icon-03.svg"
+                                            alt=""></a> -->
+                                    <a (click)="exportarAExcel()" href="javascript:;"><img
+                                            src="assets/img/icons/pdf-icon-04.svg" alt=""><span
+                                            style="font-size: 10px;">Reporte</span></a>
                                 </div>
                             </div>
                         </div>
@@ -110,40 +97,39 @@
                                                 <input class="form-check-input" type="checkbox" value="something">
                                             </div>
                                         </th>
-                                        <th mat-sort-header="comprobante_id">ID</th>
-                                        <th mat-sort-header="comprobante_tipo">COMPROB.</th>
-                                        <th mat-sort-header="comprobante_serie">DETALLE COMPROB.</th>
-                                        <th mat-sort-header="fecha_emision">FECHA EMISION</th>
-                                        <th mat-sort-header="cliente_documento_numero"># DOCUMENTO</th>
-                                        <th mat-sort-header="cliente_razon_social">CLIENTE</th>
-                                        <th mat-sort-header="venta_id">VENTAID</th>
-                                        <th mat-sort-header="envio_sunat">ESTADO SUNAT</th>
+                                        <th mat-sort-header="ope_id">#</th>
+                                        <th mat-sort-header="user_id">USUARIO</th>
+                                        <th mat-sort-header="fecha_pago">FECHA P.</th>
+                                        <th mat-sort-header="ope_tipo">OPERACI&Oacute;N</th>
+                                        <th mat-sort-header="monto_pago">MONTO</th>
+                                        <th mat-sort-header="motivo_pago">MOTIVO</th>
+                                        <th mat-sort-header="motivo_codigo">VENTAID</th>
+                                        <th mat-sort-header="medio_pago">MEDIO PAGO</th>
                                         <!-- <th></th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <ng-container *ngIf="resultadoMostrar; else noResults">
-                                        <tr *ngFor="let data of comprobantesList">
-                                            <td>
-                                                <div class="form-check check-tables">
-                                                    <input class="form-check-input" type="checkbox" value="">
-                                                </div>
-                                            </td>
-                                            <td>{{ data.comprobante_id }}</td>
-                                            <td>{{ data.nombreCOMPROBTIPO }}</td>
-                                            <td>{{ data.comprobante_serie }} - {{ data.comprobante_numero }}</td>
-                                            <td>{{ data.fecha_emision | date: 'dd/MM/yyyy' }}</td>
-                                            <td>{{ data.cliente_documento_numero }}</td>
-                                            <td>{{ data.cliente_razon_social }}</td>
-                                            <td>{{ data.venta_id }}</td>
-                                            <td>{{ data.envio_sunat }}</td>
-                                            <!-- <td class="text-end">
+                                    <tr *ngFor="let data of operacionList; let i = index">
+                                        <td>
+                                            <div class="form-check check-tables">
+                                                <input class="form-check-input" type="checkbox" value="">
+                                            </div>
+                                        </td>
+                                        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                                        <td>{{ data.user_id }}</td>
+                                        <td>{{ data.fecha_pago | date: 'dd/MM/yyyy' }}</td>
+                                        <td>{{ data.ope_tipo }}</td>
+                                        <td>{{ data.monto_pago }}</td>
+                                        <td>{{ data.motivo_pago }}</td>
+                                        <td>{{ data.motivo_codigo }}</td>
+                                        <td>{{ data.medio_pago }}</td>
+                                        <!-- <td class="text-end">
                                             <div class="dropdown dropdown-action">
                                                 <a href="javascript:void(0);" class="action-icon dropdown-toggle"
                                                     data-bs-toggle="dropdown" aria-expanded="false"><i
                                                         class="fa fa-ellipsis-v"></i></a>
                                                 <div class="dropdown-menu dropdown-menu-end">
-                                                    <a class="dropdown-item" [routerLink]="['./ver', data.comprobante_id]"><i
+                                                    <a class="dropdown-item" [routerLink]="['./ver', data.ope_id]"><i
                                                             class="fa-solid fa-pen-to-square m-r-5"></i>
                                                         VER</a>
                                                     <a class="dropdown-item" href="javascript:void(0);"
@@ -152,13 +138,7 @@
                                                 </div>
                                             </div>
                                         </td> -->
-                                        </tr>
-                                    </ng-container>
-                                    <ng-template #noResults>
-                                        <tr>
-                                            <td colspan="8" class="text-center">Especifique un rango de fecha</td>
-                                        </tr>
-                                    </ng-template>
+                                    </tr>
                                 </tbody>
                             </table>
 
@@ -226,7 +206,7 @@
                                           disabled:
                                             currentPage ===
                                               pageNumberArray[pageNumberArray.length - 1] ||
-                                              comprobantesList.length === 0
+                                              operacionList.length === 0
                                         }">
                                                 <a (click)="getMoreData('next')" class="page-link"
                                                     href="javascript:void(0);">Next
@@ -236,7 +216,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

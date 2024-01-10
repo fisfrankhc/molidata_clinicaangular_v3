@@ -222,7 +222,7 @@ export class DatanavService {
         },
 
         {
-          menuValue: 'Farmacia',
+          menuValue: 'Despacho',
           rol: [
             {
               valor: '1',
@@ -242,12 +242,12 @@ export class DatanavService {
           ],
           hasSubRoute: true,
           showSubRoute: false,
-          base: 'payroll',
+          base: 'despacho',
           img: 'assets/img/icons/menu-icon-09.svg',
           subMenus: [
             {
               menuValue: 'Ventas',
-              route: 'farmacia/venta',
+              route: 'despacho/venta',
               rol: [
                 {
                   valor: '1',
@@ -262,7 +262,7 @@ export class DatanavService {
             },
             {
               menuValue: 'Clientes',
-              route: 'farmacia/cliente',
+              route: 'despacho/cliente',
               rol: [
                 {
                   valor: '1',
@@ -274,7 +274,7 @@ export class DatanavService {
             },
             {
               menuValue: 'caja',
-              route: 'farmacia/caja',
+              route: 'despacho/caja',
               rol: [
                 {
                   valor: '1',
@@ -292,7 +292,7 @@ export class DatanavService {
             },
             {
               menuValue: 'Reporte de Caja',
-              route: 'farmacia/reportecaja',
+              route: 'despacho/reportecaja',
               rol: [
                 {
                   valor: '1',
@@ -307,7 +307,7 @@ export class DatanavService {
             },
             {
               menuValue: 'Inicio/cierre de Operaciones',
-              route: 'farmacia/inicio-cierre-operaciones',
+              route: 'despacho/inicio-cierre-operaciones',
               rol: [
                 {
                   valor: '1',

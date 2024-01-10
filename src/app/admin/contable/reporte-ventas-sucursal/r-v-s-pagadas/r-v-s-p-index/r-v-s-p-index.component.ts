@@ -9,15 +9,15 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { pageSelection, Ventas } from 'src/app/shared/interfaces/farmacia';
-import { VentasService } from 'src/app/shared/services/farmacia/ventas/ventas.service';
-import { VentasDetalleService } from 'src/app/shared/services/farmacia/ventas/ventas-detalle.service';
-import { VentasItemService } from 'src/app/shared/services/farmacia/ventas/ventas-item.service';
+import { pageSelection, Ventas } from 'src/app/shared/interfaces/despacho';
+import { VentasService } from 'src/app/shared/services/despacho/ventas/ventas.service';
+import { VentasDetalleService } from 'src/app/shared/services/despacho/ventas/ventas-detalle.service';
+import { VentasItemService } from 'src/app/shared/services/despacho/ventas/ventas-item.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
-import { ClientesService } from 'src/app/shared/services/farmacia/clientes/clientes.service';
+import { ClientesService } from 'src/app/shared/services/despacho/clientes/clientes.service';
 import { GeneralService } from 'src/app/shared/services/general.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
-import { OperacionService } from 'src/app/shared/services/farmacia/caja/operacion.service';
+import { OperacionService } from 'src/app/shared/services/despacho/caja/operacion.service';
 import { forkJoin, of, Observable } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { catchError, map } from 'rxjs/operators';

@@ -36,9 +36,9 @@ const routes: Routes = [
         data: { expectedRoles: ['1', '2'] } as any,
       },
       {
-        path: 'farmacia',
+        path: 'despacho',
         loadChildren: () =>
-          import('./farmacia/farmacia.module').then((m) => m.FarmaciaModule),
+          import('./despacho/despacho.module').then((m) => m.DespachoModule),
         data: { expectedRoles: ['1', '2', '5', '6', '7'] } as any,
       },
       {

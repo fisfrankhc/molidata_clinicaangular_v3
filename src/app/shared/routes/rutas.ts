@@ -65,30 +65,30 @@ export class rutas {
     return this.baseUrl + '/logistica/stock';
   }
 
-  public static get farmacia_venta(): string {
-    return this.baseUrl + '/farmacia/venta';
+  public static get despacho_venta(): string {
+    return this.baseUrl + '/despacho/venta';
   }
-  public static get farmacia_venta_nuevo(): string {
-    return this.baseUrl + '/farmacia/venta/nuevo';
-  }
-
-  public static get farmacia_cliente(): string {
-    return this.baseUrl + '/farmacia/cliente';
-  }
-  public static get farmacia_cliente_nuevo(): string {
-    return this.baseUrl + '/farmacia/cliente/nuevo';
+  public static get despacho_venta_nuevo(): string {
+    return this.baseUrl + '/despacho/venta/nuevo';
   }
 
-  public static get farmacia_caja(): string {
-    return this.baseUrl + '/farmacia/caja';
+  public static get despacho_cliente(): string {
+    return this.baseUrl + '/despacho/cliente';
+  }
+  public static get despacho_cliente_nuevo(): string {
+    return this.baseUrl + '/despacho/cliente/nuevo';
   }
 
-  public static get farmacia_iniciocierre_operaciones(): string {
-    return this.baseUrl + '/farmacia/inicio-cierre-operaciones';
+  public static get despacho_caja(): string {
+    return this.baseUrl + '/despacho/caja';
   }
 
-  public static get farmacia_reportecaja(): string {
-    return this.baseUrl + '/farmacia/reportecaja';
+  public static get despacho_iniciocierre_operaciones(): string {
+    return this.baseUrl + '/despacho/inicio-cierre-operaciones';
+  }
+
+  public static get despacho_reportecaja(): string {
+    return this.baseUrl + '/despacho/reportecaja';
   }
 
   public static get almacen_generarrequerimiento(): string {
