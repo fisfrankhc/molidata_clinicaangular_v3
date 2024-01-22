@@ -41,7 +41,7 @@ export class ProductosNuevoComponent implements OnInit {
       this.categorias = data;
     });
     this.medidaService.getMedidasAll().subscribe((data: any) => {
-      this.medidas = data
+      this.medidas = data;
     });
   }
 
@@ -71,7 +71,8 @@ export class ProductosNuevoComponent implements OnInit {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/logistica/producto']);
+          //this.router.navigate(['/logistica/producto']);
+          this.router.navigate([rutas.logistica_producto]);
         },
       });
     }

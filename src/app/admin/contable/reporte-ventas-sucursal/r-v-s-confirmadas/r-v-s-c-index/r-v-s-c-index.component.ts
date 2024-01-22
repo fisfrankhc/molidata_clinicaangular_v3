@@ -171,13 +171,14 @@ export class RVSCIndexComponent implements OnInit {
         //AHORA SI PASAMOS DATOS A LA TABLA
         this.totalData = this.datosSUC.length;
 
-        this.datosSUC.map((res: any, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.sucursalVentasList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosSUC.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
@@ -186,7 +187,7 @@ export class RVSCIndexComponent implements OnInit {
         this.dataSource = new MatTableDataSource<Ventas>(
           this.sucursalVentasList
         );
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
@@ -196,10 +197,56 @@ export class RVSCIndexComponent implements OnInit {
     fechaventafin: ['', Validators.required],
   });
 
-  public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.sucursalVentasList = this.dataSource.filteredData;
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosSUC.map((res: any, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.sucursalVentasList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
   }
+
+  public searchData(value: any): void {
+    //this.dataSource.filter = value.trim().toLowerCase();this.sucursalVentasList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosSUC)
+    const filteredData = this.datosSUC.filter((data: any) => {
+      return (
+        (data.suc_nombre &&
+          data.suc_nombre.toLowerCase().includes(value.toLowerCase())) ||
+        (data.fechaBusquedaInicio &&
+          data.fechaBusquedaInicio
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (data.fechaBusquedaFin &&
+          data.fechaBusquedaFin
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (data.montotal &&
+          data.montotal.toString().toLowerCase().includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.sucursalVentasList
+    this.sucursalVentasList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosSUC.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Ventas>(this.sucursalVentasList);
+  }
+
   public sortData(sort: Sort) {
     const data = this.sucursalVentasList.slice();
 

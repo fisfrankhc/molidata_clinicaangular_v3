@@ -45,7 +45,8 @@ export class RolesNuevoComponent {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/roles']);
+          //this.router.navigate(['/roles']);
+          this.router.navigate([rutas.rol]);
         },
       });
     }

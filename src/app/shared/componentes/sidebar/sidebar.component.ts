@@ -31,7 +31,7 @@ interface MenuItem {
   icon?: string;
   faIcon?: boolean;
   subMenus: MenuItem[];
-} 
+}
 
 @Component({
   selector: 'app-sidebar',

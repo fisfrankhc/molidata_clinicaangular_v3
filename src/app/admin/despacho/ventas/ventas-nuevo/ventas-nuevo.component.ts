@@ -560,7 +560,8 @@ export class VentasNuevoComponent implements OnInit {
                       );
                     },
                     complete: () => {
-                      this.router.navigate(['/despacho/venta']);
+                      //this.router.navigate(['despacho/venta']);
+                      this.router.navigate([rutas.despacho_venta]);
                     },
                   });
                 } else {
@@ -615,7 +616,8 @@ export class VentasNuevoComponent implements OnInit {
               );
             },
             complete: () => {
-              this.router.navigate(['/despacho/venta']);
+              //this.router.navigate(['despacho/venta']);
+              this.router.navigate([rutas.despacho_venta]);
             },
           });
         }
@@ -631,6 +633,7 @@ export class VentasNuevoComponent implements OnInit {
       }
     }
   }
+
   movimiento: any;
   async ConfirmarVentaClick() {
     const cantidadesPorId: {
@@ -782,7 +785,8 @@ export class VentasNuevoComponent implements OnInit {
                       );
                     },
                     complete: () => {
-                      this.router.navigate(['/despacho/caja']);
+                      //this.router.navigate(['/despacho/caja']);
+                      this.router.navigate([rutas.despacho_caja]);
                     },
                   });
                 } else {
@@ -837,7 +841,8 @@ export class VentasNuevoComponent implements OnInit {
               );
             },
             complete: () => {
-              this.router.navigate(['/despacho/caja']);
+              //this.router.navigate(['/despacho/caja']);
+              this.router.navigate([rutas.despacho_caja]);
             },
           });
         }
@@ -890,4 +895,3 @@ export class VentasNuevoComponent implements OnInit {
     }
   }
 }
-

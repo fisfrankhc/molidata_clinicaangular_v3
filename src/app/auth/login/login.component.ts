@@ -33,7 +33,12 @@ export class LoginComponent implements OnInit {
   //estaLogueado: any = localStorage.getItem('authenticated');
   ngOnInit(): void {
     if (localStorage.getItem('authenticated')) {
-      this.router.navigate(['/dashboard']);
+      if (localStorage.getItem('userpanel') === '1') {
+        this.router.navigate(['ventas/dashboard']);
+      } else if (localStorage.getItem('userpanel') === '2') {
+        this.router.navigate(['clinica/dashboard']);
+      }
+      //this.router.navigate(['/dashboard']);
     }
   }
 
@@ -60,6 +65,7 @@ export class LoginComponent implements OnInit {
                   this.datosAPI['user_correo'],
                   this.datosAPI['rol_id'],
                   this.datosAPI['sucursal_id'],
+                  this.datosAPI['user_panel'],
                   this.datosAPI['user_estado']
                 );
               } else {

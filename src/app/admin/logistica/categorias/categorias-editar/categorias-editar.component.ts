@@ -91,7 +91,8 @@ export class CategoriasEditarComponent implements OnInit {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/logistica/categoria']);
+          //this.router.navigate(['/logistica/categoria']);
+          this.router.navigate([rutas.logistica_categoria]);
         },
       });
     }

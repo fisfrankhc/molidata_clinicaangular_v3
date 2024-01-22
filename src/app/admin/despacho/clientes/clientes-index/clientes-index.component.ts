@@ -46,13 +46,15 @@ export class ClientesIndexComponent implements OnInit {
       next: (datosCLIENTE: any) => {
         this.datosCLIENTE = datosCLIENTE;
         this.totalData = this.datosCLIENTE.length;
-        this.datosCLIENTE.map((res: Clientes, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.clientesList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosCLIENTE.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
@@ -60,14 +62,69 @@ export class ClientesIndexComponent implements OnInit {
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Clientes>(this.clientesList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosCLIENTE.map((res: Clientes, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.clientesList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.clientesList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.clientesList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosCLIENTE)
+    const filteredData = this.datosCLIENTE.filter((cliente: Clientes) => {
+      return (
+        (cliente.cli_id &&
+          cliente.cli_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (cliente.tipo_documento &&
+          cliente.tipo_documento.toLowerCase().includes(value.toLowerCase())) ||
+        (cliente.numero_documento &&
+          cliente.numero_documento
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (cliente.cli_nombre &&
+          cliente.cli_nombre.toLowerCase().includes(value.toLowerCase())) ||
+        (cliente.cli_direccion &&
+          cliente.cli_direccion.toLowerCase().includes(value.toLowerCase())) ||
+        (cliente.cli_email &&
+          cliente.cli_email.toLowerCase().includes(value.toLowerCase())) ||
+        (cliente.cli_telefono &&
+          cliente.cli_telefono.toLowerCase().includes(value.toLowerCase())) ||
+        ((cliente.cli_estado === '1' ? 'activo' : 'inactivo') &&
+          (cliente.cli_estado === '1' ? 'activo' : 'inactivo')
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.clientesList
+    this.clientesList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosCLIENTE.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Clientes>(this.clientesList);
   }
 
   public sortData(sort: Sort) {
@@ -100,6 +157,7 @@ export class ClientesIndexComponent implements OnInit {
       this.skip = this.pageSize * this.pageIndex;
       this.clientesAll();
     }
+    this.dataSource = new MatTableDataSource<Clientes>(this.clientesList); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {
@@ -137,4 +195,3 @@ export class ClientesIndexComponent implements OnInit {
     }
   }
 }
-

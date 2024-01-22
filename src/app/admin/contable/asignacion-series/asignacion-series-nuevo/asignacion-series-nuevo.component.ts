@@ -105,7 +105,8 @@ export class AsignacionSeriesNuevoComponent implements OnInit {
             },
             complete: () => {
               this.form.reset();
-              this.router.navigate(['/contable/asignacion-series']);
+              //this.router.navigate(['/contable/asignacion-series']);
+              this.router.navigate([rutas.contable_asignacionserie]);
 
               const Toast = Swal.mixin({
                 toast: true,

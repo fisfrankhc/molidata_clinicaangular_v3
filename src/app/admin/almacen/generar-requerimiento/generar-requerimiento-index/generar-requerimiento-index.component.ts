@@ -80,17 +80,18 @@ export class GenerarRequerimientoIndexComponent implements OnInit {
               requerimiento.nombreUsuario = usuario.user_name;
             }
             //console.log(usuario);
-            return usuario;
+            return requerimiento;
           }
         );
 
-        datosREQUERIMIENTOS.map((res: Requerimientos, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.requerimientosList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosREQUERIMIENTOS.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
@@ -104,9 +105,58 @@ export class GenerarRequerimientoIndexComponent implements OnInit {
     });
   }
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosREQUERIMIENTOS.map((res: Requerimientos, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.requerimientosList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: string): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.requerimientosList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.requerimientosList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosCOMPRA)
+    const filteredData = this.datosREQUERIMIENTOS.filter(
+      (requerimiento: Requerimientos) => {
+        return (
+          (requerimiento.requerimiento_id &&
+            requerimiento.requerimiento_id
+              .toString()
+              .toLowerCase()
+              .includes(value.toLowerCase())) ||
+          (requerimiento.requerimiento_fecha &&
+            requerimiento.requerimiento_fecha
+              .toString()
+              .toLowerCase()
+              .includes(value.toLowerCase())) ||
+          (requerimiento.nombreUsuario &&
+            requerimiento.nombreUsuario
+              .toLowerCase()
+              .includes(value.toLowerCase()))
+        );
+      }
+    );
+
+    // Asigna los datos filtrados a this.comprasList
+    this.requerimientosList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosREQUERIMIENTOS.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Requerimientos>(
+      this.requerimientosList
+    );
   }
 
   public sortData(sort: Sort) {

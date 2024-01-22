@@ -405,8 +405,9 @@ export class CajaVerComponent implements OnInit {
             console.log(errorData);
           },
           complete: () => {
+            //this.router.navigate([`/despacho/caja/venta-pagada/${this.ventaId}`,]);
             this.router.navigate([
-              `/despacho/caja/venta-pagada/${this.ventaId}`,
+              rutas.despacho_caja_ventapagada + this.ventaId,
             ]);
           },
         });

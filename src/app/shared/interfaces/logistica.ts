@@ -58,6 +58,7 @@ export interface Compra {
   destino_id: number; //sucursal a donde se va ingresar el stock
   estado: number;
   nombreProveedor: string; //PARA VISTA
+  nombreSucursalDestino: string; //PARA VISTA
 }
 
 export interface CompraDetalle {

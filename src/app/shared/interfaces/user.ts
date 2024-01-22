@@ -1,3 +1,8 @@
+export interface pageSelection {
+  skip: number;
+  limit: number;
+}
+
 export interface User {
   fecha_registro: string;
   rol_id: number;
@@ -9,4 +14,6 @@ export interface User {
   user_name: string;
   user_nombre: string;
   user_telefono: string;
+  user_panel: string;
+  nombreRol: string; //PARA VISTA
 }

@@ -459,7 +459,8 @@ export class RequerimientosVerComponent implements OnInit {
       },
       error: (errorData) => {},
       complete: () => {
-        this.router.navigate(['/logistica/requerimientos']);
+        //this.router.navigate(['/logistica/requerimientos']);
+        this.router.navigate([rutas.logistica_requerimientos]);
       },
     });
   }

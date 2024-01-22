@@ -143,7 +143,7 @@ export class ProveedoresEditarComponent {
   actualizarProveedor() {
     if (this.form.valid) {
       const datos = this.form.value;
-      console.log(datos)
+      console.log(datos);
       this.proveedoresService.updatedProveedor(datos).subscribe({
         next: (response) => {
           console.log('Respuesta de la API:', response);
@@ -153,7 +153,8 @@ export class ProveedoresEditarComponent {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/logistica/proveedores']);
+          //this.router.navigate(['/logistica/proveedores']);
+          this.router.navigate([rutas.logistica_proveedor]);
         },
       });
     }

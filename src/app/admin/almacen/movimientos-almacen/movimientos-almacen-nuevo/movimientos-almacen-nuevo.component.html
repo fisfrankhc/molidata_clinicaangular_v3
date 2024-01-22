@@ -41,7 +41,7 @@
                                                     [value]="nombreSucursal" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-xl-2">
+                                        <div class="col-12 col-md-6 col-xl-3">
                                             <div class="form-group local-forms">
                                                 <label>TIPO MOVIMIENTO <span class="login-danger">*</span></label>
                                                 <mat-select class="form-control select" placeholder="Seleccione"
@@ -52,7 +52,7 @@
                                                 </mat-select>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-xl-2">
+                                        <div class="col-12 col-md-6 col-xl-3">
                                             <div class="form-group local-forms">
                                                 <label>MOVIMIENTO ORIGEN <span class="login-danger">*</span></label>
                                                 <mat-select class="form-control select" placeholder="Seleccione"
@@ -168,8 +168,9 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <input class="form-control " style="" type="text"
-                                                        formControlName="lotebuscado">
+                                                    <input class="form-control "
+                                                        style="width: 45px; padding: 2px 2px; text-align: center;"
+                                                        type="text" formControlName="lotebuscado">
                                                 </td>
                                                 <td>
                                                     <input class="form-control " style="" type="text"
@@ -204,7 +205,9 @@
                                         </thead>
                                         <tbody>
                                             <tr class="add-row"
-                                                *ngFor="let producto of form.get('listaMovimiento')?.value; let i = index" [ngClass]="{'producto-no-encontrado': producto.encontrado === false}" [ngClass]="{'producto-mayor': producto.estilo === 'producto-mayor'}">
+                                                *ngFor="let producto of form.get('listaMovimiento')?.value; let i = index"
+                                                [ngClass]="{'producto-no-encontrado': producto.encontrado === false}"
+                                                [ngClass]="{'producto-mayor': producto.estilo === 'producto-mayor'}">
                                                 <td style="max-width: 90px;">
                                                     <input type="hidden" class="form-control"
                                                         [value]="producto.idobtenido">

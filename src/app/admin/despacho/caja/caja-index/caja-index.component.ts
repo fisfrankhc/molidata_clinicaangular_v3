@@ -90,7 +90,8 @@ export class CajaIndexComponent implements OnInit {
                 timer: 1500,
                 timerProgressBar: true,
               }).then(() => {
-                this.router.navigate(['/despacho/inicio-cierre-operaciones']);
+                //this.router.navigate(['/despacho/inicio-cierre-operaciones']);
+                this.router.navigate([rutas.despacho_iniciocierre_operaciones]);
               });
             } else {
               console.log('AUN NO HA REALIZADO EL CIERRE, TODO BIEN');
@@ -107,7 +108,8 @@ export class CajaIndexComponent implements OnInit {
               timer: 1500,
               timerProgressBar: true,
             }).then(() => {
-              this.router.navigate(['/despacho/inicio-cierre-operaciones']);
+              //this.router.navigate(['/despacho/inicio-cierre-operaciones']);
+              this.router.navigate([rutas.despacho_iniciocierre_operaciones]);
             });
           }
         },
@@ -166,27 +168,84 @@ export class CajaIndexComponent implements OnInit {
           return venta;
         });
 
-        this.datosVENTA.map((res: Ventas, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.ventasList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosVENTA.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Ventas>(this.ventasList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosVENTA.map((res: Ventas, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.ventasList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.ventasList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase(); this.ventasList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosVENTA)
+    const filteredData = this.datosVENTA.filter((venta: Ventas) => {
+      return (
+        (venta.venta_id &&
+          venta.venta_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (venta.venta_fecha &&
+          venta.venta_fecha
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (venta.nombreCliente &&
+          venta.nombreCliente.toLowerCase().includes(value.toLowerCase())) ||
+        (venta.venta_proceso &&
+          venta.venta_proceso.toLowerCase().includes(value.toLowerCase())) ||
+        (venta.usuario_id &&
+          venta.usuario_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (venta.nombreSucursal &&
+          venta.nombreSucursal.toLowerCase().includes(value.toLowerCase())) ||
+        ((venta.venta_estado === '1' ? 'activo' : 'inactivo') &&
+          (venta.venta_estado === '1' ? 'activo' : 'inactivo')
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.ventasList
+    this.ventasList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosVENTA.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Ventas>(this.ventasList);
   }
 
   public sortData(sort: Sort) {
@@ -219,6 +278,7 @@ export class CajaIndexComponent implements OnInit {
       this.skip = this.pageSize * this.pageIndex;
       this.ventasConfirmadasAll();
     }
+    this.dataSource = new MatTableDataSource<Ventas>(this.ventasList); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {

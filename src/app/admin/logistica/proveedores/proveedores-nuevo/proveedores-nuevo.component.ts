@@ -50,7 +50,6 @@ export class ProveedoresNuevoComponent {
     return this.form.controls;
   }
 
-
   // Evento input para validar la longitud del documento_numero
   validarNumeroDocumento(event: any): void {
     const input = event.target;
@@ -100,7 +99,8 @@ export class ProveedoresNuevoComponent {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/logistica/proveedores']);
+          //this.router.navigate(['/logistica/proveedores']);
+          this.router.navigate([rutas.logistica_proveedor]);
         },
       });
     }

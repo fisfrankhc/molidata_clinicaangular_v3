@@ -93,21 +93,22 @@ export class ProductosEditarComponent implements OnInit {
   }
 
   actualizarProducto() {
-        if (this.form.valid) {
-          const datos = this.form.value;
-          console.log(datos);
-          this.productoService.updatedProducto(datos).subscribe({
-            next: (response) => {
-              console.log('Respuesta de la API:', response);
-            },
-            error: (errorData) => {
-              console.error('Error al enviar la solicitud POST:', errorData);
-            },
-            complete: () => {
-              this.form.reset();
-              this.router.navigate(['/logistica/producto']);
-            },
-          });
-        }
+    if (this.form.valid) {
+      const datos = this.form.value;
+      console.log(datos);
+      this.productoService.updatedProducto(datos).subscribe({
+        next: (response) => {
+          console.log('Respuesta de la API:', response);
+        },
+        error: (errorData) => {
+          console.error('Error al enviar la solicitud POST:', errorData);
+        },
+        complete: () => {
+          this.form.reset();
+          //this.router.navigate(['/logistica/producto']);
+          this.router.navigate([rutas.logistica_producto]);
+        },
+      });
+    }
   }
 }

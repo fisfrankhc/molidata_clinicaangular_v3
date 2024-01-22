@@ -109,9 +109,12 @@ export class StockSucursalIndexComponent implements OnInit {
     this.serialNumberArray = [];
     const sucursalId = this.form.value.sucursalid;
     this.stockService.getStockAll().subscribe({
-      next: (datosSTOCK: any) => {
-        this.datosSTOCK = datosSTOCK;
+      next: (responseSTOCK: any) => {
+        this.datosSTOCK = responseSTOCK;
         this.totalData = this.datosSTOCK.length;
+        this.datosSTOCK = this.datosSTOCK.filter(
+          (data) => data.almacen_id === this.usersucursal
+        );
 
         // Mapear nombres
         this.datosSTOCK = this.datosSTOCK.map((stock: Stock) => {
@@ -145,30 +148,86 @@ export class StockSucursalIndexComponent implements OnInit {
         });
         //console.log(this.datosSTOCK);
 
-        this.datosSTOCK.map((res: Stock, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.stockList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosSTOCK.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
       },
       complete: () => {
-        this.stockList = this.datosSTOCK.filter(
-          (data) => data.almacen_id === this.usersucursal
-        );
         this.dataSource = new MatTableDataSource<Stock>(this.stockList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
+
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosSTOCK.map((res: Stock, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.stockList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: string): void {
-    console.log('searchDataValue:', value);
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.stockList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.stockList = this.dataSource.filteredData;
+    // Realiza el filtro en todos los datos (this.datosSTOCK)
+    const filteredData = this.datosSTOCK.filter((stock: Stock) => {
+      return (
+        (stock.stock_id &&
+          stock.stock_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (stock.codigoProducto &&
+          stock.codigoProducto.toLowerCase().includes(value.toLowerCase())) ||
+        (stock.nombreProducto &&
+          stock.nombreProducto.toLowerCase().includes(value.toLowerCase())) ||
+        (stock.descripcionProducto &&
+          stock.descripcionProducto
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (stock.cantidad &&
+          stock.cantidad
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (stock.stock_minimo &&
+          stock.stock_minimo
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (stock.stock_minimo &&
+          stock.stock_minimo
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.stockList
+    this.stockList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosSTOCK.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Stock>(this.stockList);
   }
 
   public sortData(sort: Sort) {
@@ -225,10 +284,7 @@ export class StockSucursalIndexComponent implements OnInit {
 
   private calculateTotalPages(totalData: number, pageSize: number): void {
     this.pageNumberArray = [];
-    this.totalPages = totalData / pageSize;
-    if (this.totalPages % 1 != 0) {
-      this.totalPages = Math.trunc(this.totalPages + 1);
-    }
+    this.totalPages = Math.ceil(totalData / pageSize);
     /* eslint no-var: off */
     for (var i = 1; i <= this.totalPages; i++) {
       const limit = pageSize * i;

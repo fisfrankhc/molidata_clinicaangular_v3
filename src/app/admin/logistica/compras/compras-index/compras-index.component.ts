@@ -5,6 +5,7 @@ import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { pageSelection, Compra } from 'src/app/shared/interfaces/logistica';
 import { ProveedoresService } from 'src/app/shared/services/logistica/proveedor/proveedores.service';
+import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 
 @Component({
   selector: 'app-compras-index',
@@ -16,7 +17,8 @@ export class ComprasIndexComponent implements OnInit {
 
   constructor(
     public comprasService: ComprasService,
-    public proveedoresService: ProveedoresService
+    public proveedoresService: ProveedoresService,
+    private sucursalService: SucursalService
   ) {}
 
   public comprasList: Array<Compra> = [];
@@ -38,6 +40,7 @@ export class ComprasIndexComponent implements OnInit {
 
   ngOnInit(): void {
     this.proveedoresAll();
+    this.sucursalesAll();
   }
 
   datosPROVEEDOR: any;
@@ -52,10 +55,22 @@ export class ComprasIndexComponent implements OnInit {
     });
   }
 
+  datosSUC: any;
+  sucursalesAll(): void {
+    this.sucursalService.getSucursalAll().subscribe({
+      next: (responseSUC: any) => {
+        this.datosSUC = responseSUC;
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
+
   datosCOMPRA: Compra[] = [];
   private comprasAll(): void {
     this.comprasList = [];
     this.serialNumberArray = [];
+    // Obtener datos sin aplicar el filtro
     this.comprasService.getComprasAll().subscribe({
       next: (datosCOMPRA: any) => {
         this.datosCOMPRA = datosCOMPRA;
@@ -70,31 +85,103 @@ export class ComprasIndexComponent implements OnInit {
           if (proveedor) {
             compra.nombreProveedor = proveedor.razon_social;
           }
+          //PARA DESTINO/SUCURSAL
+          const sucursal = this.datosSUC.find(
+            (suc: any) => suc.suc_id === compra.destino_id
+          );
+          if (sucursal) {
+            compra.nombreSucursalDestino = sucursal.suc_nombre;
+          }
 
           return compra;
         });
 
-        datosCOMPRA.map((res: Compra, index: number) => {
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosCOMPRA.length;
+        }
+
+        /* datosCOMPRA.map((res: Compra, index: number) => {
           const serialNumber = index + 1;
           if (index >= this.skip && serialNumber <= this.limit) {
             this.comprasList.push(res);
             this.serialNumberArray.push(serialNumber);
           }
-        });
+        }); */
       },
       error: (errorData) => {
         console.error(errorData);
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Compra>(this.comprasList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosCOMPRA.map((res: Compra, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.comprasList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: string): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.comprasList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();
+    //this.comprasList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosCOMPRA)
+    const filteredData = this.datosCOMPRA.filter((compra: Compra) => {
+      return (
+        (compra.compra_id &&
+          compra.compra_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (compra.nombreProveedor &&
+          compra.nombreProveedor.toLowerCase().includes(value.toLowerCase())) ||
+        (compra.compra_fecha &&
+          compra.compra_fecha
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (compra.tipo_pago &&
+          compra.tipo_pago.toLowerCase().includes(value.toLowerCase())) ||
+        (compra.proceso &&
+          compra.proceso.toLowerCase().includes(value.toLowerCase())) ||
+        (compra.nombreSucursalDestino &&
+          compra.nombreSucursalDestino
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        ((compra.estado === 1 ? 'activo' : 'inactivo') &&
+          (compra.estado === 1 ? 'activo' : 'inactivo')
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.comprasList
+    this.comprasList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosCOMPRA.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Compra>(this.comprasList);
   }
 
   public sortData(sort: Sort) {
@@ -155,6 +242,7 @@ export class ComprasIndexComponent implements OnInit {
     if (this.totalPages % 1 != 0) {
       this.totalPages = Math.trunc(this.totalPages + 1);
     }
+    //this.totalPages = Math.ceil(totalData / pageSize);
     /* eslint no-var: off */
     for (var i = 1; i <= this.totalPages; i++) {
       const limit = pageSize * i;

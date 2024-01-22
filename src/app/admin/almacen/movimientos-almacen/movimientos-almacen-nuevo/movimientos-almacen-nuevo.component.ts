@@ -604,8 +604,9 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                                 console.error(errorData);
                               },
                               complete: () => {
+                                //this.router.navigate(['/almacen/movimientos-almacen',]);
                                 this.router.navigate([
-                                  '/almacen/movimientos-almacen',
+                                  rutas.almacen_movimientosalmacen,
                                 ]);
                               },
                             });
@@ -753,7 +754,8 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
                 console.error(errorData);
               },
               complete: () => {
-                this.router.navigate(['/almacen/movimientos-almacen']);
+                //this.router.navigate(['/almacen/movimientos-almacen']);
+                this.router.navigate([rutas.almacen_movimientosalmacen]);
               },
             });
         }
@@ -849,7 +851,8 @@ export class MovimientosAlmacenNuevoComponent implements OnInit {
               console.error(errorData);
             },
             complete: () => {
-              this.router.navigate(['/almacen/movimientos-almacen']);
+              //this.router.navigate(['/almacen/movimientos-almacen']);
+              this.router.navigate([rutas.almacen_movimientosalmacen]);
             },
           });
       }

@@ -68,7 +68,7 @@
                                                         [for]="picker1"></mat-datepicker-toggle>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="col-12 col-md-6 col-xl-5">
                                                 <div class="form-group local-forms" style="margin-bottom: 0;">
                                                     <label>HASTA: <span
                                                             style="font-size: 10px;">MM/DD/YYYY</span></label>
@@ -83,13 +83,14 @@
                                             <div class="col-12 col-md-6 col-xl-3">
                                                 <div class="doctor-submit">
                                                     <button type="submit" [disabled]="form.invalid"
-                                                        class="btn btn-primary submit-list-form me-2">Buscar</button>
+                                                        class="btn btn-primary submit-list-form me-2"
+                                                        style="min-width: 105px;">Buscar</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-1 text-end float-end ms-auto download-grp">
+                                <div class="col-12 col-md-6 col-xl-1 text-center float-end ms-auto download-grp">
                                     <a (click)="exportToExcel()" href="javascript:;"
                                         [class.disabled]="!resultadoMostrar"><img src="assets/img/icons/pdf-icon-04.svg"
                                             alt=""><span style="font-size: 10px;">Reporte</span></a>
@@ -136,8 +137,10 @@
                                                             [routerLink]="['./ver', data.suc_id, data.fechaBusquedaInicio, data.fechaBusquedaFin ]"><i
                                                                 class="fa-solid fa-pen-to-square m-r-5"></i> VER
                                                             DETALLE</a>
-                                                        <a class="dropdown-item vista" (click)="ventasExcelAll(data.suc_id, data.suc_nombre, data.fechaBusquedaInicio, data.fechaBusquedaFin)"><i class="fa fa-file-excel"
-                                                                aria-hidden="true"></i> &nbsp; REPORTE POR PRODUCTOS</a>
+                                                        <a class="dropdown-item vista"
+                                                            (click)="ventasExcelAll(data.suc_id, data.suc_nombre, data.fechaBusquedaInicio, data.fechaBusquedaFin)"><i
+                                                                class="fa fa-file-excel" aria-hidden="true"></i> &nbsp;
+                                                            REPORTE POR PRODUCTOS</a>
                                                     </div>
                                                 </div>
                                             </td>
@@ -160,9 +163,9 @@
                             <div class="table_footer">
                                 <div class="col-sm-12 col-md-5">
                                     <div class="dataTables_info">
-                                        Mostrando de {{ serialNumberArray[0] }} a
-                                        {{ serialNumberArray[serialNumberArray.length - 1] }} de
-                                        {{ totalData }} registros
+                                        Mostrando de {{ skip + 1 }} a {{ skip + sucursalVentasList.length }} de {{
+                                        totalFilteredData }}
+                                        registros
                                     </div>
                                 </div>
 

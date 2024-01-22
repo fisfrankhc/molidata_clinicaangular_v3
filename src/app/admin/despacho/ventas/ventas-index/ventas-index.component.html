@@ -69,7 +69,7 @@
                                                         [for]="picker1"></mat-datepicker-toggle>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="col-12 col-md-6 col-xl-5">
                                                 <div class="form-group local-forms" style="margin-bottom: 0;">
                                                     <label>HASTA: <span style="font-size: 10px;">MM/DD/YYYY</span>
                                                     </label>
@@ -84,13 +84,14 @@
                                             <div class="col-12 col-md-6 col-xl-3">
                                                 <div class="doctor-submit">
                                                     <button type="submit" [disabled]="form.invalid"
-                                                        class="btn btn-primary submit-list-form me-2">Buscar</button>
+                                                        class="btn btn-primary submit-list-form me-2"
+                                                        style="min-width: 105px;">Buscar</button>
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-1 text-end float-end ms-auto download-grp">
+                                <div class="col-12 col-md-6 col-xl-1 text-center float-end ms-auto download-grp">
                                     <a (click)="exportToExcel()" [class.disabled]="!resultadoMostrar"
                                         href="javascript:;">
                                         <img src="assets/img/icons/pdf-icon-04.svg" alt="">
@@ -168,64 +169,38 @@
                             </table>
                             <div class="table_footer">
                                 <div class="col-sm-12 col-md-5">
-                                    <div class="dataTables_info"> Mostrando de {{ serialNumberArray[0] }} a {{
-                                        serialNumberArray[serialNumberArray.length - 1] }} de {{ totalData }} registros
+                                    <div class="dataTables_info">
+                                        Mostrando de {{ skip + 1 }} a {{ skip + ventasList.length }} de {{
+                                        totalFilteredData }}
+                                        registros
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-7">
                                     <div class="pagination_section">
                                         <ul class="pagination">
                                             <li class="page-item" [ngClass]="{
-                                                                                                                  disabled: currentPage === 1
-                                                                                                                }">
+                                                                                disabled: currentPage === 1
+                                                                            }">
                                                 <a (click)="getMoreData('previous')" class="page-link"
                                                     href="javascript:void(0);" tabindex="-1">Previous</a>
                                             </li>
+
                                             <ng-container *ngFor="let item of pageNumberArray; let i = index">
-                                                <li class="page-item" [class.active]="item === currentPage" [ngClass]="(pageNumberArray[currentPage - 2] > item && item !== 1 &&
-                                                                                                                      pageNumberArray.length > 6) ||
-                                                                                                                    (pageNumberArray[currentPage] < item &&
-                                                                                                                      item !== 1 &&
-                                                                                                                      pageNumberArray.length > 6 &&
-                                                                                                                      pageNumberArray.length !== item)
-                                                                                                                      ? 'hide-page-no'
-                                                                                                                      : 'show-page-no'
-                                                                                                                  ">
+                                                <li class="page-item" [class.active]="item === currentPage">
                                                     <a (click)="moveToPage(item)" class="page-link"
                                                         href="javascript:void(0);">
                                                         {{ item }}
                                                     </a>
                                                 </li>
-                                                <li class="page-item" *ngIf="
-                                                                                                                    i === 0 &&
-                                                                                                                    pageNumberArray.length > 6 &&
-                                                                                                                    currentPage > 2
-                                                                                                                  "
-                                                    [hidden]="currentPage === 1" (click)="moveToPage(currentPage - 2)">
-                                                    <a class="page-link" href="javascript:void(0);"> ... </a>
-                                                </li>
-                                                <li *ngIf="
-                                                                                                                    i === pageNumberArray.length - 2 &&
-                                                                                                                    pageNumberArray.length > 6
-                                                                                                                  "
-                                                    [hidden]="
-                                                                                                                    currentPage >=
-                                                                                                                      pageNumberArray[pageNumberArray.length - 2] ||
-                                                                                                                    totalData <
-                                                                                                                      serialNumberArray[serialNumberArray.length - 1]
-                                                                                                                  "
-                                                    class="page-item" (click)="moveToPage(currentPage + 2)">
-                                                    <a class="page-link" href="javascript:void(0);"> ... </a>
-                                                </li>
                                             </ng-container>
+
                                             <li class="page-item" [ngClass]="{
-                                                                                                                  disabled:
-                                                                                                                    currentPage ===
-                                                                                                                      pageNumberArray[pageNumberArray.length - 1] ||
-                                                                                                                      ventasList.length === 0
-                                                                                                                }">
+                                                                                disabled: currentPage === pageNumberArray[pageNumberArray.length - 1] ||
+                                                                                    ventasList.length === 0
+                                                                            }">
                                                 <a (click)="getMoreData('next')" class="page-link"
-                                                    href="javascript:void(0);">Next </a>
+                                                    href="javascript:void(0);">Next
+                                                </a>
                                             </li>
                                         </ul>
                                     </div>

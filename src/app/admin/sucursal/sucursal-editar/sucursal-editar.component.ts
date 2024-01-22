@@ -76,7 +76,8 @@ export class SucursalEditarComponent implements OnInit {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/sucursal']);
+          //this.router.navigate(['/sucursal']);
+          this.router.navigate([rutas.sucursal]);
         },
       });
     }

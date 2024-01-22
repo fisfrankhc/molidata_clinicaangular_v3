@@ -163,12 +163,13 @@
                                         <div class="doctor-submit text-end">
                                             <a class="btn btn-primary cancel-form"
                                                 [routerLink]="ruta.logistica_compra">ATRÁS</a>
-                                            <div *ngIf="datoCOMPRA[0] && datoCOMPRA[0]['proceso'] === 'COTIZACION'">
-                                                <button class="btn btn-primary" type="submit" name="proforma"
-                                                    (click)="confirmarCompra()" style="margin: 5px;">CONFIRMAR
-                                                    COMPRA</button>
-                                            </div>
-                                            <a href="javascript:void(0);" class="btn btn-success" data-bs-toggle="modal"
+                                            <button *ngIf="datoCOMPRA[0] && datoCOMPRA[0]['proceso'] === 'COTIZACION'"
+                                                class="btn btn-primary" type="submit" name="proforma"
+                                                (click)="confirmarCompra()" style="margin: 5px;">CONFIRMAR
+                                                COMPRA</button>
+                                            <a href="javascript:void(0);"
+                                                *ngIf="datoCOMPRA[0] && datoCOMPRA[0]['proceso'] === 'CONFIRMADO'"
+                                                class="btn btn-success" data-bs-toggle="modal"
                                                 data-bs-target="#agregar_datos_entrega"
                                                 style="margin: 5px; padding: 11px">AGREGAR DATOS DE ENTREGA</a>
                                         </div>

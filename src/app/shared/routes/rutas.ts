@@ -1,5 +1,5 @@
 export class rutas {
-  private static Url = '';
+  private static Url = '/ventas';
 
   public static get baseUrl(): string {
     return this.Url;
@@ -38,6 +38,9 @@ export class rutas {
   }
   public static get logistica_compra_nuevo(): string {
     return this.baseUrl + '/logistica/compra/nuevo';
+  }
+  public static get logistica_compra_ver(): string {
+    return this.baseUrl + '/logistica/compra/ver/';
   }
 
   public static get logistica_producto(): string {
@@ -81,6 +84,9 @@ export class rutas {
 
   public static get despacho_caja(): string {
     return this.baseUrl + '/despacho/caja';
+  }
+  public static get despacho_caja_ventapagada(): string {
+    return this.baseUrl + '/despacho/caja/venta-pagada/';
   }
 
   public static get despacho_iniciocierre_operaciones(): string {

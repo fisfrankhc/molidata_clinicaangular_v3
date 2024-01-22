@@ -308,7 +308,7 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
         codigoobtenido: ['', Validators.required],
         producto: ['', Validators.required],
         nombrepobtenido: ['', Validators.required],
-        descripcionpro: ['', Validators.required] ,
+        descripcionpro: ['', Validators.required],
         cantidad: ['', Validators.required],
         medida: [''],
         medidanombre: [''],
@@ -416,7 +416,8 @@ export class GenerarRequerimientoNuevoComponent implements OnInit {
             console.error(errorData);
           },
           complete: () => {
-            this.router.navigate(['/almacen/generar-requerimiento']);
+            //this.router.navigate(['/almacen/generar-requerimiento']);
+            this.router.navigate([rutas.almacen_generarrequerimiento]);
           },
         });
     }

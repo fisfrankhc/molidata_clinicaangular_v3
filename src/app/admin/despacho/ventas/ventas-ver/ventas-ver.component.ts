@@ -384,7 +384,8 @@ export class VentasVerComponent implements OnInit {
               console.log(errorData);
             },
             complete: () => {
-              this.router.navigate(['/despacho/caja']);
+              //this.router.navigate(['/despacho/caja']);
+              this.router.navigate([rutas.despacho_caja]);
             },
           });
         });
@@ -401,4 +402,3 @@ export class VentasVerComponent implements OnInit {
     }
   }
 }
-

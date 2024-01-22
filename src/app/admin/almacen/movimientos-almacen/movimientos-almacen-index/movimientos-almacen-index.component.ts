@@ -96,7 +96,7 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
     this.movimientosAlmacenService.getMovimientosAll().subscribe({
       next: (datosINGRESO: any) => {
         this.datosINGRESO = datosINGRESO;
-        
+
         const fechaInicioE = this.datePipe.transform(fechaInicio, 'yyyy-MM-dd');
         const fechaFinE = this.datePipe.transform(fechaFin, 'yyyy-MM-dd');
 
@@ -128,13 +128,14 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
           return movimiento;
         });
 
-        this.datosINGRESO.map((res: Movimientos, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.ingresoList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosINGRESO.length;
+        }
         //console.log(this.datosINGRESO);
       },
       error: (errorData) => {
@@ -142,14 +143,57 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Movimientos>(this.ingresoList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
+
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosINGRESO.map((res: Movimientos, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.ingresoList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: string): void {
-    console.log('searchDataValue:', value);
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.ingresoList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.ingresoList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosINGRESO)
+    const filteredData = this.datosINGRESO.filter((movimiento: Movimientos) => {
+      return (
+        (movimiento.movimiento_id &&
+          movimiento.movimiento_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (movimiento.movimiento_fecha &&
+          movimiento.movimiento_fecha
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (movimiento.nombreUsuario &&
+          movimiento.nombreUsuario.toLowerCase().includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.ingresoList
+    this.ingresoList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosINGRESO.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Movimientos>(this.ingresoList);
   }
 
   public sortData(sort: Sort) {

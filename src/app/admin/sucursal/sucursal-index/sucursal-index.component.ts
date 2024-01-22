@@ -43,27 +43,77 @@ export class SucursalIndexComponent implements OnInit {
       next: (datosSUCURSAL: any) => {
         this.datosSUCURSAL = datosSUCURSAL;
         this.totalData = this.datosSUCURSAL.length;
-        this.datosSUCURSAL.map((res: Sucursal, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.sucursalList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosSUCURSAL.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Sucursal>(this.sucursalList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosSUCURSAL.map((res: Sucursal, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.sucursalList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.sucursalList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.sucursalList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosCOMPRA)
+
+    const filteredData = this.datosSUCURSAL.filter((sucursal: Sucursal) => {
+      return (
+        (sucursal.suc_id &&
+          sucursal.suc_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (sucursal.suc_nombre &&
+          sucursal.suc_nombre.toLowerCase().includes(value.toLowerCase())) ||
+        (sucursal.suc_direccion &&
+          sucursal.suc_direccion
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        ((sucursal.suc_estado === '1' ? 'activo' : 'inactivo') &&
+          (sucursal.suc_estado === '1' ? 'activo' : 'inactivo')
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.comprasList
+    this.sucursalList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosSUCURSAL.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Sucursal>(this.sucursalList);
   }
 
   public sortData(sort: Sort) {
@@ -96,6 +146,7 @@ export class SucursalIndexComponent implements OnInit {
       this.skip = this.pageSize * this.pageIndex;
       this.sucursalAll();
     }
+    this.dataSource = new MatTableDataSource<Sucursal>(this.sucursalList); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {

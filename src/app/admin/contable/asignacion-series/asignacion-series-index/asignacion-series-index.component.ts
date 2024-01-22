@@ -100,15 +100,14 @@ export class AsignacionSeriesIndexComponent implements OnInit {
           }
         );
 
-        this.datosComprobNumeracion.map(
-          (res: ComprobanteNumeracion, index: number) => {
-            const serialNumber = index + 1;
-            if (index >= this.skip && serialNumber <= this.limit) {
-              this.comprobNumeracionList.push(res);
-              this.serialNumberArray.push(serialNumber);
-            }
-          }
-        );
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosComprobNumeracion.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
@@ -122,9 +121,61 @@ export class AsignacionSeriesIndexComponent implements OnInit {
     });
   }
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosComprobNumeracion.map(
+      (res: ComprobanteNumeracion, index: number) => {
+        const serialNumber = index + 1;
+        if (index >= this.skip && serialNumber <= this.limit) {
+          this.comprobNumeracionList.push(res);
+          this.serialNumberArray.push(serialNumber);
+        }
+      }
+    );
+  }
+
   public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.comprobNumeracionList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.comprobNumeracionList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosComprobNumeracion)
+    const filteredData = this.datosComprobNumeracion.filter(
+      (cnum: ComprobanteNumeracion) => {
+        return (
+          (cnum.numeracion_id &&
+            cnum.numeracion_id
+              .toString()
+              .toLowerCase()
+              .includes(value.toLowerCase())) ||
+          (cnum.nombreSede &&
+            cnum.nombreSede.toLowerCase().includes(value.toLowerCase())) ||
+          (cnum.nombreComprobanteTipo &&
+            cnum.nombreComprobanteTipo
+              .toLowerCase()
+              .includes(value.toLowerCase())) ||
+          (cnum.serie &&
+            cnum.serie.toLowerCase().includes(value.toLowerCase())) ||
+          (cnum.numero &&
+            cnum.numero.toLowerCase().includes(value.toLowerCase()))
+        );
+      }
+    );
+
+    // Asigna los datos filtrados a this.comprobNumeracionList
+    this.comprobNumeracionList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosComprobNumeracion.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<ComprobanteNumeracion>(
+      this.comprobNumeracionList
+    );
   }
 
   public sortData(sort: Sort) {
@@ -157,6 +208,9 @@ export class AsignacionSeriesIndexComponent implements OnInit {
       this.skip = this.pageSize * this.pageIndex;
       this.comprobantesNumeracionAll();
     }
+    this.dataSource = new MatTableDataSource<ComprobanteNumeracion>(
+      this.comprobNumeracionList
+    ); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {
@@ -181,10 +235,7 @@ export class AsignacionSeriesIndexComponent implements OnInit {
 
   private calculateTotalPages(totalData: number, pageSize: number): void {
     this.pageNumberArray = [];
-    this.totalPages = totalData / pageSize;
-    if (this.totalPages % 1 != 0) {
-      this.totalPages = Math.trunc(this.totalPages + 1);
-    }
+    this.totalPages = Math.ceil(totalData / pageSize);
     /* eslint no-var: off */
     for (var i = 1; i <= this.totalPages; i++) {
       const limit = pageSize * i;

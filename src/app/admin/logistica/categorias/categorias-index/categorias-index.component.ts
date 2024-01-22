@@ -41,54 +41,80 @@ export class CategoriasIndexComponent implements OnInit {
   private categoriasAll(): void {
     this.categoriaList = [];
     this.serialNumberArray = [];
-    this.categoriaService.getCategoriasAll().subscribe(
-      {
-        next: (datosCAT: any) => {
-          this.datosCAT = datosCAT;
-          this.totalData = this.datosCAT.length;
-          datosCAT.map((res: Categoria, index: number) => {
-            const serialNumber = index + 1;
-            if (index >= this.skip && serialNumber <= this.limit) {
-              this.categoriaList.push(res);
-              //console.log(this.categoriaList.push(res));
-              this.serialNumberArray.push(serialNumber);
-            }
-          });
-        },
-        error: (errorData) => {
-          console.error(errorData);
-          this.categoriaallError = errorData;
-        },
-        complete: () => {
-          this.dataSource = new MatTableDataSource<Categoria>(
-            this.categoriaList
-          );
-          this.calculateTotalPages(this.totalData, this.pageSize);
-        },
-      }
-      /* (datosCAT: any) => {
-      this.datosCAT = datosCAT;
-      this.totalData = this.datosCAT.length;
-      //console.log(this.totalData);
-      //console.log(this.datosCAT)
-      this.datosCAT.map((res: Categoria, index: number) => {
-        const serialNumber = index + 1;
-        if (index >= this.skip && serialNumber <= this.limit) {
-          this.categoriaList.push(res);
-          //console.log(this.categoriaList.push(res));
-          this.serialNumberArray.push(serialNumber);
+    this.categoriaService.getCategoriasAll().subscribe({
+      next: (datosCAT: any) => {
+        this.datosCAT = datosCAT;
+        this.totalData = this.datosCAT.length;
+
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosCAT.length;
         }
-      });
-      this.dataSource = new MatTableDataSource<Categoria>(this.categoriaList);
-      this.calculateTotalPages(this.totalData, this.pageSize);
-      } */
-    );
+      },
+      error: (errorData) => {
+        console.error(errorData);
+        this.categoriaallError = errorData;
+      },
+      complete: () => {
+        this.dataSource = new MatTableDataSource<Categoria>(this.categoriaList);
+        this.calculateTotalPages(this.totalData, this.pageSize);
+      },
+    });
+  }
+
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosCAT.map((res: Categoria, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.categoriaList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
   }
 
   public searchData(value: string): void {
-    console.log('searchDataValue:', value);
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.categoriaList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.categoriaList = this.dataSource.filteredData;
+    this.searchDataValue = value;
+    const filteredData = this.datosCAT.filter((categoria: Categoria) => {
+      return (
+        (categoria.cat_id &&
+          categoria.cat_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (categoria.cat_nombre &&
+          categoria.cat_nombre.toLowerCase().includes(value.toLowerCase())) ||
+        (categoria.cat_descripcion &&
+          categoria.cat_descripcion
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        ((categoria.cat_estado === '1' ? 'activo' : 'inactivo') &&
+          (categoria.cat_estado === '1' ? 'activo' : 'inactivo')
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.comprasList
+    this.categoriaList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosCAT.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Categoria>(this.categoriaList);
   }
 
   public sortData(sort: Sort) {
@@ -157,5 +183,4 @@ export class CategoriasIndexComponent implements OnInit {
       this.pageSelection.push({ skip: skip, limit: limit });
     }
   }
-
 }

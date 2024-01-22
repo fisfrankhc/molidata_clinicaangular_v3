@@ -120,7 +120,7 @@ export class VentasIndexComponent implements OnInit {
     this.fechaVisualFin = this.datePipe.transform(fechaFin, 'dd/MM/yyyy');
     this.fechaI = this.datePipe.transform(fechaInicio, 'yyyy-MM-dd');
     this.fechaF = this.datePipe.transform(fechaFin, 'yyyy-MM-dd');
-    console.log(this.fechaI, this.fechaF);
+    //console.log(this.fechaI, this.fechaF);
     //console.log(this.fechaVisualInicio, this.fechaVisualFin);
     this.ventasService.getVentasAll().subscribe({
       next: (datosVENTA: any) => {
@@ -128,7 +128,7 @@ export class VentasIndexComponent implements OnInit {
 
         if (fechaInicio && fechaFin) {
           this.resultadoMostrar = true;
-          console.log(this.resultadoMostrar);
+          //console.log(this.resultadoMostrar);
         }
         const dataVentaFinal = this.datosVENTA.filter(
           (vent: any) =>
@@ -165,22 +165,22 @@ export class VentasIndexComponent implements OnInit {
 
           return venta;
         });
-        console.log(this.datosVENTA);
-        console.log(this.totalData);
-        this.datosVENTA.map((res: Ventas, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.ventasList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosVENTA.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Ventas>(this.ventasList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
@@ -190,9 +190,61 @@ export class VentasIndexComponent implements OnInit {
     fechaventafin: ['', Validators.required],
   });
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosVENTA.map((res: Ventas, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.ventasList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: string): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.ventasList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.ventasList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosVENTA)
+    const filteredData = this.datosVENTA.filter((venta: Ventas) => {
+      return (
+        (venta.venta_id &&
+          venta.venta_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (venta.venta_fecha &&
+          venta.venta_fecha.toLowerCase().includes(value.toLowerCase())) ||
+        (venta.nombreCliente &&
+          venta.nombreCliente.toLowerCase().includes(value.toLowerCase())) ||
+        (venta.venta_proceso &&
+          venta.venta_proceso.toLowerCase().includes(value.toLowerCase())) ||
+        (venta.nombreUsuarioVenta &&
+          venta.nombreUsuarioVenta
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (venta.nombreSucursal &&
+          venta.nombreSucursal.toLowerCase().includes(value.toLowerCase())) ||
+        ((venta.venta_estado === '1' ? 'activo' : 'inactivo') &&
+          (venta.venta_estado === '1' ? 'activo' : 'inactivo')
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.ventasList
+    this.ventasList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosVENTA.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Ventas>(this.ventasList);
   }
 
   public sortData(sort: Sort) {
@@ -489,4 +541,3 @@ export class VentasIndexComponent implements OnInit {
     });
   }
 }
-

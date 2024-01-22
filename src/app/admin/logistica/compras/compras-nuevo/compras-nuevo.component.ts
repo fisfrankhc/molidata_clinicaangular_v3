@@ -317,7 +317,7 @@ export class ComprasNuevoComponent implements OnInit {
       comprobante: '',
       seriecomprobante: '',
       numerocomprobante: '',
-      destino: ''
+      destino: '',
     };
     if (this.form.valid) {
       this.comprasService.postCompras(compraData).subscribe({
@@ -348,7 +348,8 @@ export class ComprasNuevoComponent implements OnInit {
           );
         },
         complete: () => {
-          this.router.navigate(['/logistica/compra']);
+          //this.router.navigate(['/logistica/compra']);
+          this.router.navigate([rutas.logistica_compra]);
         },
       });
     }
@@ -369,36 +370,35 @@ export class ComprasNuevoComponent implements OnInit {
       destino: '',
     };
     if (this.form.valid) {
-            this.comprasService.postCompras(compraData).subscribe({
-              next: (response) => {
-                this.compra = response;
-                console.log('Compra registrada con éxito:', this.compra);
-                this.form.value.listaCompra.forEach((producto: Producto) => {
-                  producto.compra = this.compra;
+      this.comprasService.postCompras(compraData).subscribe({
+        next: (response) => {
+          this.compra = response;
+          console.log('Compra registrada con éxito:', this.compra);
+          this.form.value.listaCompra.forEach((producto: Producto) => {
+            producto.compra = this.compra;
 
-                  this.comprasDetalleService
-                    .postComprasDetalle(producto)
-                    .subscribe({
-                      next: (response) => {
-                        console.log('Entrada registrada con éxito:', response);
-                      },
-                      error: (errorData) => {
-                        console.error(
-                          'Error al enviar la solicitud POST de COMPRADETALLE:',
-                          errorData
-                        );
-                      },
-                      complete: () => {},
-                    });
-                });
+            this.comprasDetalleService.postComprasDetalle(producto).subscribe({
+              next: (response) => {
+                console.log('Entrada registrada con éxito:', response);
               },
               error: (errorData) => {
-                console.error(errorData);
+                console.error(
+                  'Error al enviar la solicitud POST de COMPRADETALLE:',
+                  errorData
+                );
               },
-              complete: () => {
-                this.router.navigate(['/logistica/compra']);
-              },
+              complete: () => {},
             });
+          });
+        },
+        error: (errorData) => {
+          console.error(errorData);
+        },
+        complete: () => {
+          //this.router.navigate(['/logistica/compra']);
+          this.router.navigate([rutas.logistica_compra]);
+        },
+      });
     }
   }
 

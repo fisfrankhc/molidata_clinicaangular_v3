@@ -23,6 +23,7 @@ export class AuthloginService {
     correo: string,
     rol: string,
     sucursal: string,
+    userpanel: string,
     estado: string
   ) {
     localStorage.setItem('userid', id);
@@ -32,14 +33,23 @@ export class AuthloginService {
     localStorage.setItem('userrol', rol);
     localStorage.setItem('usersucursal', sucursal);
     localStorage.setItem('userestado', estado);
+    localStorage.setItem('userpanel', userpanel);
     localStorage.setItem('authenticated', 'true');
-    this.router.navigate(['/dashboard']);
+    if (userpanel === '1') {
+      this.router.navigate(['ventas/dashboard']);
+    } else if (userpanel === '2') {
+      this.router.navigate(['clinica/dashboard']);
+    } else if (userpanel === '3') {
+      this.router.navigate(['administracion/dashboard']);
+    }
+
     console.log(id);
     console.log(username);
     console.log(nombre);
     console.log(correo);
     console.log(rol);
     console.log(sucursal);
+    console.log(userpanel);
     console.log(estado);
   }
 

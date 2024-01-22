@@ -18,7 +18,7 @@ import { GeneralService } from 'src/app/shared/services/general.service';
 import { DatePipe } from '@angular/common';
 
 import { CompraDetalle } from 'src/app/shared/interfaces/logistica';
-
+import Swal from 'sweetalert2';
 interface data {
   value: string;
 }
@@ -270,7 +270,25 @@ export class ComprasVerComponent implements OnInit {
         console.error('Error al enviar al actualizar COMPRA:', errorData);
       },
       complete: () => {
-        this.router.navigate([`/logistica/compra/ver/${this.compraId}`]);
+        //this.router.navigate([`/logistica/compra/ver/${this.compraId}`]);
+        this.router.navigate([rutas.logistica_compra_ver + this.compraId]);
+        this.compraDetalle(this.compraId);
+
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          },
+        });
+        Toast.fire({
+          icon: 'success',
+          html: `<div style="font-size: 15px; font-weight: 700">Compra ${this.compraId} confirmada con &eacute;xito.</div>`,
+        });
       },
     });
   }
@@ -295,7 +313,8 @@ export class ComprasVerComponent implements OnInit {
         console.error('Error al enviar al actualizar COMPRA2:', errorData);
       },
       complete: () => {
-        this.router.navigate([`/logistica/compra`]);
+        //this.router.navigate([`/logistica/compra`]);
+        this.router.navigate([rutas.logistica_compra]);
       },
     });
   }

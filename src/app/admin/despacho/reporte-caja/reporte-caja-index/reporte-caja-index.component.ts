@@ -45,29 +45,95 @@ export class ReporteCajaIndexComponent implements OnInit {
     this.operacionService.getOperacionAll().subscribe({
       next: (datosOPER: any) => {
         this.datosOPER = datosOPER;
-        this.totalData = this.datosOPER.length;
+        //this.totalData = this.datosOPER.length;
 
-        this.datosOPER.map((res: Operacion, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.operacionList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosOPER.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Operacion>(this.operacionList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosOPER.map((res: Operacion, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.operacionList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.operacionList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.operacionList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosOPER)
+    const filteredData = this.datosOPER.filter((operacion: Operacion) => {
+      return (
+        (operacion.ope_id &&
+          operacion.ope_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (operacion.user_id &&
+          operacion.user_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (operacion.fecha_pago &&
+          operacion.fecha_pago
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (operacion.ope_tipo &&
+          operacion.ope_tipo.toLowerCase().includes(value.toLowerCase())) ||
+        (operacion.monto_pago &&
+          operacion.monto_pago
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (operacion.motivo_pago &&
+          operacion.motivo_pago.toLowerCase().includes(value.toLowerCase())) ||
+        (operacion.motivo_codigo &&
+          operacion.motivo_codigo
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (operacion.medio_pago &&
+          operacion.medio_pago.toLowerCase().includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.operacionsList
+    this.operacionList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosOPER.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Operacion>(this.operacionList);
+    // Actualiza pageNumberArray para reflejar la cantidad correcta de páginas (PUEDE SER)
+    //this.pageNumberArray = Array.from({ length: this.totalPages },(_, i) => i + 1);
+    //console.log(this.pageNumberArray);
   }
 
   public sortData(sort: Sort) {
@@ -100,6 +166,10 @@ export class ReporteCajaIndexComponent implements OnInit {
       this.skip = this.pageSize * this.pageIndex;
       this.operacionAll();
     }
+    // Recalcula las páginas después de actualizar los datos (PUEDE SER)
+    //this.calculateTotalPages(this.totalFilteredData, this.pageSize);
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Operacion>(this.operacionList); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {
@@ -111,6 +181,7 @@ export class ReporteCajaIndexComponent implements OnInit {
     } else if (pageNumber < this.currentPage) {
       this.pageIndex = pageNumber + 1;
     }
+    //console.log(this.pageIndex);
     this.operacionAll();
   }
 
@@ -128,8 +199,10 @@ export class ReporteCajaIndexComponent implements OnInit {
     if (this.totalPages % 1 != 0) {
       this.totalPages = Math.trunc(this.totalPages + 1);
     }
+    //this.totalPages = Math.ceil(totalData / pageSize);
+    //console.log(this.totalPages);
     /* eslint no-var: off */
-    for (var i = 1; i <= this.totalPages; i++) {
+    for (var i = 1; i <= this.totalPages; ++i) {
       const limit = pageSize * i;
       const skip = limit - pageSize;
       this.pageNumberArray.push(i);
@@ -195,4 +268,3 @@ export class ReporteCajaIndexComponent implements OnInit {
     return new Blob([byteArray], { type: mimeType });
   }
 }
-

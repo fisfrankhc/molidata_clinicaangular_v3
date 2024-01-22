@@ -148,14 +148,22 @@ export class ReporteVentasUsuarioIndexComponent implements OnInit {
         //AHORA SI PASAMOS DATOS A LA TABLA
         this.totalData = this.datosUSUARIO.length;
 
-        this.datosUSUARIO.map((res: any, index: number) => {
+        /* this.datosUSUARIO.map((res: any, index: number) => {
           const serialNumber = index + 1;
           if (index >= this.skip && serialNumber <= this.limit) {
             this.usuarioVentasList.push(res);
             console.log(this.usuarioVentasList);
             this.serialNumberArray.push(serialNumber);
           }
-        });
+        }); */
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosUSUARIO.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
@@ -173,9 +181,49 @@ export class ReporteVentasUsuarioIndexComponent implements OnInit {
     fechaventa: ['', Validators.required],
   });
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosUSUARIO.map((res: any, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.usuarioVentasList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.usuarioVentasList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.usuarioVentasList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosUSUARIO)
+    const filteredData = this.datosUSUARIO.filter((data: any) => {
+      return (
+        (data.user_nombre &&
+          data.user_nombre.toLowerCase().includes(value.toLowerCase())) ||
+        (data.fechaBusqueda &&
+          data.fechaBusqueda
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (data.montotal &&
+          data.montotal.toString().toLowerCase().includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.usuarioVentasList
+    this.usuarioVentasList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosUSUARIO.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<any>(this.usuarioVentasList);
   }
   public sortData(sort: Sort) {
     const data = this.usuarioVentasList.slice();
@@ -241,10 +289,11 @@ export class ReporteVentasUsuarioIndexComponent implements OnInit {
 
   private calculateTotalPages(totalData: number, pageSize: number): void {
     this.pageNumberArray = [];
-    this.totalPages = totalData / pageSize;
+    /* this.totalPages = totalData / pageSize;
     if (this.totalPages % 1 != 0) {
       this.totalPages = Math.trunc(this.totalPages + 1);
-    }
+    } */
+    this.totalPages = Math.ceil(totalData / pageSize);
     //eslint no-var: off
     for (var i = 1; i <= this.totalPages; i++) {
       const limit = pageSize * i;

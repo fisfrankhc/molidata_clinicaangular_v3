@@ -57,7 +57,8 @@ export class CategoriasNuevoComponent {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/logistica/categoria']);
+          //this.router.navigate(['/logistica/categoria']);
+          this.router.navigate([rutas.logistica_categoria]);
         },
       });
     }

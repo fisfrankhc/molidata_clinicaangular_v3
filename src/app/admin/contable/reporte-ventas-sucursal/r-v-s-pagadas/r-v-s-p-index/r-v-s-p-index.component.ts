@@ -202,13 +202,15 @@ export class RVSPIndexComponent implements OnInit {
         //console.log(this.datosSUC);
         //AHORA SI PASAMOS DATOS A LA TABLA
         this.totalData = this.datosSUC.length;
-        this.datosSUC.map((res: any, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.sucursalVentasList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosSUC.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
@@ -217,7 +219,7 @@ export class RVSPIndexComponent implements OnInit {
         this.dataSource = new MatTableDataSource<Ventas>(
           this.sucursalVentasList
         );
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
@@ -227,9 +229,59 @@ export class RVSPIndexComponent implements OnInit {
     fechaventafin: ['', Validators.required],
   });
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosSUC.map((res: any, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.sucursalVentasList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.sucursalVentasList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.sucursalVentasList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosSUC)
+    const filteredData = this.datosSUC.filter((sucursalVenta: any) => {
+      return (
+        (sucursalVenta.suc_nombre &&
+          sucursalVenta.suc_nombre
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (sucursalVenta.fechaBusquedaInicio &&
+          sucursalVenta.fechaBusquedaInicio
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (sucursalVenta.fechaBusquedaFin &&
+          sucursalVenta.fechaBusquedaFin
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (sucursalVenta.montotal &&
+          sucursalVenta.montotal
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.sucursalVentasList
+    this.sucursalVentasList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosSUC.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<any>(this.sucursalVentasList);
   }
   public sortData(sort: Sort) {
     const data = this.sucursalVentasList.slice();
@@ -313,10 +365,7 @@ export class RVSPIndexComponent implements OnInit {
 
   private calculateTotalPages(totalData: number, pageSize: number): void {
     this.pageNumberArray = [];
-    this.totalPages = totalData / pageSize;
-    if (this.totalPages % 1 != 0) {
-      this.totalPages = Math.trunc(this.totalPages + 1);
-    }
+    this.totalPages = Math.ceil(totalData / pageSize);
     //eslint no-var: off
     for (var i = 1; i <= this.totalPages; i++) {
       const limit = pageSize * i;
@@ -353,7 +402,9 @@ export class RVSPIndexComponent implements OnInit {
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Agrega una fila para el título del reporte
-    const titleRow = worksheet.addRow(['REPORTE DE VENTAS CONCRETADAS POR SUCURSAL']);
+    const titleRow = worksheet.addRow([
+      'REPORTE DE VENTAS CONCRETADAS POR SUCURSAL',
+    ]);
     titleRow.font = { bold: true, size: 16 };
     titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
     worksheet.mergeCells(`A${titleRow.number}:E${titleRow.number}`);
@@ -594,18 +645,22 @@ export class RVSPIndexComponent implements OnInit {
 
               responseVenta.codigoProducto = result[0][0]?.prod_codigo;
               responseVenta.nombreProducto = result[0][0]?.prod_nombre;
-              responseVenta.descripcionProducto = result[0][0]?.prod_descripcion;
+              responseVenta.descripcionProducto =
+                result[0][0]?.prod_descripcion;
               responseVenta.nombreCliente = result[1][0]?.cli_nombre;
               responseVenta.nombreUsuarioVenta = result[2][0]?.user_nombre;
 
               // Agregar la parte que falta
+              //ope.fecha_pago === responseVenta.venta_fecha &&
               const operacion = this.datosOPERACION.find(
                 (ope: any) =>
                   ope.motivo_codigo === responseVenta.venta_id &&
-                  ope.fecha_pago === responseVenta.venta_fecha &&
                   ope.motivo_pago === 'VENTA'
               );
-              responseVenta.tipoPago = operacion.medio_pago;
+              if (operacion) {
+                responseVenta.tipoPago = operacion.medio_pago;
+              }
+              //console.log(responseVenta);
             });
 
             // Llamar a la función exportProductosToExcel después de que todas las operaciones estén completas
@@ -819,7 +874,7 @@ export class RVSPIndexComponent implements OnInit {
         vertical: 'middle',
         horizontal: 'justify',
       }; // DESCRIPCION DE PRPDUCTO
-       excelRow.getCell(4).alignment = {
+      excelRow.getCell(4).alignment = {
         vertical: 'middle',
         horizontal: 'center',
       }; // CODIGO DE VENTA

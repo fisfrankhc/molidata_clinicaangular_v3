@@ -77,7 +77,8 @@ export class RolesEditarComponent implements OnInit {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/roles']);
+          //this.router.navigate(['/roles']);
+          this.router.navigate([rutas.rol]);
         },
       });
     }

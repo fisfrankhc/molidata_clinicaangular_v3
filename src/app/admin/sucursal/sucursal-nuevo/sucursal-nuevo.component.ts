@@ -21,8 +21,8 @@ export class SucursalNuevoComponent {
     public sucursalService: SucursalService,
     private router: Router,
     private fb: FormBuilder
-  ) { }
-  
+  ) {}
+
   form = this.fb.group({
     nombre: ['', Validators.required],
     direccion: ['', Validators.required],
@@ -45,7 +45,8 @@ export class SucursalNuevoComponent {
         },
         complete: () => {
           this.form.reset();
-          this.router.navigate(['/sucursal']);
+          //this.router.navigate(['/sucursal']);
+          this.router.navigate([rutas.sucursal]);
         },
       });
     }

@@ -42,27 +42,77 @@ export class RolesIndexComponent implements OnInit {
       next: (datosRoles: any) => {
         this.datosRoles = datosRoles;
         this.totalData = this.datosRoles.length;
-        this.datosRoles.map((res: Roles, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.rolesList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosRoles.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Roles>(this.rolesList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
 
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosRoles.map((res: Roles, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.rolesList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: any): void {
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.rolesList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase(); this.rolesList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosCOMPRA)
+
+    const filteredData = this.datosRoles.filter((roles: Roles) => {
+      return (
+        (roles.rol_id &&
+          roles.rol_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (roles.rol_nombre &&
+          roles.rol_nombre.toLowerCase().includes(value.toLowerCase())) ||
+        (roles.rol_descripcion &&
+          roles.rol_descripcion
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        ((roles.rol_estado === '1' ? 'activo' : 'inactivo') &&
+          (roles.rol_estado === '1' ? 'activo' : 'inactivo')
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.comprasList
+    this.rolesList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosRoles.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Roles>(this.rolesList);
   }
 
   public sortData(sort: Sort) {
@@ -95,6 +145,7 @@ export class RolesIndexComponent implements OnInit {
       this.skip = this.pageSize * this.pageIndex;
       this.rolesAll();
     }
+    this.dataSource = new MatTableDataSource<Roles>(this.rolesList); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {
@@ -132,5 +183,3 @@ export class RolesIndexComponent implements OnInit {
     }
   }
 }
-
-

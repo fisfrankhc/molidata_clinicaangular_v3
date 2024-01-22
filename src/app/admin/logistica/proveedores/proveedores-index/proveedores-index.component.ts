@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
 import { ProveedoresService } from 'src/app/shared/services/logistica/proveedor/proveedores.service';
-import { pageSelection, Proveedor } from '../../../../shared/interfaces/logistica';
+import {
+  pageSelection,
+  Proveedor,
+} from '../../../../shared/interfaces/logistica';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 
@@ -44,27 +47,92 @@ export class ProveedoresIndexComponent implements OnInit {
       next: (datosPROVEEDOR: any) => {
         this.datosPROVEEDOR = datosPROVEEDOR;
         this.totalData = this.datosPROVEEDOR.length;
-        datosPROVEEDOR.map((res: Proveedor, index: number) => {
-          const serialNumber = index + 1;
-          if (index >= this.skip && serialNumber <= this.limit) {
-            this.proveedorList.push(res);
-            this.serialNumberArray.push(serialNumber);
-          }
-        });
+
+        // Aplicar filtro solo si searchDataValue está definido
+        if (this.searchDataValue) {
+          this.searchData(this.searchDataValue);
+        } else {
+          // Si no hay filtro, mostrar todos los datos paginados
+          this.paginateData();
+          this.totalFilteredData = this.datosPROVEEDOR.length;
+        }
       },
       error: (errorData) => {
         console.error(errorData);
       },
       complete: () => {
         this.dataSource = new MatTableDataSource<Proveedor>(this.proveedorList);
-        this.calculateTotalPages(this.totalData, this.pageSize);
+        this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
   }
+
+  totalFilteredData: any;
+  private paginateData(): void {
+    this.datosPROVEEDOR.map((res: Proveedor, index: number) => {
+      const serialNumber = index + 1;
+      if (index >= this.skip && serialNumber <= this.limit) {
+        this.proveedorList.push(res);
+        this.serialNumberArray.push(serialNumber);
+      }
+    });
+  }
+
   public searchData(value: string): void {
-    console.log('searchDataValue:', value);
-    this.dataSource.filter = value.trim().toLowerCase();
-    this.proveedorList = this.dataSource.filteredData;
+    //this.dataSource.filter = value.trim().toLowerCase();this.proveedorList = this.dataSource.filteredData;
+    this.searchDataValue = value; // Almacena el valor de búsqueda
+    // Realiza el filtro en todos los datos (this.datosCOMPRA)
+    const filteredData = this.datosPROVEEDOR.filter((proveedor: Proveedor) => {
+      return (
+        (proveedor.proveedor_id &&
+          proveedor.proveedor_id
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (proveedor.documento_tipo &&
+          proveedor.documento_tipo
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (proveedor.documento_numero &&
+          proveedor.documento_numero
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (proveedor.razon_social &&
+          proveedor.razon_social.toLowerCase().includes(value.toLowerCase())) ||
+        (proveedor.proveedor_descripcion &&
+          proveedor.proveedor_descripcion
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (proveedor.proveedor_direccion &&
+          proveedor.proveedor_direccion
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (proveedor.proveedor_email &&
+          proveedor.proveedor_email
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        ((proveedor.proveedor_estado === 1 ? 'activo' : 'inactivo') &&
+          (proveedor.proveedor_estado === 1 ? 'activo' : 'inactivo')
+            .toLowerCase()
+            .includes(value.toLowerCase()))
+      );
+    });
+
+    // Asigna los datos filtrados a this.proveedorList
+    this.proveedorList = filteredData.slice(this.skip, this.limit);
+
+    if (value.trim() === '') {
+      // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
+      this.calculateTotalPages(this.totalData, this.pageSize);
+      this.totalFilteredData = this.datosPROVEEDOR.length;
+    } else {
+      this.totalFilteredData = filteredData.length;
+      // Recalcula las páginas disponibles para los resultados filtrados
+      this.calculateTotalPages(filteredData.length, this.pageSize);
+    }
+    // Actualiza la vista
+    this.dataSource = new MatTableDataSource<Proveedor>(this.proveedorList);
   }
 
   public sortData(sort: Sort) {

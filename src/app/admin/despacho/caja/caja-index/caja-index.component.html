@@ -87,7 +87,8 @@
                                                 <input class="form-check-input" type="checkbox" value="">
                                             </div>
                                         </td>
-                                        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                                        <!-- <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td> -->
+                                        <td>{{ data.venta_id}}</td>
                                         <td>{{ data.venta_fecha | date: 'dd/MM/yyyy' }}</td>
                                         <td>{{ data.nombreCliente }}</td>
                                         <td>{{ data.venta_proceso }}</td>
@@ -109,9 +110,12 @@
                             <div class="table_footer">
                                 <div class="col-sm-12 col-md-5">
                                     <div class="dataTables_info">
-                                        Mostrando de {{ serialNumberArray[0] }} a
+                                        <!-- Mostrando de {{ serialNumberArray[0] }} a
                                         {{ serialNumberArray[serialNumberArray.length - 1] }} de
-                                        {{ totalData }} registros
+                                        {{ totalData }} registros -->
+                                        Mostrando de {{ skip + 1 }} a {{ skip + ventasList.length }} de {{
+                                        totalFilteredData }}
+                                        registros
                                     </div>
                                 </div>
 
