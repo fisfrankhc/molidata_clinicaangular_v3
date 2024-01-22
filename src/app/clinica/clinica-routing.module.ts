@@ -19,14 +19,6 @@ const routes: Routes = [
           expectedRoles: ['1', '2', '3', '4', '5', '6', '7', '8'],
         },
       },
-      {
-        path: 'administracion',
-        loadChildren: () =>
-          import('./administracion/administracion.module').then(
-            (m) => m.AdministracionModule
-          ),
-        data: { expectedRoles: ['1'] } as any,
-      },
     ],
   },
 ];

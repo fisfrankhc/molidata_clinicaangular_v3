@@ -8,11 +8,4 @@ export class rutasclinica {
   public static get dashboard(): string {
     return this.baseUrl + '/dashboard';
   }
-
-  public static get administracion_usuarios(): string {
-    return this.baseUrl + '/dashboard/usuarios';
-  }
-  public static get administracion_usuarios_nuevo(): string {
-    return this.baseUrl + '/dashboard/usuarios/nuevo';
-  }
 }

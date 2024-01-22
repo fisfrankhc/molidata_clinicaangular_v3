@@ -78,33 +78,6 @@ export class DatanavService {
             },
           ],
         },
-
-        {
-          menuValue: 'Administracion',
-          rol: [
-            {
-              valor: '1',
-            },
-            {
-              valor: '5',
-            },
-          ],
-          hasSubRoute: true,
-          showSubRoute: false,
-          base: 'blogs',
-          img: 'assets/img/icons/chat-icon-03.svg',
-          subMenus: [
-            {
-              menuValue: 'Usuarios',
-              route: 'administracion/usuarios',
-              rol: [
-                {
-                  valor: '1',
-                },
-              ],
-            },
-          ],
-        },
       ],
     },
   ];

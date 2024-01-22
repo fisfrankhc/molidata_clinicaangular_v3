@@ -10,9 +10,9 @@ export class rutasadministracion {
   }
 
   public static get administracion_usuarios(): string {
-    return this.baseUrl + '/dashboard/usuarios';
+    return this.baseUrl + '/administracion/usuarios';
   }
   public static get administracion_usuarios_nuevo(): string {
-    return this.baseUrl + '/dashboard/usuarios/nuevo';
+    return this.baseUrl + '/administracion/usuarios/nuevo';
   }
 }
