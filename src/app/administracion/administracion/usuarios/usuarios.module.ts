@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 
 import { UsuariosRoutingModule } from './usuarios-routing.module';
 import { UsuariosIndexComponent } from './usuarios-index/usuarios-index.component';
@@ -14,5 +14,6 @@ import { SharedModule } from 'src/app/shared/shared.module';
     UsuariosNuevoComponent,
   ],
   imports: [CommonModule, UsuariosRoutingModule, SharedModule],
+  providers: [DatePipe],
 })
 export class UsuariosModule {}

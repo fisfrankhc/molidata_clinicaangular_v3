@@ -10,7 +10,7 @@
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item"><a [routerLink]="ruta.logistica_producto">PRODUCTOS </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item active">Nueva Producto</li>
+                        <li class="breadcrumb-item active"> Editar Producto</li>
                     </ul>
                 </div>
             </div>
@@ -25,14 +25,15 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="form-heading">
-                                        <h4>Detallar nuevo producto</h4>
+                                        <h4>Editar producto</h4>
                                     </div>
                                 </div>
                                 <div class="col-sm">
                                     <div class="col-12 col-md-6 col-xl-6">
                                         <div class="form-group local-forms">
                                             <label>C&Oacute;DIGO <span class="login-danger">*</span></label>
-                                            <input class="form-control" formControlName="codigo" type="text" style="background-color: #e3e3e3;" readonly>
+                                            <input class="form-control" formControlName="codigo" type="text"
+                                                style="background-color: #e3e3e3;" readonly>
                                         </div>
 
                                     </div>
@@ -85,7 +86,8 @@
                                                 <label>CATEGORIA <span class="login-danger">*</span></label>
                                                 <mat-select formControlName="categoria" class="form-control select"
                                                     placeholder="Seleccione una categoria">
-                                                    <mat-option *ngFor="let option of categoriasData" [value]="option.cat_id">
+                                                    <mat-option *ngFor="let option of categoriasData"
+                                                        [value]="option.cat_id">
                                                         {{option.cat_nombre}}
                                                     </mat-option>
                                                 </mat-select>

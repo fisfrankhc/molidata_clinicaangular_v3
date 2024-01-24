@@ -1,1 +1,146 @@
-<p>usuarios-editar works!</p>
+<div class="page-wrapper">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>ADMINISTRACI&Oacute;N </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a
+                                [routerLink]="rutaadministracion.administracion_usuarios">USUARIOS </a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Editar Usuario</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card">
+                    <div class="card-body">
+                        <form [formGroup]="form" (ngSubmit)="actualizarUsuario()">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-heading">
+                                        <h4>Editar usuario {{userId}}</h4>
+                                    </div>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms">
+                                                <label>NOMBRE DE USUARIO <span class="login-danger">*</span></label>
+                                                <input class="form-control" formControlName="user_name" type="text"
+                                                    [ngClass]="{
+                        'is-invalid': f['user_name'].touched && f['user_name'].invalid
+                      }">
+                                                <div *ngIf="f['user_name'].touched && f['user_name'].invalid"
+                                                    class="invalid-feedback">
+                                                    <div
+                                                        *ngIf="f['user_name'].errors && f['user_name'].errors['required']">
+                                                        Es necesario que asigne un nombre de usuario.
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-12 col-md-12 col-xl-8">
+                                            <div class="form-group local-forms">
+                                                <label>NOMBRE COMPLETO <span class="login-danger">*</span></label>
+                                                <input class="form-control" formControlName="user_nombre" type="text"
+                                                    [ngClass]="{
+                        'is-invalid': f['user_nombre'].touched && f['user_nombre'].invalid
+                      }">
+                                                <div *ngIf="f['user_nombre'].touched && f['user_nombre'].invalid"
+                                                    class="invalid-feedback">
+                                                    <div
+                                                        *ngIf="f['user_nombre'].errors && f['user_nombre'].errors['required']">
+                                                        Agregue el nombre del usuario.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-12 col-xl-4">
+                                            <div class="form-group local-forms">
+                                                <label>EMAIL </label>
+                                                <input class="form-control" formControlName="user_correo" type="email">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-12 col-xl-3">
+                                            <div class="form-group local-forms">
+                                                <label>TEL&Eacute;FONO </label>
+                                                <input class="form-control" formControlName="user_telefono"
+                                                    type="number">
+                                            </div>
+                                        </div>
+                                        <!-- <div class="col-12 col-md-12 col-xl-4">
+                                            <div class="form-group local-forms">
+                                                <label>CONTRASEÑA <span class="login-danger">*</span></label>
+                                                <input class="form-control" formControlName="user_clave"
+                                                    type="password">
+                                            </div>
+                                        </div> -->
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 col-xl-3">
+                                            <div class="form-group local-forms">
+                                                <label>ROL <span class="login-danger">*</span></label>
+                                                <mat-select [(ngModel)]="selectedValue" formControlName="rol_id"
+                                                    class="form-control select" placeholder="Seleccione">
+                                                    <mat-option *ngFor="let option of datosROL" [value]="option.rol_id">
+                                                        {{option.rol_nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-3">
+                                            <div class="form-group local-forms">
+                                                <label>SUCURSAL <span class="login-danger">*</span></label>
+                                                <mat-select formControlName="sucursal_id" class="form-control select"
+                                                    placeholder="Seleccione">
+                                                    <mat-option *ngFor="let option of datosSUC" [value]="option.suc_id">
+                                                        {{option.suc_nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-3">
+                                            <div class="form-group local-forms">
+                                                <label>(USER PANEL) <span class="login-danger">*</span></label>
+                                                <mat-select formControlName="user_panel" class="form-control select"
+                                                    placeholder="Seleccione">
+                                                    <mat-option *ngFor="let option of selectedUserPanel"
+                                                        [value]="option.id">
+                                                        {{option.value}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="doctor-submit text-end">
+                                        <button class="btn btn-primary submit-form me-2"
+                                            [disabled]="form.invalid">ACTUALIZAR
+                                            USUARIO</button>
+                                        <a class="btn btn-primary cancel-form"
+                                            [routerLink]="rutaadministracion.administracion_usuarios">Cancelar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
