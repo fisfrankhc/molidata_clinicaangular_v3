@@ -78,6 +78,37 @@ export class DatanavService {
             },
           ],
         },
+
+        {
+          menuValue: 'Cita',
+          rol: [
+            {
+              valor: '1',
+            },
+            {
+              valor: '5',
+            },
+          ],
+          hasSubRoute: true,
+          showSubRoute: false,
+          base: 'blogs',
+          route: 'sucursal',
+          img: 'assets/img/icons/ram.svg',
+          subMenus: [
+            {
+              menuValue: 'Clientes',
+              route: 'cita/clientes',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '5',
+                },
+              ],
+            },
+          ],
+        },
       ],
     },
   ];

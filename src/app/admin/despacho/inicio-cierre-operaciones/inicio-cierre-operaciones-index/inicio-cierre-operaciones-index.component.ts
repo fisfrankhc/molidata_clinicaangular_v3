@@ -176,7 +176,8 @@ export class InicioCierreOperacionesIndexComponent implements OnInit {
           },
           complete: () => {
             this.inicioCierreOperacionesServiceAll();
-            this.router.navigate(['/despacho/inicio-cierre-operaciones']);
+            //this.router.navigate(['/despacho/inicio-cierre-operaciones']);
+            this.router.navigate([rutas.despacho_iniciocierre_operaciones]);
           },
         });
     }
@@ -201,7 +202,8 @@ export class InicioCierreOperacionesIndexComponent implements OnInit {
           },
           complete: () => {
             this.inicioCierreOperacionesServiceAll();
-            this.router.navigate(['/despacho/inicio-cierre-operaciones']);
+            //this.router.navigate(['/despacho/inicio-cierre-operaciones']);
+            this.router.navigate([rutas.despacho_iniciocierre_operaciones]);
           },
         });
     }
@@ -788,4 +790,3 @@ export class InicioCierreOperacionesIndexComponent implements OnInit {
     });
   }
 }
-

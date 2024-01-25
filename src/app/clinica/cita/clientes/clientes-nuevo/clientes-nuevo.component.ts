@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { rutas } from 'src/app/shared/routes/rutas';
+import { rutasclinica } from 'src/app/shared/routes/rutasclinica';
 import {
   FormBuilder,
   FormControl,
@@ -19,7 +19,7 @@ interface data {
   styleUrls: ['./clientes-nuevo.component.scss'],
 })
 export class ClientesNuevoComponent {
-  public ruta = rutas;
+  public rutaclinica = rutasclinica;
 
   constructor(
     public clientesService: ClientesService,
@@ -53,7 +53,7 @@ export class ClientesNuevoComponent {
         complete: () => {
           this.form.reset();
           //this.router.navigate(['/despacho/cliente']);
-          this.router.navigate([rutas.despacho_cliente]);
+          this.router.navigate([rutasclinica.cita_cliente]);
         },
       });
     }

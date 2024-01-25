@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { rutas } from 'src/app/shared/routes/rutas';
+import { rutasclinica } from 'src/app/shared/routes/rutasclinica';
 import {
   FormBuilder,
   FormControl,
@@ -20,7 +20,7 @@ interface data {
 })
 export class ClientesEditarComponent implements OnInit {
   cliId: number | null = null;
-  public ruta = rutas;
+  public rutaclinica = rutasclinica;
 
   constructor(
     private route: ActivatedRoute,
@@ -99,7 +99,7 @@ export class ClientesEditarComponent implements OnInit {
         complete: () => {
           this.form.reset();
           //this.router.navigate(['/despacho/cliente']);
-          this.router.navigate([rutas.despacho_cliente]);
+          this.router.navigate([rutasclinica.cita_cliente]);
         },
       });
     }

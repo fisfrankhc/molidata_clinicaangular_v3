@@ -27,8 +27,18 @@ export const authGuard: CanActivateFn = (route, state) => {
     ) {
       //console.log('Acceso permitido');
       return true; // Acceso permitido
-    } else {
-      return router.parseUrl('/');
+    }
+    //EN CASO TENGA EL VALOR 1 DE VENTAS
+    else if (localStorage.getItem('user_panel') === '1') {
+      return router.parseUrl('/ventas/dashboard');
+    }
+    //EN CASO TENGA EL VALOR 2 DE CLINICA
+    else if (localStorage.getItem('user_panel') === '2') {
+      return router.parseUrl('/clinica/dashboard');
+    }
+    //EN CASO TENGA EL VALOR 3 DE ADMINISTRACION
+    else if (localStorage.getItem('user_panel') === '3') {
+      return router.parseUrl('/administracion/dashboard');
     }
   }
   console.log('Redireccionando a /login');
