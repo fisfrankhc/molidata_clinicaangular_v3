@@ -103,6 +103,24 @@ export class AdminnavService {
                 },
               ],
             },
+            {
+              menuValue: 'Roles',
+              route: 'administracion/roles',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
+            },
+            {
+              menuValue: 'Sucursales',
+              route: 'administracion/sucursales',
+              rol: [
+                {
+                  valor: '1',
+                },
+              ],
+            },
           ],
         },
       ],

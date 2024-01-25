@@ -28,7 +28,7 @@ export const authGuard: CanActivateFn = (route, state) => {
       //console.log('Acceso permitido');
       return true; // Acceso permitido
     } else {
-      return router.parseUrl('/dashboard');
+      return router.parseUrl('/');
     }
   }
   console.log('Redireccionando a /login');

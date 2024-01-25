@@ -15,4 +15,18 @@ export class rutasadministracion {
   public static get administracion_usuarios_nuevo(): string {
     return this.baseUrl + '/administracion/usuarios/nuevo';
   }
+
+  public static get administracion_roles(): string {
+    return this.baseUrl + '/administracion/roles';
+  }
+  public static get administracion_roles_nuevo(): string {
+    return this.baseUrl + '/administracion/roles/nuevo';
+  }
+
+  public static get administracion_sucursales(): string {
+    return this.baseUrl + '/administracion/sucursales';
+  }
+  public static get administracion_sucursales_nuevo(): string {
+    return this.baseUrl + '/administracion/sucursales/nuevo';
+  }
 }

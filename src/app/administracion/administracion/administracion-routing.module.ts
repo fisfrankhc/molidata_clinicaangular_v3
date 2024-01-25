@@ -10,6 +10,19 @@ const routes: Routes = [
       import('./usuarios/usuarios.module').then((m) => m.UsuariosModule),
     data: { expectedRoles: ['1'] } as any,
   },
+  {
+    path: 'roles',
+    canActivate: [authGuard],
+    loadChildren: () => import('./role/role.module').then((m) => m.RoleModule),
+    data: { expectedRoles: ['1'] } as any,
+  },
+  {
+    path: 'sucursales',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./sucursal/sucursal.module').then((m) => m.SucursalModule),
+    data: { expectedRoles: ['1'] } as any,
+  },
 ];
 
 @NgModule({
