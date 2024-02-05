@@ -10,6 +10,13 @@ const routes: Routes = [
       import('./clientes/clientes.module').then((m) => m.ClientesModule),
     data: { expectedRoles: ['1'] } as any,
   },
+  {
+    path: 'pacientes',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./pacientes/pacientes.module').then((m) => m.PacientesModule),
+    data: { expectedRoles: ['1'] } as any,
+  },
 ];
 
 @NgModule({

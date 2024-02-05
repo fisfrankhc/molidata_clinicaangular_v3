@@ -42,13 +42,13 @@ const routes: Routes = [
       ),
     data: { expectedRoles: ['1', '2'] } as any,
   },
-  {
+  /* {
     path: 'stock',
     canActivate: [authGuard],
     loadChildren: () =>
       import('./stock/stock.module').then((m) => m.StockModule),
     data: { expectedRoles: ['1', '2'] } as any,
-  },
+  }, */
 ];
 
 @NgModule({

@@ -1,0 +1,148 @@
+<div class="page-wrapper">
+    <div class="content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a>CITA</a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a [routerLink]="rutaclinica.cita_cliente">PACIENTES </a></li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item active">Nuevo Paciente</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- /Page Header -->
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="card">
+                    <div class="card-body">
+                        <form [formGroup]="form" (ngSubmit)="registrarPaciente()">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-heading">
+                                        <h4>Detallar nuevo Paciente</h4>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>APELLIDO PATERNO <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="apaterno" type="text"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>APELLIDO MATERNO <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="amaterno" type="text"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-5">
+                                        <div class="form-group local-forms">
+                                            <label>NOMBRES <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="nombres" type="text"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>TIPO DE PACIENTE <span class="login-danger">*</span></label>
+                                            <mat-select formControlName="tipoPaciente" class="form-control select"
+                                                placeholder="Seleccione">
+                                                <mat-option *ngFor="let data of tiposeguroList1" [value]="data.value">
+                                                    {{data.value}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>FECHA DE NACIMIENTO <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="fechaNacimiento" type="date"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="form-group local-forms">
+                                            <label>SEXO<span class="login-danger">*</span></label>
+                                            <mat-select formControlName="pacienteSexo" class="form-control select"
+                                                placeholder="Seleccione">
+                                                <mat-option *ngFor="let data of sexoList1" [value]="data.value">
+                                                    {{data.value}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="form-group local-forms">
+                                            <label>LUGAR NACIMIENTO <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="lugarNacimiento" type="text"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-8">
+                                        <div class="form-group local-forms">
+                                            <label>DIRECCION <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="direccion" type="text"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>TEL&Eacute;FONO <span class="login-danger">*</span></label>
+                                            <input class="form-control" formControlName="telefono" type="number"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6  col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>NUMERO POLIZA </label>
+                                            <input class="form-control" formControlName="poliza" type="number"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6  col-xl-3">
+                                        <div class="form-group local-forms">
+                                            <label>EPS SEGURO </label>
+                                            <input class="form-control" formControlName="eps" type="text"
+                                                placeholder="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group local-forms">
+                                        <label>FAMILIAR DECLARADO </label>
+                                        <input class="form-control" formControlName="familiar" type="text"
+                                            placeholder="">
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="doctor-submit text-end">
+                                        <button type="submit" class="btn btn-primary submit-form me-2"
+                                            [disabled]="form.invalid">REGISTRAR</button>
+                                        <a class="btn btn-primary cancel-form"
+                                            [routerLink]="rutaclinica.cita_paciente">Cancelar</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

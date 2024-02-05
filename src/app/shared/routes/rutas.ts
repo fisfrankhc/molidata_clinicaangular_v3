@@ -108,6 +108,10 @@ export class rutas {
     return this.baseUrl + '/almacen/stock-sucursal';
   }
 
+  public static get almacen_stockminimo(): string {
+    return this.baseUrl + '/almacen/stock-minimo';
+  }
+
   public static get almacen_movimientosalmacen(): string {
     return this.baseUrl + '/almacen/movimientos-almacen';
   }

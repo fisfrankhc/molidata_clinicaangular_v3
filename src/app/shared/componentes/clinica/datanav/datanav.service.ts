@@ -107,6 +107,18 @@ export class DatanavService {
                 },
               ],
             },
+            {
+              menuValue: 'Pacientes',
+              route: 'cita/pacientes',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '5',
+                },
+              ],
+            },
           ],
         },
       ],

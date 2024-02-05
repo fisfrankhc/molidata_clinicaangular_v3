@@ -45,7 +45,7 @@ const routes: Routes = [
         path: 'almacen',
         loadChildren: () =>
           import('./almacen/almacen.module').then((m) => m.AlmacenModule),
-        data: { expectedRoles: ['1', '8'] } as any,
+        data: { expectedRoles: ['1', '5', '8'] } as any,
       },
       {
         path: 'contable',

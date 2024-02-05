@@ -206,7 +206,7 @@ export class DatanavService {
                 },
               ],
             },
-            {
+            /* {
               menuValue: 'Stock',
               route: 'logistica/stock',
               rol: [
@@ -217,7 +217,7 @@ export class DatanavService {
                   valor: '2',
                 },
               ],
-            },
+            }, */
           ],
         },
 
@@ -326,6 +326,9 @@ export class DatanavService {
               valor: '1',
             },
             {
+              valor: '5',
+            },
+            {
               valor: '8',
             },
           ],
@@ -367,6 +370,18 @@ export class DatanavService {
                 },
                 {
                   valor: '8',
+                },
+              ],
+            },
+            {
+              menuValue: 'Stock minimo',
+              route: 'almacen/stock-minimo',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '5',
                 },
               ],
             },

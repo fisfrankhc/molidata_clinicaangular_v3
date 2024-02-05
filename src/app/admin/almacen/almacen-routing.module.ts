@@ -30,10 +30,19 @@ const routes: Routes = [
       ),
     data: { expectedRoles: ['1', '8'] } as any,
   },
+  {
+    path: 'stock-minimo',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./stock-minimo/stock-minimo.module').then(
+        (m) => m.StockMinimoModule
+      ),
+    data: { expectedRoles: ['1', '5'] } as any,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AlmacenRoutingModule { }
+export class AlmacenRoutingModule {}

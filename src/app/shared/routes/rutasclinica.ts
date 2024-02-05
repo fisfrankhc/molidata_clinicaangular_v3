@@ -15,4 +15,11 @@ export class rutasclinica {
   public static get cita_cliente_nuevo(): string {
     return this.baseUrl + '/cita/clientes/nuevo';
   }
+
+  public static get cita_paciente(): string {
+    return this.baseUrl + '/cita/pacientes';
+  }
+  public static get cita_paciente_nuevo(): string {
+    return this.baseUrl + '/cita/pacientes/nuevo';
+  }
 }
