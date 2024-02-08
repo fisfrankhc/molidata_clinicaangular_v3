@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from '../../auth/guard/auth.guard';
+import { StockCentral } from '../../shared/interfaces/logistica';
 
 const routes: Routes = [
   {
@@ -42,13 +43,15 @@ const routes: Routes = [
       ),
     data: { expectedRoles: ['1', '2'] } as any,
   },
-  /* {
-    path: 'stock',
+  {
+    path: 'stock-central',
     canActivate: [authGuard],
     loadChildren: () =>
-      import('./stock/stock.module').then((m) => m.StockModule),
+      import('./stock-central/stock-central.module').then(
+        (m) => m.StockCentralModule
+      ),
     data: { expectedRoles: ['1', '2'] } as any,
-  }, */
+  },
 ];
 
 @NgModule({

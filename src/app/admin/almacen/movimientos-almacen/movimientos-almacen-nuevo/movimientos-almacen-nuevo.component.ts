@@ -15,7 +15,7 @@ import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movim
 import { MovimientosAlmacenDetalleService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen-detalle.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
-import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
+import { StockService } from 'src/app/shared/services/almacen/stock/stock.service';
 import { ComprasItemService } from 'src/app/shared/services/logistica/compra/compras-item.service';
 import { ComprasService } from 'src/app/shared/services/logistica/compra/compras.service';
 import { DatePipe } from '@angular/common';

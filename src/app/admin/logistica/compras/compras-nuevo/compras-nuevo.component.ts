@@ -14,11 +14,16 @@ import { ComprasService } from 'src/app/shared/services/logistica/compra/compras
 import { ComprasDetalleService } from 'src/app/shared/services/logistica/compra/compras-detalle.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
+import { StockCentralService } from 'src/app/shared/services/logistica/stock-central/stock-central.service';
+
 import { GeneralService } from 'src/app/shared/services/general.service';
 import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
 
 import { map, startWith } from 'rxjs/operators';
+
+import * as Notiflix from 'notiflix';
+import Swal from 'sweetalert2';
 
 interface Producto {
   idobtenido: string;
@@ -54,6 +59,7 @@ export class ComprasNuevoComponent implements OnInit {
     private productoService: ProductoService,
     private medidaService: MedidaService,
     private generalService: GeneralService,
+    private stockCentralService: StockCentralService,
     private datePipe: DatePipe
   ) {}
 
@@ -255,10 +261,10 @@ export class ComprasNuevoComponent implements OnInit {
         codigoobtenido: ['', Validators.required],
         producto: ['', Validators.required],
         nombrepobtenido: ['', Validators.required],
-        cantidad: ['', Validators.required],
+        cantidad: [0, Validators.required],
         medida: [''],
-        precio: ['', Validators.required],
-        subtotalagregado: ['', Validators.required],
+        precio: [0, Validators.required],
+        subtotalagregado: [0, Validators.required],
         descuento: [0],
       });
 
@@ -268,14 +274,13 @@ export class ComprasNuevoComponent implements OnInit {
         codigoobtenido: productoBuscado?.get('codigobuscado')?.value,
         producto: productoBuscado?.get('nombrebuscado')?.value,
         nombrepobtenido: productoBuscado?.get('nombrebproducto')?.value,
-        cantidad: productoBuscado?.get('cantidadbuscado')?.value,
+        cantidad: +productoBuscado?.get('cantidadbuscado')?.value,
         medida: productoBuscado?.get('medidabuscado')?.value,
-        precio: productoBuscado?.get('preciobuscado')?.value,
+        precio: +productoBuscado?.get('preciobuscado')?.value,
         descuento: 0,
-        subtotalagregado: (
-          productoBuscado?.get('preciobuscado')?.value *
-          productoBuscado?.get('cantidadbuscado')?.value
-        ).toString(),
+        subtotalagregado:
+          +productoBuscado?.get('preciobuscado')?.value *
+          +productoBuscado?.get('cantidadbuscado')?.value,
       });
 
       // Agrega el nuevo producto a la lista de compra
@@ -354,7 +359,8 @@ export class ComprasNuevoComponent implements OnInit {
       });
     }
   }
-
+  //10416820959
+  dataFindStockCentral: any;
   ConfirmarCompraClick() {
     const compraData = {
       proveedor: this.form.value.proveedorDetalle['id'],
@@ -370,6 +376,8 @@ export class ComprasNuevoComponent implements OnInit {
       destino: '',
     };
     if (this.form.valid) {
+      Notiflix.Loading.pulse('Guardando la compra...');
+      //HACEMOS EL POST DE COMPRAS
       this.comprasService.postCompras(compraData).subscribe({
         next: (response) => {
           this.compra = response;
@@ -377,11 +385,13 @@ export class ComprasNuevoComponent implements OnInit {
           this.form.value.listaCompra.forEach((producto: Producto) => {
             producto.compra = this.compra;
 
+            //GUARDAMOS INFORMACION EN COMPRA_DETALLE
             this.comprasDetalleService.postComprasDetalle(producto).subscribe({
               next: (response) => {
                 console.log('Entrada registrada con éxito:', response);
               },
               error: (errorData) => {
+                Notiflix.Loading.remove();
                 console.error(
                   'Error al enviar la solicitud POST de COMPRADETALLE:',
                   errorData
@@ -389,9 +399,139 @@ export class ComprasNuevoComponent implements OnInit {
               },
               complete: () => {},
             });
+
+            //GUARDAMOS CADA PRODUCTRO EN STOCK CENTRAL
+            const productosAgrupados: { [id: string]: Producto } = {};
+            this.form.value.listaCompra.forEach((producto: Producto) => {
+              const idProducto = producto.idobtenido;
+              if (productosAgrupados[idProducto]) {
+                // Si ya existe el producto en la lista agrupada, se suma la cantidad
+                productosAgrupados[idProducto].cantidad += producto.cantidad;
+                productosAgrupados[idProducto].subtotalagregado +=
+                  producto.subtotalagregado;
+              } else {
+                // Si no existe, se agrega el producto a la lista agrupada
+                productosAgrupados[idProducto] = { ...producto };
+              }
+            });
+
+            // Ahora productosAgrupados contiene los productos agrupados por ID
+            Object.values(productosAgrupados).forEach((producto: Producto) => {
+              producto.compra = this.compra;
+              //console.log(producto);
+              const dataStockCentralPost = {
+                producto: producto.producto,
+                cantidad: producto.cantidad,
+                medida: producto.medida,
+              };
+              console.log(dataStockCentralPost);
+
+              const dataStockCentralUpdate = {
+                producto: producto.producto,
+                cantidad: producto.cantidad,
+                condicion: 'COMPRA-NUEVA',
+              };
+
+              this.stockCentralService.getStockCentralAll().subscribe({
+                next: (responseFind: any) => {
+                  if (responseFind == 'no hay resultados') {
+                    //console.log('no hay resultados');
+                    //HACEMOS UN PRIMER POST
+                    this.stockCentralService
+                      .postStockCentral(dataStockCentralPost)
+                      .subscribe({
+                        next: (responsePostStock) => {
+                          console.log(
+                            'Entrada registrada con éxito:',
+                            responsePostStock
+                          );
+                        },
+                        error: (errorData) => {
+                          Notiflix.Loading.remove();
+                          console.error(
+                            'Error al enviar la solicitud POST PRIMERA de SOTCKCENTRAL:',
+                            errorData
+                          );
+                        },
+                        complete: () => {},
+                      });
+                  } else {
+                    this.dataFindStockCentral = responseFind;
+                    //buscamos algun producto que se encuentre en la tabla
+                    const StockEncontrado = this.dataFindStockCentral.find(
+                      (stoc: any) => stoc.producto_id === producto.producto
+                    );
+                    //SI ENCONTRAMOS HACEMOS EL PUT
+                    if (StockEncontrado) {
+                      this.stockCentralService
+                        .updatedStockCentral(dataStockCentralUpdate)
+                        .subscribe({
+                          next: (responseUpdateStock) => {
+                            console.log(
+                              'Entrada registrada con éxito:',
+                              responseUpdateStock
+                            );
+                          },
+                          error: (errorData) => {
+                            Notiflix.Loading.remove();
+                            console.error(
+                              'Error al enviar la solicitud PUT de SOTCKCENTRAL:',
+                              errorData
+                            );
+                          },
+                          complete: () => {},
+                        });
+                      //console.log(dataStockCentralUpdate);
+                    }
+                    //SI NO ENCONTRAMOS, PROCEDEMOS A HACER EL POST
+                    else {
+                      this.stockCentralService
+                        .postStockCentral(dataStockCentralPost)
+                        .subscribe({
+                          next: (responsePostStock) => {
+                            console.log(
+                              'Entrada registrada con éxito:',
+                              responsePostStock
+                            );
+                          },
+                          error: (errorData) => {
+                            Notiflix.Loading.remove();
+                            console.error(
+                              'Error al enviar la solicitud POST de SOTCKCENTRAL:',
+                              errorData
+                            );
+                          },
+                          complete: () => {},
+                        });
+                    }
+                  }
+                },
+                error: () => {},
+                complete: () => {},
+              });
+            });
+          });
+
+          Notiflix.Loading.remove();
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+          Toast.fire({
+            icon: 'success',
+            //title: 'Stock minimo guardado',
+            html: '<div style="font-size: 15px; font-weight: 700">Compra registrada exitosamente</div>',
           });
         },
         error: (errorData) => {
+          Notiflix.Loading.remove();
           console.error(errorData);
         },
         complete: () => {

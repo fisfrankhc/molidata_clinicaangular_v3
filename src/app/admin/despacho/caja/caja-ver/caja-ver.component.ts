@@ -14,7 +14,7 @@ import { ClientesService } from 'src/app/shared/services/despacho/clientes/clien
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MediosPagoService } from 'src/app//shared/services/despacho/caja/medios-pago.service';
 import { OperacionService } from 'src/app/shared/services/despacho/caja/operacion.service';
-import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
+import { StockService } from 'src/app/shared/services/almacen/stock/stock.service';
 import { DatePipe } from '@angular/common';
 
 import { VentasDetalle } from 'src/app/shared/interfaces/despacho';

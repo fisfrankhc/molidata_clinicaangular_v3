@@ -15,12 +15,29 @@ import { ProductoService } from 'src/app/shared/services/logistica/producto/prod
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 import { GeneralService } from 'src/app/shared/services/general.service';
+import { StockCentralService } from 'src/app/shared/services/logistica/stock-central/stock-central.service';
+
 import { DatePipe } from '@angular/common';
 
 import { CompraDetalle } from 'src/app/shared/interfaces/logistica';
+import * as Notiflix from 'notiflix';
 import Swal from 'sweetalert2';
+
 interface data {
   value: string;
+}
+
+interface Producto {
+  cantidad: number;
+  codigoProducto: string;
+  compra_id: number;
+  detalle_id: number;
+  entrega: number;
+  nombreMedida: string;
+  nombreProducto: string;
+  precio_compra: number;
+  producto_id: number;
+  unidad_medida: number;
 }
 
 @Component({
@@ -44,6 +61,7 @@ export class ComprasVerComponent implements OnInit {
     private medidaService: MedidaService,
     private generalService: GeneralService,
     private sucursalService: SucursalService,
+    private stockCentralService: StockCentralService,
     private datePipe: DatePipe
   ) {}
 
@@ -256,17 +274,132 @@ export class ComprasVerComponent implements OnInit {
   );
   comprobanteTipo: data[] = [{ value: 'BOLETA' }, { value: 'FACTURA' }];
 
+  dataFindStockCentral: any;
   confirmarCompra() {
     const compraData = {
       id: this.compraId,
       proceso: 'CONFIRMADO',
     };
     //console.log(compraData);
+    Notiflix.Loading.pulse('Confirmando compra...');
     this.comprasService.updatedCompra(compraData).subscribe({
       next: (response) => {
         console.log(response);
+
+        //PROCEDEMOS A ACTUALIZAR O GUARDAR LOS PRODUCTOS EN EL STOCK CENTRAL
+        const productosAgrupados: { [id: string]: Producto } = {};
+        this.datosProductosDetalle.forEach((producto: Producto) => {
+          const idProducto = producto.producto_id;
+          if (productosAgrupados[idProducto]) {
+            // Si ya existe el producto en la lista agrupada, se suma la cantidad
+            productosAgrupados[idProducto].cantidad += producto.cantidad; // No se realiza ninguna conversión
+          } else {
+            // Si no existe, se agrega el producto a la lista agrupada
+            productosAgrupados[idProducto] = { ...producto };
+          }
+        });
+
+        Object.values(productosAgrupados).forEach((producto: Producto) => {
+          const dataStockCentralPost = {
+            producto: producto.producto_id,
+            cantidad: producto.cantidad,
+            medida: producto.unidad_medida,
+          };
+          console.log(dataStockCentralPost);
+
+          const dataStockCentralUpdate = {
+            producto: producto.producto_id,
+            cantidad: producto.cantidad,
+            condicion: 'COMPRA-CONFIRMAR',
+          };
+
+          this.stockCentralService.getStockCentralAll().subscribe({
+            next: (responseFind: any) => {
+              if (responseFind == 'no hay resultados') {
+                //console.log('no hay resultados');
+                //HACEMOS UN PRIMER POST
+                this.stockCentralService
+                  .postStockCentral(dataStockCentralPost)
+                  .subscribe({
+                    next: (responsePostStock) => {
+                      console.log(
+                        'Entrada registrada con éxito:',
+                        responsePostStock
+                      );
+                    },
+                    error: (errorData) => {
+                      Notiflix.Loading.remove();
+                      console.error(
+                        'Error al enviar la solicitud POST PRIMERA de SOTCKCENTRAL:',
+                        errorData
+                      );
+                    },
+                    complete: () => {},
+                  });
+              } else {
+                this.dataFindStockCentral = responseFind;
+                //buscamos algun producto que se encuentre en la tabla
+                const StockEncontrado = this.dataFindStockCentral.find(
+                  (stoc: any) => stoc.producto_id === producto.producto_id
+                );
+                //SI ENCONTRAMOS HACEMOS EL PUT
+                if (StockEncontrado) {
+                  this.stockCentralService
+                    .updatedStockCentral(dataStockCentralUpdate)
+                    .subscribe({
+                      next: (responseUpdateStock) => {
+                        console.log(
+                          'Entrada registrada con éxito:',
+                          responseUpdateStock
+                        );
+                      },
+                      error: (errorData) => {
+                        Notiflix.Loading.remove();
+                        console.error(
+                          'Error al enviar la solicitud PUT de SOTCKCENTRAL:',
+                          errorData
+                        );
+                      },
+                      complete: () => {},
+                    });
+                  //console.log(dataStockCentralUpdate);
+                }
+                //SI NO ENCONTRAMOS, PROCEDEMOS A HACER EL POST
+                else {
+                  this.stockCentralService
+                    .postStockCentral(dataStockCentralPost)
+                    .subscribe({
+                      next: (responsePostStock) => {
+                        console.log(
+                          'Entrada registrada con éxito:',
+                          responsePostStock
+                        );
+                      },
+                      error: (errorData) => {
+                        Notiflix.Loading.remove();
+                        console.error(
+                          'Error al enviar la solicitud POST de SOTCKCENTRAL:',
+                          errorData
+                        );
+                      },
+                      complete: () => {},
+                    });
+                }
+              }
+            },
+            error: (errorData) => {
+              Notiflix.Loading.remove();
+              console.error(
+                'Error al enviar al consultar datos de STOCKCENTRAL:',
+                errorData
+              );
+            },
+            complete: () => {},
+          });
+        });
       },
       error: (errorData) => {
+        Notiflix.Loading.remove();
         console.error('Error al enviar al actualizar COMPRA:', errorData);
       },
       complete: () => {
@@ -274,6 +407,7 @@ export class ComprasVerComponent implements OnInit {
         this.router.navigate([rutas.logistica_compra_ver + this.compraId]);
         this.compraDetalle(this.compraId);
 
+        Notiflix.Loading.remove();
         const Toast = Swal.mixin({
           toast: true,
           position: 'bottom-end',
@@ -293,7 +427,9 @@ export class ComprasVerComponent implements OnInit {
     });
   }
 
+  dataFindStockCentral2: any;
   confirmar() {
+    Notiflix.Loading.pulse('Confirmando compra...');
     //console.log(this.form.value);
     const compraData2 = {
       id: this.compraId,
@@ -302,19 +438,111 @@ export class ComprasVerComponent implements OnInit {
         this.form.get('comprobanteDetalle')?.value.comprobante_serie,
       numerocomprobante:
         this.form.get('comprobanteDetalle')?.value.comprobante_numero,
+      proceso: 'CONFIRMADO',
       destino: this.form.get('comprobanteDetalle')?.value.suc_destino,
     };
     //console.log(compraData2);
     this.comprasService.updatedCompra(compraData2).subscribe({
       next: (response) => {
         console.log(response);
+
+        //INICIO PARA ACTUALIZAR STOCK
+        this.stockCentralService.getStockCentralAll().subscribe({
+          next: (responseFind2: any) => {
+            if (responseFind2 != 'no hay resultados') {
+              this.dataFindStockCentral2 = responseFind2;
+
+              const productosAgrupados: { [id: string]: Producto } = {};
+              this.datosProductosDetalle.forEach((producto: Producto) => {
+                const idProducto = producto.producto_id;
+                if (productosAgrupados[idProducto]) {
+                  // Si ya existe el producto en la lista agrupada, se suma la cantidad
+                  productosAgrupados[idProducto].cantidad += producto.cantidad;
+                } else {
+                  // Si no existe, se agrega el producto a la lista agrupada
+                  productosAgrupados[idProducto] = { ...producto };
+                }
+              });
+
+              Object.values(productosAgrupados).forEach(
+                (producto: Producto) => {
+                  const StockEncontrado2 = this.dataFindStockCentral2.find(
+                    (stoc: any) => stoc.producto_id === producto.producto_id
+                  );
+                  if (StockEncontrado2) {
+                    console.log(producto);
+                    console.log(StockEncontrado2);
+                    const nuevostock =
+                      StockEncontrado2.cantidad - producto.cantidad;
+
+                    const dataCalculadaStockCentral = {
+                      producto: StockEncontrado2.producto_id,
+                      cantidad: nuevostock,
+                      condicion: 'COMPRA-CONFIRMAR',
+                    };
+                    console.log(dataCalculadaStockCentral);
+
+                    this.stockCentralService
+                      .updatedStockCentral(dataCalculadaStockCentral)
+                      .subscribe({
+                        next: (responseDataCalculada) => {
+                          console.log(
+                            'Entrada registrada con éxito en stock central:',
+                            responseDataCalculada
+                          );
+                        },
+                        error: (errorData) => {
+                          Notiflix.Loading.remove();
+                          console.log(
+                            'Error al registrar dato calculado en stock central:',
+                            errorData
+                          );
+                        },
+                        complete: () => {},
+                      });
+                  }
+                }
+              );
+            }
+          },
+          error: (errorData) => {
+            Notiflix.Loading.remove();
+            console.log(
+              'Error al onsultar datos generales de stock central:',
+              errorData
+            );
+          },
+          complete: () => {},
+        });
+        //FIN
       },
       error: (errorData) => {
-        console.error('Error al enviar al actualizar COMPRA2:', errorData);
+        Notiflix.Loading.remove();
+        console.error(
+          'Error al enviar al actualizar datos de entrega',
+          errorData
+        );
       },
       complete: () => {
         //this.router.navigate([`/logistica/compra`]);
         this.router.navigate([rutas.logistica_compra]);
+
+        Notiflix.Loading.remove();
+        const Toast = Swal.mixin({
+          toast: true,
+          position: 'bottom-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          },
+        });
+        Toast.fire({
+          icon: 'success',
+          html: `<div style="font-size: 15px; font-weight: 700">Datos de la compra ${this.compraId} añadidas con &eacute;xito.</div>`,
+        });
       },
     });
   }

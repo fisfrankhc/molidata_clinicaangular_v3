@@ -64,8 +64,8 @@ export class rutas {
     return this.baseUrl + '/logistica/requerimientos';
   }
 
-  public static get logistica_stock(): string {
-    return this.baseUrl + '/logistica/stock';
+  public static get logistica_stockcentral(): string {
+    return this.baseUrl + '/logistica/stock-central';
   }
 
   public static get despacho_venta(): string {

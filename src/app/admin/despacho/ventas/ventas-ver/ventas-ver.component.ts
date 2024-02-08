@@ -12,15 +12,24 @@ import { VentasService } from 'src/app/shared/services/despacho/ventas/ventas.se
 import { VentasItemService } from 'src/app/shared/services/despacho/ventas/ventas-item.service';
 import { ClientesService } from 'src/app/shared/services/despacho/clientes/clientes.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
-import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
+import { StockService } from 'src/app/shared/services/almacen/stock/stock.service';
 import { Stock } from 'src/app/shared/interfaces/logistica';
 import { VentasDetalle } from 'src/app/shared/interfaces/despacho';
 
 import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
 import { MovimientosAlmacenDetalleService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen-detalle.service';
 
+import { ComprobantesItemsService } from 'src/app/shared/services/contable/comprobantes/comprobantes-items.service';
+import { ComprobantesVentaService } from 'src/app/shared/services/contable/comprobantes/comprobantes-venta.service';
+import { GeneralService } from 'src/app/shared/services/general.service';
+import { DatosEmpresa } from 'src/app/shared/interfaces/empresa';
+
 import { DatePipe } from '@angular/common';
 import Swal from 'sweetalert2';
+
+import { jsPDF } from 'jspdf';
+import * as Notiflix from 'notiflix';
+import { EmailService } from 'src/app/shared/services/email.service';
 
 @Component({
   selector: 'app-ventas-ver',
@@ -39,11 +48,16 @@ export class VentasVerComponent implements OnInit {
     private stockService: StockService,
     private movimientosAlmacenService: MovimientosAlmacenService,
     private movimientosAlmacenDetalleService: MovimientosAlmacenDetalleService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private comprobantesItemsService: ComprobantesItemsService,
+    private comprobantesVentaService: ComprobantesVentaService,
+    private emailService: EmailService,
+    public generalService: GeneralService
   ) {}
-  ventaId: number | null = null;
+  ventaId: any;
   usersucursal = localStorage.getItem('usersucursal');
   userid = localStorage.getItem('userid');
+  usernombre = localStorage.getItem('usernombre');
   public ruta = rutas;
 
   ngOnInit(): void {
@@ -56,6 +70,7 @@ export class VentasVerComponent implements OnInit {
     this.clientesAll();
     this.productosAll();
     this.ventaDetalle(this.ventaId);
+    this.comprobantesAll(this.ventaId);
   }
 
   form = this.fb.group({
@@ -66,6 +81,11 @@ export class VentasVerComponent implements OnInit {
       email: [''],
     }),
     listaCompra: this.fb.array([]), // FormArray para la lista de compra
+    datoVerBoleta: this.fb.group({
+      envioOpcion: [''],
+      correoBoleta: ['', Validators.email],
+      whatsappBoleta: [''],
+    }),
   });
 
   datosCLI: any;
@@ -130,7 +150,9 @@ export class VentasVerComponent implements OnInit {
     this.ventasService.getVenta(ventaId).subscribe({
       next: (data) => {
         this.datoVenta = data;
+        console.log(this.datoVenta);
         this.sucursalVenta = this.datoVenta[0]['sucursal_id'];
+
         if (this.datosCLI && this.datosCLI.length > 0) {
           // Buscar el cliente correspondiente en datosCLI
           const cliente = this.datosCLI.find(
@@ -400,5 +422,327 @@ export class VentasVerComponent implements OnInit {
         });
       }
     }
+  }
+
+  //PARA COMPROBANTEEEE
+  datosCOMPROBANTE: any;
+  comprobanteExist: boolean = false;
+  comprobantesAll(ventaId: number): void {
+    this.comprobantesVentaService.getComprobanteVentaItem(ventaId).subscribe({
+      next: (datosCOMPROBANTE: any) => {
+        if (datosCOMPROBANTE === 'No hay resultados') {
+          this.datosCOMPROBANTE = 'No hay resultados';
+        } else {
+          this.datosCOMPROBANTE = datosCOMPROBANTE[0];
+          this.comprobanteExist = true;
+          console.log(this.datosCOMPROBANTE);
+
+          this.infoItemsComprobantesAll(this.datosCOMPROBANTE.comprobante_id);
+          this.infoEmpresaAll();
+        }
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
+
+  infoEmpresa: any;
+  infoEmpresaAll(): void {
+    this.generalService.getDatosEmpresa().subscribe({
+      next: (responsEmpresa: any) => {
+        this.infoEmpresa = responsEmpresa;
+        this.infoEmpresa = this.infoEmpresa.find(
+          (inempre: any) =>
+            inempre.empresa_ruc === this.datosCOMPROBANTE.empresa_emision
+        );
+        console.log(this.infoEmpresa);
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
+
+  infoItemsComprobantes: any;
+  infoItemsComprobantesAll(comprobanteid: any): void {
+    this.comprobantesItemsService
+      .getComprobanteDetalleItem(comprobanteid)
+      .subscribe({
+        next: (response: any) => {
+          console.log(response);
+          this.infoItemsComprobantes = response;
+          console.log(this.infoItemsComprobantes);
+
+          this.itemList = this.infoItemsComprobantes;
+        },
+        error: () => {},
+        complete: () => {},
+      });
+  }
+
+  public calcularSubtotalItem(producto: any): number {
+    const precio = producto.precio_venta;
+    const cantidad = producto.cantidad_venta;
+    const descuento = producto.exonerado;
+
+    return precio * cantidad - descuento;
+  }
+
+  itemList = [];
+  public calcularTotalItem(): number {
+    let subtotalTotal = 0;
+    this.itemList.forEach((producto) => {
+      subtotalTotal += this.calcularSubtotalItem(producto);
+    });
+
+    return subtotalTotal;
+  }
+
+  public totalEnTextoItem(): string {
+    const subtotalTotal = this.calcularTotalItem();
+    const parteEntera = Math.floor(subtotalTotal);
+    const parteDecimal = Math.round((subtotalTotal - parteEntera) * 100);
+    // Convertir a texto
+    if (subtotalTotal !== 0) {
+      const parteEnteraEnPalabras = this.numeroAStringItem(parteEntera);
+      const parteDecimalEnPalabras = this.numeroAStringItem(parteDecimal);
+      return `${parteEnteraEnPalabras} con ${parteDecimalEnPalabras}/100 soles`;
+    } else {
+      // En caso de que subtotalTotal sea igual a 0
+      return 'Cero soles';
+    }
+  }
+
+  numeroAStringItem(numero: number): string {
+    const especiales = [
+      'Diez',
+      'Once',
+      'Doce',
+      'Trece',
+      'Catorce',
+      'Quince',
+      'Dieciséis',
+      'Diecisiete',
+      'Dieciocho',
+      'Diecinueve',
+    ];
+    const unidades = [
+      'Cero',
+      'Uno',
+      'Dos',
+      'Tres',
+      'Cuatro',
+      'Cinco',
+      'Seis',
+      'Siete',
+      'Ocho',
+      'Nueve',
+    ];
+    const decenas = [
+      '',
+      '',
+      'Veinte',
+      'Treinta',
+      'Cuarenta',
+      'Cincuenta',
+      'Sesenta',
+      'Setenta',
+      'Ochenta',
+      'Noventa',
+    ];
+    const centenas = [
+      '',
+      'Ciento',
+      'Doscientos',
+      'Trescientos',
+      'Cuatrocientos',
+      'Quinientos',
+      'Seiscientos',
+      'Setecientos',
+      'Ochocientos',
+      'Novecientos',
+    ];
+
+    if (numero === 0) {
+      return 'Cero';
+    } else if (numero < 10) {
+      return unidades[numero];
+    } else if (numero < 20) {
+      return especiales[numero - 10];
+    } else if (numero < 100) {
+      const unidad = numero % 10;
+      const decena = Math.floor(numero / 10);
+      return decenas[decena] + (unidad > 0 ? ' y ' + unidades[unidad] : '');
+    } else if (numero < 1000) {
+      const centena = Math.floor(numero / 100);
+      const restoCentena = numero % 100;
+      return (
+        centenas[centena] +
+        (restoCentena > 0 ? ' ' + this.numeroAStringItem(restoCentena) : '')
+      );
+    } else if (numero < 1e6) {
+      const miles = Math.floor(numero / 1e3);
+      const restoMiles = numero % 1e3;
+      return (
+        (miles === 1 ? 'Mil' : this.numeroAStringItem(miles) + ' Mil') +
+        (restoMiles > 0 ? ' ' + this.numeroAStringItem(restoMiles) : '')
+      );
+    } else {
+      const millones = Math.floor(numero / 1e6);
+      const restoMillones = numero % 1e6;
+      return (
+        (millones === 1
+          ? 'Un Millón'
+          : this.numeroAStringItem(millones) + ' Millones') +
+        (restoMillones > 0 ? ' ' + this.numeroAStringItem(restoMillones) : '')
+      );
+    }
+  }
+
+  generarBOLETAA4() {
+    //SE EJECUTA DE FORMA NORMAL EL CODIGO DE PDF
+    const pdf = new jsPDF({
+      unit: 'mm',
+      format: 'a4',
+      orientation: 'portrait',
+    });
+
+    // Obtén el contenido del div
+    const contenidoDiv = document.getElementById('boletaA4Emitir');
+
+    // Verifica que el div exista antes de continuar
+    if (contenidoDiv) {
+      pdf.html(contenidoDiv, {
+        callback: (pdf) => {
+          // Guarda el PDF después de cargar el contenido
+          pdf.output('dataurlnewwindow');
+        },
+      });
+    } else {
+      console.error('Elemento no encontrado:', contenidoDiv);
+    }
+  }
+
+  generarBOLETATicket() {
+    const pdf = new jsPDF({
+      unit: 'mm',
+      format: 'a7',
+      orientation: 'portrait',
+    });
+
+    // Obtén el contenido del div
+    const contenidoDiv = document.getElementById('boletaTicketEmitir');
+
+    // Verifica que el div exista antes de continuar
+    if (contenidoDiv) {
+      pdf.html(contenidoDiv, {
+        callback: (pdf) => {
+          // Guarda el PDF después de cargar el contenido
+          pdf.output('dataurlnewwindow');
+        },
+      });
+    } else {
+      console.error('Elemento no encontrado:', contenidoDiv);
+    }
+  }
+
+  enviarACorreo() {
+    const datoEmailBoleta = this.form.get('datoVerBoleta')?.value.correoBoleta;
+    if (datoEmailBoleta) {
+      const correoBoletaControl = this.form.get('datoVerBoleta.correoBoleta');
+
+      if (correoBoletaControl?.invalid) {
+        if (correoBoletaControl.hasError('email')) {
+          console.log('Correo electrónico inválido');
+          alert('El campo ingresado no es un correo electrónico válido.');
+        } else {
+          alert('HAY UN ERROR');
+        }
+      } else {
+        //PASAMOS A EJECUTAR EL CODIGO
+        const pdf = new jsPDF({
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+        });
+
+        // Obtén el contenido del div
+        const contenidoDiv = document.getElementById('boletaA4Emitir');
+
+        // Verifica que el div exista antes de continuar
+        if (contenidoDiv) {
+          pdf.html(contenidoDiv, {
+            callback: (pdf) => {
+              Notiflix.Loading.dots('Enviando correo');
+              // Obtiene el PDF en formato base64
+              const pdfBase64 = pdf.output('datauristring').split(',')[1];
+              // Llama al servicio para enviar el correo electrónico con el PDF adjunto
+              const formData = new FormData();
+              formData.append('to_email', datoEmailBoleta);
+              formData.append('subject', 'Boleta Electronica QARA');
+              formData.append(
+                'message',
+                'Buen dia, se envia una copia de su boleta electrónica'
+              );
+              formData.append('attachment', pdfBase64);
+              this.emailService.enviarEmail(formData).subscribe({
+                next: (response) => {
+                  console.log(
+                    'Correo electrónico enviado con éxito:',
+                    response
+                  );
+
+                  Notiflix.Loading.remove();
+                  const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                      toast.onmouseenter = Swal.stopTimer;
+                      toast.onmouseleave = Swal.resumeTimer;
+                    },
+                  });
+                  Toast.fire({
+                    icon: 'success',
+                    //title: 'Stock minimo guardado',
+                    html: '<div style="font-size: 15px; font-weight: 700">Correo enviado exitosamente</div>',
+                  });
+                },
+                error: (errorData) => {
+                  console.error(
+                    'Error al enviar el correo electrónico:',
+                    errorData
+                  );
+                },
+                complete: () => {},
+              });
+            },
+          });
+        } else {
+          console.error('Elemento no encontrado:', contenidoDiv);
+        }
+      }
+    } else {
+      alert('INGRESE UN CORREO ELECTRÓNICO');
+    }
+  }
+
+  enviarAWhatsApp() {
+    const numeroWhatsApp = this.form.get('datoVerBoleta.whatsappBoleta')?.value;
+
+    const valorTotal = this.calcularTotalItem();
+    const valorFormateado = valorTotal.toFixed(2); // 2 indica el número de decimales
+
+    const mensaje = `USTED TIENE UN COMPROBANTE ELECTRONICO DE LA EMPRESA
+    ${this.infoEmpresa.razon_social}
+    CON RUC: ${this.infoEmpresa.empresa_ruc} 
+    POR EL VALOR DE S/.${valorFormateado} \n.
+    SERIE Y NUMERO: ${this.datosCOMPROBANTE.comprobante_serie}-${this.datosCOMPROBANTE.comprobante_numero}`;
+
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    const enlaceWhatsApp = `https://api.whatsapp.com/send?phone=${numeroWhatsApp}&text=${mensajeCodificado}`;
+
+    window.open(enlaceWhatsApp, '_blank');
   }
 }

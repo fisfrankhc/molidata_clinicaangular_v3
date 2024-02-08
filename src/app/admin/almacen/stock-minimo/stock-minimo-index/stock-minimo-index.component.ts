@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
-import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
+import { StockService } from 'src/app/shared/services/almacen/stock/stock.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';

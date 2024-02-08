@@ -251,4 +251,8 @@ export class ComprasIndexComponent implements OnInit {
       this.pageSelection.push({ skip: skip, limit: limit });
     }
   }
+
+  public recargarCompras(): void {
+    this.comprasAll();
+  }
 }

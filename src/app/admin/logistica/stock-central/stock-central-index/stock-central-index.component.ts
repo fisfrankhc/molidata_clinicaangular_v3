@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+
 import { rutas } from 'src/app/shared/routes/rutas';
-import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
-import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
+import { StockCentralService } from 'src/app/shared/services/logistica/stock-central/stock-central.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
-import { pageSelection, Stock } from '../../../../shared/interfaces/logistica';
+import {
+  pageSelection,
+  StockCentral,
+} from 'src/app/shared/interfaces/logistica';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 import {
@@ -14,19 +17,20 @@ import {
   Validators,
 } from '@angular/forms';
 
-import Swal from 'sweetalert2';
+import * as ExcelJS from 'exceljs';
 
 @Component({
-  selector: 'app-stock-index',
-  templateUrl: './stock-index.component.html',
-  styleUrls: ['./stock-index.component.scss'],
+  selector: 'app-stock-central-index',
+  templateUrl: './stock-central-index.component.html',
+  styleUrls: ['./stock-central-index.component.scss'],
 })
-export class StockIndexComponent implements OnInit {
+export class StockCentralIndexComponent implements OnInit {
   public ruta = rutas;
-  datosSTOCK: Stock[] = [];
+  usersucursal = localStorage.getItem('usersucursal');
+  datosSTOCK: StockCentral[] = [];
 
-  public stockList: Array<Stock> = [];
-  dataSource!: MatTableDataSource<Stock>;
+  public stockCentralList: Array<StockCentral> = [];
+  dataSource!: MatTableDataSource<StockCentral>;
 
   public showFilter = false;
   public searchDataValue: string = '';
@@ -43,8 +47,7 @@ export class StockIndexComponent implements OnInit {
   public totalPages = 0;
 
   constructor(
-    public stockService: StockService,
-    public sucursalService: SucursalService,
+    public stockCentralService: StockCentralService,
     private productoService: ProductoService,
     private medidaService: MedidaService,
     private fb: FormBuilder
@@ -52,28 +55,16 @@ export class StockIndexComponent implements OnInit {
 
   ngOnInit(): void {
     this.productosAll();
-    this.sucursalAll();
     this.medidasAll();
-    this.form.patchValue({ sucursalid: '1' }); // Establecer valor predeterminado de la sucursal a 1
-    this.verSucursal(); // Llamarfunción verSucursal para filtrar los datos/dfecto de la sucursal 1
+    //this.form.patchValue({ sucursalid: '1' }); Establecer valor predeterminado de la sucursal a 1
   }
 
-  datosSUC: any;
-  sucursalAll() {
-    this.sucursalService.getSucursalAll().subscribe({
-      next: (datosSUC: any) => {
-        this.datosSUC = datosSUC;
-      },
-      error: (errorData) => {},
-      complete: () => {},
-    });
-  }
   datosPRO: any;
   productosAll() {
     this.productoService.getProductosAll().subscribe({
       next: (datosPRO: any) => {
         this.datosPRO = datosPRO;
-        this.stockAll();
+        this.stockCentralAll();
       },
       error: (errorData) => {},
       complete: () => {},
@@ -90,20 +81,17 @@ export class StockIndexComponent implements OnInit {
     });
   }
 
-  form = this.fb.group({
-    sucursalid: ['', Validators.required],
-  });
-
-  private stockAll(): void {
-    this.stockList = [];
+  private stockCentralAll(): void {
+    this.stockCentralList = [];
     this.serialNumberArray = [];
-    this.stockService.getStockAll().subscribe({
-      next: (datosSTOCK: any) => {
-        this.datosSTOCK = datosSTOCK;
+    this.stockCentralService.getStockCentralAll().subscribe({
+      next: (responseSTOCK: any) => {
+        this.datosSTOCK = responseSTOCK;
         this.totalData = this.datosSTOCK.length;
+        //console.log(this.datosSTOCK);
 
         // Mapear nombres
-        this.datosSTOCK = this.datosSTOCK.map((stock: Stock) => {
+        this.datosSTOCK = this.datosSTOCK.map((stock: StockCentral) => {
           //PARA productos
           const producto = this.datosPRO.find(
             (pro: any) => pro.prod_id === stock.producto_id
@@ -111,6 +99,7 @@ export class StockIndexComponent implements OnInit {
           if (producto) {
             stock.codigoProducto = producto.prod_codigo;
             stock.nombreProducto = producto.prod_nombre;
+            stock.descripcionProducto = producto.prod_descripcion;
           }
           //PARA Medidas
           const medida = this.datosMED.find(
@@ -135,7 +124,9 @@ export class StockIndexComponent implements OnInit {
         console.error(errorData);
       },
       complete: () => {
-        this.dataSource = new MatTableDataSource<Stock>(this.stockList);
+        this.dataSource = new MatTableDataSource<StockCentral>(
+          this.stockCentralList
+        );
         this.calculateTotalPages(this.totalFilteredData, this.pageSize);
       },
     });
@@ -143,20 +134,19 @@ export class StockIndexComponent implements OnInit {
 
   totalFilteredData: any;
   private paginateData(): void {
-    this.datosSTOCK.map((res: Stock, index: number) => {
+    this.datosSTOCK.map((res: StockCentral, index: number) => {
       const serialNumber = index + 1;
       if (index >= this.skip && serialNumber <= this.limit) {
-        this.stockList.push(res);
+        this.stockCentralList.push(res);
         this.serialNumberArray.push(serialNumber);
       }
     });
   }
 
   public searchData(value: string): void {
-    //this.dataSource.filter = value.trim().toLowerCase();this.stockList = this.dataSource.filteredData;
-    this.searchDataValue = value; // Almacena el valor de búsqueda
+    //this.dataSource.filter = value.trim().toLowerCase();this.stockCentralList = this.dataSource.filteredData;
     // Realiza el filtro en todos los datos (this.datosSTOCK)
-    const filteredData = this.datosSTOCK.filter((stock: Stock) => {
+    const filteredData = this.datosSTOCK.filter((stock: StockCentral) => {
       return (
         (stock.stock_id &&
           stock.stock_id
@@ -166,17 +156,13 @@ export class StockIndexComponent implements OnInit {
         (stock.codigoProducto &&
           stock.codigoProducto.toLowerCase().includes(value.toLowerCase())) ||
         (stock.nombreProducto &&
-          stock.nombreProducto
-            .toString()
+          stock.nombreProducto.toLowerCase().includes(value.toLowerCase())) ||
+        (stock.descripcionProducto &&
+          stock.descripcionProducto
             .toLowerCase()
             .includes(value.toLowerCase())) ||
         (stock.cantidad &&
           stock.cantidad
-            .toString()
-            .toLowerCase()
-            .includes(value.toLowerCase())) ||
-        (stock.stock_minimo &&
-          stock.stock_minimo
             .toString()
             .toLowerCase()
             .includes(value.toLowerCase())) ||
@@ -185,8 +171,8 @@ export class StockIndexComponent implements OnInit {
       );
     });
 
-    // Asigna los datos filtrados a this.stockList
-    this.stockList = filteredData.slice(this.skip, this.limit);
+    // Asigna los datos filtrados a this.stockCentralList
+    this.stockCentralList = filteredData.slice(this.skip, this.limit);
 
     if (value.trim() === '') {
       // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
@@ -198,16 +184,18 @@ export class StockIndexComponent implements OnInit {
       this.calculateTotalPages(filteredData.length, this.pageSize);
     }
     // Actualiza la vista
-    this.dataSource = new MatTableDataSource<Stock>(this.stockList);
+    this.dataSource = new MatTableDataSource<StockCentral>(
+      this.stockCentralList
+    );
   }
 
   public sortData(sort: Sort) {
-    const data = this.stockList.slice();
+    const data = this.stockCentralList.slice();
 
     if (!sort.active || sort.direction === '') {
-      this.stockList = data;
+      this.stockCentralList = data;
     } else {
-      this.stockList = data.sort((a, b) => {
+      this.stockCentralList = data.sort((a, b) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const aValue = (a as any)[sort.active];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -229,8 +217,10 @@ export class StockIndexComponent implements OnInit {
       this.limit -= this.pageSize;
       this.skip = this.pageSize * this.pageIndex;
     }
-    this.stockAll();
-    this.dataSource = new MatTableDataSource<Stock>(this.stockList); // Agregar esta línea
+    this.stockCentralAll();
+    this.dataSource = new MatTableDataSource<StockCentral>(
+      this.stockCentralList
+    ); // Agregar esta línea
   }
 
   public moveToPage(pageNumber: number): void {
@@ -242,7 +232,7 @@ export class StockIndexComponent implements OnInit {
     } else if (pageNumber < this.currentPage) {
       this.pageIndex = pageNumber + 1;
     }
-    this.stockAll();
+    this.stockCentralAll();
   }
 
   public PageSize(): void {
@@ -250,15 +240,12 @@ export class StockIndexComponent implements OnInit {
     this.limit = this.pageSize;
     this.skip = 0;
     this.currentPage = 1;
-    this.stockAll();
+    this.stockCentralAll();
   }
 
   private calculateTotalPages(totalData: number, pageSize: number): void {
     this.pageNumberArray = [];
-    this.totalPages = totalData / pageSize;
-    if (this.totalPages % 1 != 0) {
-      this.totalPages = Math.trunc(this.totalPages + 1);
-    }
+    this.totalPages = Math.ceil(totalData / pageSize);
     /* eslint no-var: off */
     for (var i = 1; i <= this.totalPages; i++) {
       const limit = pageSize * i;
@@ -268,91 +255,7 @@ export class StockIndexComponent implements OnInit {
     }
   }
 
-  verSucursal() {
-    const sucursalId = this.form.value.sucursalid;
-
-    // Verificar si sucursalId tiene un valor antes de comparar
-    if (sucursalId !== null && sucursalId !== undefined) {
-      // Filtrar los datos según la sucursal seleccionada
-      this.stockList = this.datosSTOCK.filter(
-        (data) => data.almacen_id === sucursalId
-      );
-
-      // Actualizar la tabla y recalcular las páginas
-      this.dataSource = new MatTableDataSource<Stock>(this.stockList);
-      //this.dataSource.data = this.stockList;
-      this.calculateTotalPages(this.stockList.length, this.pageSize);
-    }
-  }
-
   public actualizarStock(): void {
-    this.stockAll();
-  }
-
-  form2 = this.fb.group({
-    idstock: ['', Validators.required],
-    productoNombre: ['', Validators.required],
-    stock: ['', Validators.required],
-    stockMinimo: ['', Validators.required],
-    condicion: '',
-  });
-
-  selectedStockData: Stock | null = null;
-  openEditModal(data: Stock) {
-    this.selectedStockData = data;
-    // Mostrar el modal
-    const modalElement = document.getElementById('modal_stock');
-    if (modalElement) {
-      modalElement.classList.add('show');
-    }
-
-    this.form2.setValue({
-      idstock: data.stock_id.toString(),
-      productoNombre: data.nombreProducto,
-      stock: data.cantidad.toString(),
-      stockMinimo: data.stock_minimo.toString(),
-      condicion: 'STOCK-MINIMO',
-    });
-  }
-
-  updatedStock(): void {
-    if (this.form2.valid) {
-      const dataStockMin = {
-        id: this.form2.value.idstock,
-        productoNombre: this.form2.value.productoNombre,
-        stockmin: this.form2.value.stockMinimo,
-        condicion: this.form2.value.condicion,
-      };
-
-      //console.log(dataStockMin);
-      this.stockService.updatedStock(dataStockMin).subscribe({
-        next: (response) => {
-          console.log(response);
-        },
-        error: (errorData) => {
-          console.log(errorData);
-        },
-        complete: () => {
-          this.stockAll();
-
-          const Toast = Swal.mixin({
-            toast: true,
-            position: 'bottom-end',
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-              toast.onmouseenter = Swal.stopTimer;
-              toast.onmouseleave = Swal.resumeTimer;
-            },
-          });
-          Toast.fire({
-            icon: 'success',
-            //title: 'Stock minimo guardado',
-            html: '<div style="font-size: 15px; font-weight: 700">Stock mínimo guardado</div>',
-          });
-        },
-      });
-    }
+    this.stockCentralAll();
   }
 }

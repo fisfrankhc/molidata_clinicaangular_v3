@@ -40,7 +40,8 @@
                                                 <a [routerLink]="ruta.logistica_compra_nuevo"
                                                     class="btn btn-primary add-pluss ms-2"><img
                                                         src="assets/img/icons/plus.svg" alt=""></a>
-                                                <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"><img
+                                                <a href="javascript:;" (click)="recargarCompras()"
+                                                    class="btn btn-primary doctor-refresh ms-2"><img
                                                         src="assets/img/icons/re-fresh.svg" alt=""></a>
                                             </div>
                                         </div>

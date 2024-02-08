@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
-import { StockService } from 'src/app/shared/services/logistica/stock/stock.service';
+import { StockService } from 'src/app/shared/services/almacen/stock/stock.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
@@ -298,36 +298,7 @@ export class StockSucursalIndexComponent implements OnInit {
     this.stockAll();
   }
 
-  @ViewChild('table') table!: ElementRef;
-  /*   public exportarAExcel(): void {
-    const header = ['#', 'CODIGO', 'PRODUCTO', 'STOCK', 'UNIDAD MEDIDA'];
-    const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(
-      this.table.nativeElement
-    );
-
-    // Modificar los encabezados de las columnas
-    ws['A1'] = { v: header[0], t: 's' };
-    ws['B1'] = { v: header[1], t: 's' };
-    ws['C1'] = { v: header[2], t: 's' };
-    ws['D1'] = { v: header[3], t: 's' };
-    ws['E1'] = { v: header[4], t: 's' };
-
-    // Iterar sobre los datos y asignarlos a las celdas correspondientes
-    for (let i = 0; i < this.stockList.length; i++) {
-      ws[`A${i + 2}`] = {
-        v: (this.currentPage - 1) * this.pageSize + i + 1,
-        t: 'n',
-      };
-      ws[`B${i + 2}`] = { v: this.stockList[i].codigoProducto, t: 's' };
-      ws[`C${i + 2}`] = { v: this.stockList[i].nombreProducto, t: 's' };
-      ws[`D${i + 2}`] = { v: this.stockList[i].cantidad, t: 'n' };
-      ws[`E${i + 2}`] = { v: this.stockList[i].nombreMedida, t: 's' };
-    }
-
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-    XLSX.writeFile(wb, 'exported-data.xlsx');
-  } */
+  //@ViewChild('table') table!: ElementRef;
 
   public exportarAExcel(): void {
     const workbook = new ExcelJS.Workbook();

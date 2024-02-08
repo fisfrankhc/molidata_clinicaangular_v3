@@ -48,10 +48,527 @@
                                                         readonly></textarea>
                                                 </div>
                                             </div>
+                                            <div class="col-12 col-md-6 col-xl-3 text-end">
+                                                <a href="javascript:void(0);" *ngIf="comprobanteExist"
+                                                    data-bs-toggle="modal" data-bs-target="#pregunta_descargar"
+                                                    class="btn btn-success"
+                                                    style="padding: 8px 30px; margin: 5px; color: white "> <i
+                                                        class="fa-solid fa-download"></i>
+                                                    DESCARGAR
+                                                    C.P.</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
+
+                            <!-- Modal VER Boleta/Factura -->
+                            <div class="modal custom-modal fade" id="pregunta_descargar" role="dialog"
+                                formGroupName="datoVerBoleta">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <div class="form-header">
+                                                <h2>¿Que desea observar?</h2>
+
+                                                <div class="accordion accordion-flush" id="accordionFlushExample"
+                                                    style="border: 2px solid #2e37a4;">
+                                                    <div class="accordion-item">
+                                                        <h2 class="accordion-header">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#flush-collapseOne"
+                                                                aria-expanded="false" aria-controls="flush-collapseOne">
+                                                                <span style="right: -30%; position: relative;">Boleta
+                                                                    Electr&oacute;nica</span>
+                                                            </button>
+                                                        </h2>
+                                                        <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                                            data-bs-parent="#accordionFlushExample">
+                                                            <div class="accordion-body">
+                                                                <div class="row"
+                                                                    style="margin: auto; place-content: center; ">
+                                                                    <div class="col-auto"
+                                                                        style="padding: 10px 5px; border-radius: 10px;"
+                                                                        [ngClass]="{'selected-email': form.get('datoVerBoleta.envioOpcion')?.value === 'email'}">
+                                                                        <input type="radio" class="form-check-input"
+                                                                            formControlName="envioOpcion" value="email"
+                                                                            id="emailOption" />
+                                                                        <label for="emailOption"> Correo
+                                                                            Electr&oacute;nico</label>
+                                                                    </div>
+                                                                    <div class="col-auto"
+                                                                        style="padding: 10px 5px; border-radius: 10px;"
+                                                                        [ngClass]="{'selected-whatsapp': form.get('datoVerBoleta.envioOpcion')?.value === 'whatsapp'}">
+                                                                        <input type="radio" class="form-check-input"
+                                                                            formControlName="envioOpcion"
+                                                                            value="whatsapp" id="whatsappOption" />
+                                                                        <label for="whatsappOption"> WhatsApp</label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row fade-in-out-down"
+                                                                    *ngIf="form.get('datoVerBoleta.envioOpcion')?.value === 'email'">
+                                                                    <div class="row" style="margin: auto;">
+                                                                        <div class="col-12">
+                                                                            <label for="validationCustomUsername">Correo
+                                                                                al
+                                                                                que desea enviar:</label>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-9"
+                                                                            style="padding-right: 0;">
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-prepend">
+                                                                                    <span class="input-group-text"
+                                                                                        id="inputGroupPrepend"><i
+                                                                                            class="fa-solid fa-envelope"></i></span>
+                                                                                </div>
+                                                                                <input type="email"
+                                                                                    formControlName="correoBoleta"
+                                                                                    style="border-radius: 2px 10px 10px 2px; height: 45px;"
+                                                                                    class="form-control"
+                                                                                    placeholder="correo@correo.com">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-auto"
+                                                                            style="align-self: center; padding-left: 0; max-width: 90px;">
+                                                                            <a href="javascript:void(0);"
+                                                                                (click)="enviarACorreo()"
+                                                                                class="btn btn-secondary"
+                                                                                style="padding: 7px 20px;">ENVIAR</a>
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <div style="color: red; padding: 5px;font-size: 12px"
+                                                                                class="fade-in-out"
+                                                                                *ngIf="form.get('datoVerBoleta.correoBoleta')?.hasError('email')">
+                                                                                Ingrese un correo electr&oacute;nico
+                                                                                v&aacute;lido.
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="row fade-in-out-down"
+                                                                    *ngIf="form.get('datoVerBoleta.envioOpcion')?.value === 'whatsapp'">
+
+                                                                    <div class="row" style="margin: auto;">
+                                                                        <div class="col-12">
+                                                                            <label
+                                                                                for="validationCustomUsername">Ingrese
+                                                                                un n&uacute;mero: </label>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-9"
+                                                                            style="padding-right: 0;">
+                                                                            <div class="input-group">
+                                                                                <div class="input-group-prepend">
+                                                                                    <span class="input-group-text"
+                                                                                        id="inputGroupPrepend"><i
+                                                                                            class="fas fa-phone"></i></span>
+                                                                                </div>
+                                                                                <input type="text"
+                                                                                    formControlName="whatsappBoleta"
+                                                                                    style="border-radius: 2px 10px 10px 2px; height: 45px;"
+                                                                                    class="form-control" placeholder="">
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="col-12 col-lg-auto"
+                                                                            style="align-self: center; padding-left: 0; max-width: 90px;">
+                                                                            <a href="javascript:void(0);"
+                                                                                (click)="enviarAWhatsApp()"
+                                                                                class="btn btn-secondary"
+                                                                                style="padding: 7px 20px;">ENVIAR</a>
+                                                                        </div>
+                                                                    </div>
+
+                                                                </div>
+                                                                <br>
+                                                                <div class="row">
+                                                                    <div class="col-12 col-lg-6">
+                                                                        <a href="javascript:void(0);"
+                                                                            (click)="generarBOLETAA4()"
+                                                                            class="btn btn-outline-primary"
+                                                                            style="width: 100%; padding: 10px 20px; margin: 5px;">Formato
+                                                                            A4</a>
+                                                                    </div>
+                                                                    <div class="col-12 col-lg-6">
+                                                                        <a href="javascript:void(0);"
+                                                                            (click)="generarBOLETATicket()"
+                                                                            class="btn btn-outline-secondary"
+                                                                            style="width: 100%; padding: 10px 20px; margin: 5px;">Formato
+                                                                            Ticket</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-btn delete-action">
+                                                <div class="row">
+                                                    <div class="col-auto" style="margin: 0 auto;">
+                                                        <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                                            class="btn btn-primary paid-cancel-btn">SALIR</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Modal Modal VER Boleta/Factura -->
+
+                            <!-- Modal Boleta A4-->
+                            <div class="modal custom-modal fade" id="boletaElectronica" role="dialog">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <div id="boletaA4Emitir" style="text-align: center; ">
+                                                <div class="row"
+                                                    style="padding-top: 5px; padding-left: 20px; width: 220px; padding-bottom: 5px; padding-right: 5px;">
+                                                    <table *ngIf="infoEmpresa && datosCOMPROBANTE">
+                                                        <tr>
+                                                            <td><img src="assets/img/logo.png" width="20" height="20"
+                                                                    alt="" style="position: relative; ">
+                                                            </td>
+                                                            <td style="width: 180px;">
+                                                                <table
+                                                                    style=" border: none; align-items: center; text-align: center; width: 100%;">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="border: none; font-weight: bold; font-size: 6px; padding-bottom: 0;">
+                                                                                {{ infoEmpresa.nombre_comercial }}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="border: none; font-weight: bold; font-size: 4.5px; padding-bottom: 0; ">
+                                                                                {{ infoEmpresa.razon_social }}</td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="border: none; font-size: 4px; font-style: oblique; padding-bottom: 0;">
+                                                                                Dirección: {{
+                                                                                infoEmpresa.empresa_direccion
+                                                                                }}
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="border: none; font-size: 4px; font-style: oblique; padding-bottom: 0;">
+                                                                                TELÉFONO: {{
+                                                                                infoEmpresa.empresa_telefono }}
+                                                                            </td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td
+                                                                                style="border: none; font-size: 4px; font-style: oblique; padding-bottom: 0;">
+                                                                                EMAIL: qara@qara.com.pe</td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                            <td style="width: 2px;"></td>
+                                                            <td style="width: 105px;">
+                                                                <div
+                                                                    style="border-radius: 2px; border: 1px solid #000000; padding: 1px 0;">
+                                                                    <table
+                                                                        style=" border: none; align-items: center; text-align: center; width: 100%; font-size: 3.5px;">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td style="border: none; ">R.U.C. N° {{
+                                                                                    infoEmpresa.empresa_ruc }}
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td></td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td
+                                                                                    style="border: none; background-color: #c5c5c5;">
+                                                                                    BOLETA DE VENTA
+                                                                                    ELECTR&Oacute;NICA</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="border: none; ">N°
+                                                                                    {{
+                                                                                    datosCOMPROBANTE.comprobante_serie
+                                                                                    }}-{{datosCOMPROBANTE.comprobante_numero}}
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </div>
+                                                <div class="row" *ngIf="datosCOMPROBANTE"
+                                                    style="padding-left: 20px; width: 212px; padding-bottom: 5px;">
+                                                    <table style="border: 1px solid #000; font-size: 3.8px;">
+                                                        <thead>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </thead>
+                                                        <tbody style="text-align: left;">
+                                                            <tr>
+                                                                <td style="width: 25px;"> &nbsp;CLIENTE</td>
+                                                                <td style="letter-spacing: 0.15px">: {{
+                                                                    datosCOMPROBANTE.cliente_razon_social }}
+                                                                </td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td> &nbsp;DIRECCION</td>
+                                                                <td>: {{ datosCOMPROBANTE.cliente_direccion
+                                                                    }}</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td> &nbsp;{{ datosCOMPROBANTE.cliente_documento_tipo
+                                                                    }}</td>
+                                                                <td>: {{ datosCOMPROBANTE.cliente_documento_numero }}
+                                                                </td>
+                                                                <td style="width: 40px;"> &nbsp;FECHA DE EMISION</td>
+                                                                <td style="width: 40px;">: {{
+                                                                    datosCOMPROBANTE.fecha_emision }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td> &nbsp;CODIGO</td>
+                                                                <td>: </td>
+                                                                <td> &nbsp;FECHA DE VMTO</td>
+                                                                <td>: {{
+                                                                    datosCOMPROBANTE.fecha_emision}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td> &nbsp;TELEFONO</td>
+                                                                <td>: </td>
+                                                                <td> &nbsp;CONDICION PAGO</td>
+                                                                <td>: CONTADO</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td> &nbsp;G/REMISION</td>
+                                                                <td>: -</td>
+                                                                <td> &nbsp;MONEDA</td>
+                                                                <td>: SOLES</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="row"
+                                                    style="padding-left: 20px; width: 212px; padding-bottom: 5px;">
+                                                    <table class="" style="font-size: 4.2px">
+                                                        <thead>
+                                                            <tr
+                                                                style="border-bottom: 1px solid #313131; text-align: center; padding-bottom: 1px;">
+                                                                <th>N°</th>
+                                                                <th>CANT.</th>
+                                                                <th>MED.</th>
+                                                                <th>DESCRIPCION</th>
+                                                                <th>P. UN.</th>
+                                                                <th>IMPORTE</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr *ngFor="let data of infoItemsComprobantes, let i = index"
+                                                                style="border-bottom: 1px solid #313131;">
+                                                                <td style="padding: 0; padding-bottom: 1px;">{{ i+1 }}
+                                                                </td>
+                                                                <td style="padding: 0; padding-bottom: 1px;">{{
+                                                                    data.cantidad_venta }}</td>
+                                                                <td style="padding: 0; padding-bottom: 1px;">{{
+                                                                    data.medida }}</td>
+                                                                <td style="padding: 0; padding-bottom: 1px;">{{
+                                                                    data.producto_nombre }}</td>
+                                                                <td style="padding: 0; padding-bottom: 1px;">{{
+                                                                    data.precio_venta }}</td>
+                                                                <td
+                                                                    style="padding: 0; padding-bottom: 1px; text-align: right;">
+                                                                    {{
+                                                                    calcularSubtotalItem(data) | number:'1.2-2' }}</td>
+                                                            </tr>
+                                                            <br>
+                                                            <tr class="textoMonto">
+                                                                <td colspan="4"
+                                                                    style="padding-top: 0; border: 1px solid #313131;">
+                                                                    SON:
+                                                                    {{totalEnTextoItem()}}</td>
+                                                                <td
+                                                                    style="border-top: 1px solid #313131; border-bottom: 1px solid #313131;">
+                                                                    TOTAL:</td>
+                                                                <td style="border: 1px solid #313131;"><span
+                                                                        style="font-weight: bold;">
+                                                                        S/.
+                                                                        {{calcularTotalItem() |
+                                                                        number:'1.2-2'}}</span></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>QR</td>
+                                                                <td colspan="5">Representaci&oacute;n impresa del
+                                                                    comprobante electr&oacute;nico</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div style="padding-left: 10px; width: 212px;">
+                                                    <p style="margin-bottom: 0; font-size: 4px;">
+                                                        VENDEDOR: {{
+                                                        this.usernombre }}</p>
+                                                    <p style="margin-bottom: 0; font-size: 4px;">Telefono: </p>
+                                                    <p style="margin-bottom: 0; font-size: 4px;">Email: </p>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-btn delete-action">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                                            class="btn btn-primary paid-cancel-btn">Cancelar</a>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button type="submit" data-bs-dismiss="modal"
+                                                            class="btn btn-primary paid-continue-btn"
+                                                            style="width: 100%;">EMITIR</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Modal Boleta A4-->
+                            <!-- Modal Boleta Ticket -->
+                            <div class="modal custom-modal fade" id="ticket" role="dialog">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <div id="boletaTicketEmitir" style="letter-spacing: 0.012em; width: 74px">
+                                                <div *ngIf="infoEmpresa && datosCOMPROBANTE"
+                                                    style="text-align: center; padding-top: 2px; font-size: 2px;">
+                                                    <img src="assets/img/logo.jpg" width="5px" height="5px" alt="">
+                                                    <br><span style="top: -0.6em; position: relative;">{{
+                                                        infoEmpresa.nombre_comercial
+                                                        }}</span>
+                                                    <br><span style="top: -1em; position: relative;">BOLETA DE VENTA
+                                                        ELECTRÓNICA</span>
+                                                    <br><span
+                                                        style="font-weight: bold ; top: -1.2em; position: relative;">{{datosCOMPROBANTE.comprobante_serie}}-{{datosCOMPROBANTE.comprobante_numero}}</span>
+                                                    <br><span style="top: -1.4em; position: relative;">{{
+                                                        infoEmpresa.razon_social }}</span>
+                                                    <br><span style="top: -1.6em; position: relative;">RUC: {{
+                                                        infoEmpresa.empresa_ruc }}</span>
+                                                    <br><span style="top: -1.8em; position: relative;">{{
+                                                        infoEmpresa.empresa_direccion }}</span>
+                                                    <br><span style="top: -2em; position: relative;">-</span>
+                                                    <br><span style="top: -2.2em; position: relative;">TEL&Eacute;FONO:
+                                                        {{ infoEmpresa.empresa_telefono }}</span>
+                                                </div>
+                                                <div *ngIf="datosCOMPROBANTE"
+                                                    style="font-size: 2px; padding: 0 2px; top: -2.2em; position: relative;">
+                                                    <table>
+                                                        <thead>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </thead>
+                                                        <tbody style="text-align: justify;">
+                                                            <tr>
+                                                                <td style="padding: 0; width: 25px;">FECHA</td>
+                                                                <td style="padding: 0;">: 2023-03-29</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">{{
+                                                                    datosCOMPROBANTE.cliente_documento_tipo
+                                                                    }}</td>
+                                                                <td style="padding: 0;">: {{
+                                                                    datosCOMPROBANTE.cliente_documento_numero }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">SEÑOR (A)</td>
+                                                                <td style="padding: 0;">: {{
+                                                                    datosCOMPROBANTE.cliente_razon_social }}
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">DIRECCION</td>
+                                                                <td style="padding: 0;">: {{
+                                                                    datosCOMPROBANTE.cliente_direccion }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="padding: 0;">FECHA EMISION</td>
+                                                                <td style="padding: 0;">: {{
+                                                                    datosCOMPROBANTE.fecha_emision }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div
+                                                    style="font-size: 1.7px; padding: 0 2px; top: -1.6em; position: relative; text-align: center;">
+                                                    <table style="width: 100%;">
+                                                        <thead>
+                                                            <th>CANT.</th>
+                                                            <th>UM.</th>
+                                                            <th>DESCRIPCION</th>
+                                                            <th style="width: 10px;">P. UN.</th>
+                                                            <th>IMP.</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr
+                                                                *ngFor="let data of infoItemsComprobantes, let i = index">
+                                                                <td style="padding: 0; letter-spacing: 0.012em;">{{
+                                                                    data.cantidad_venta }}</td>
+                                                                <td style="padding: 0;">{{ data.medida }}</td>
+                                                                <td style="padding: 0;">{{ data.producto_nombre }}</td>
+                                                                <td style="padding: 0; letter-spacing: 0.012em;">{{
+                                                                    data.precio_venta }}</td>
+                                                                <td
+                                                                    style="padding: 0; text-align: right; letter-spacing: 0.012em;">
+                                                                    {{
+                                                                    calcularSubtotalItem(data) | number:'1.2-2' }}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td colspan="5" style="padding: 0;">
+                                                                    TOTAL: <span style="font-weight: bold;">S/.
+                                                                        {{calcularTotalItem() |
+                                                                        number:'1.2-2'}}</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="textoMonto">
+                                                                <td colspan="5" style="padding-top: 0; ">
+                                                                    SON:
+                                                                    {{totalEnTextoItem()}}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div
+                                                    style="font-size: 2px; padding: 0 2px; top: -1.4em; position: relative; text-align: center;">
+                                                    <p style="margin-bottom: 0;">VENDEDOR: {{ this.usernombre }}</p>
+                                                    <p style="margin-bottom: 0;">Telefono: </p>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-btn delete-action">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <a href="javascript:void(0);" data-bs-dismiss="modal"
+                                                            class="btn btn-primary paid-cancel-btn">Cancelar</a>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <button type="submit" data-bs-dismiss="modal"
+                                                            class="btn btn-primary paid-continue-btn"
+                                                            style="width: 100%;">EMITIR</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /Modal Boleta Ticket -->
+
                             <div class="invoice-add-table" style="padding-top: 0px;">
                                 <h4>Lista de compra</h4>
                                 <div class="table-responsive">
