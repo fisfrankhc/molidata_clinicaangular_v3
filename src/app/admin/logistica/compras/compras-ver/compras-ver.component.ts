@@ -470,8 +470,8 @@ export class ComprasVerComponent implements OnInit {
                     (stoc: any) => stoc.producto_id === producto.producto_id
                   );
                   if (StockEncontrado2) {
-                    console.log(producto);
-                    console.log(StockEncontrado2);
+                    //console.log(producto);
+                    //console.log(StockEncontrado2);
                     const nuevostock =
                       StockEncontrado2.cantidad - producto.cantidad;
 

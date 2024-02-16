@@ -119,6 +119,13 @@ export class rutas {
     return this.baseUrl + '/almacen/movimientos-almacen/nuevo';
   }
 
+  public static get almacen_transferencias(): string {
+    return this.baseUrl + '/almacen/transferencias';
+  }
+  public static get almacen_transferencias_nuevo(): string {
+    return this.baseUrl + '/almacen/transferencias/nuevo';
+  }
+
   public static get contable_comprobante(): string {
     return this.baseUrl + '/contable/comprobantes';
   }

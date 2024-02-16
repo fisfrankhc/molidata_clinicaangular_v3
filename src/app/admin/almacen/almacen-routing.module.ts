@@ -39,6 +39,15 @@ const routes: Routes = [
       ),
     data: { expectedRoles: ['1', '5'] } as any,
   },
+  {
+    path: 'transferencias',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./transferencias/transferencias.module').then(
+        (m) => m.TransferenciasModule
+      ),
+    data: { expectedRoles: ['1', '5'] } as any,
+  },
 ];
 
 @NgModule({

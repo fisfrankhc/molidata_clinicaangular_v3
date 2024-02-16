@@ -426,12 +426,6 @@ export class ComprasNuevoComponent implements OnInit {
               };
               console.log(dataStockCentralPost);
 
-              const dataStockCentralUpdate = {
-                producto: producto.producto,
-                cantidad: producto.cantidad,
-                condicion: 'COMPRA-NUEVA',
-              };
-
               this.stockCentralService.getStockCentralAll().subscribe({
                 next: (responseFind: any) => {
                   if (responseFind == 'no hay resultados') {
@@ -463,6 +457,14 @@ export class ComprasNuevoComponent implements OnInit {
                     );
                     //SI ENCONTRAMOS HACEMOS EL PUT
                     if (StockEncontrado) {
+                      const nuevostock =
+                        StockEncontrado.cantidad + producto.cantidad;
+                      const dataStockCentralUpdate = {
+                        producto: producto.producto,
+                        cantidad: nuevostock,
+                        condicion: 'COMPRA-NUEVA',
+                      };
+                      
                       this.stockCentralService
                         .updatedStockCentral(dataStockCentralUpdate)
                         .subscribe({

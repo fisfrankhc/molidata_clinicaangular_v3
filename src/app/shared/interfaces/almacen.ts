@@ -13,7 +13,8 @@ export interface Movimientos {
   codigo_origen: string;
   movimiento_observaciones: string;
   movimiento_estado: string;
-  nombreUsuario: string;
+  nombreUsuario: string; //PARA VISTA
+  nombreSucursal: string; //PARA VISTA
 }
 
 export interface Requerimientos {
@@ -37,5 +38,27 @@ export interface Requerimiento_Detalle {
   nombreProducto: string; //PARA VISTA
   codigoProducto: string; //PARA VISTA
   descripcionProducto: string; //PARA VISTA
+  nombreMedida: string; //PARA VISTA
+}
+
+export interface MovimientosCentral {
+  movimiento_id: number;
+  movimiento_fecha: Date;
+  sucursal_id: number;
+  usuario_id: number;
+  movimiento_observaciones: string;
+  movimiento_estado: string;
+  nombreUsuario: string; //PARA VISTA
+  nombreSucursal: string; //PARA VISTA
+}
+
+export interface MovimientosCentralDetalle {
+  movimiento_id: number;
+  producto_codigo: string;
+  producto_id: number;
+  cantidad: number;
+  unidad_medida: string;
+  observaciones: string;
+  nombreProducto: string; //PARA VISTA
   nombreMedida: string; //PARA VISTA
 }

@@ -385,6 +385,18 @@ export class DatanavService {
                 },
               ],
             },
+            {
+              menuValue: 'Transferencias',
+              route: 'almacen/transferencias',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '5',
+                },
+              ],
+            },
           ],
         },
 
