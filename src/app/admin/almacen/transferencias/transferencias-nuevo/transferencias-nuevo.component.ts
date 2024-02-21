@@ -9,7 +9,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
@@ -17,10 +17,12 @@ import { StockService } from 'src/app/shared/services/almacen/stock/stock.servic
 import { DatePipe } from '@angular/common';
 import { Observable } from 'rxjs';
 
-import { MovimientosCentralService } from 'src/app/shared/services/almacen/transferencias/movimientos-central.service';
-import { MovimientosCentralDetalleService } from 'src/app/shared/services/almacen/transferencias/movimientos-central-detalle.service';
+//import { MovimientosCentralService } from 'src/app/shared/services/almacen/transferencias/movimientos-central.service';
+//import { MovimientosCentralDetalleService } from 'src/app/shared/services/almacen/transferencias/movimientos-central-detalle.service';
 
-import { map, startWith } from 'rxjs/operators';
+import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
+import { MovimientosAlmacenDetalleService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen-detalle.service';
+import { catchError, concatMap, map, startWith, tap } from 'rxjs/operators';
 
 import Swal from 'sweetalert2';
 import * as Notiflix from 'notiflix';
@@ -60,8 +62,10 @@ export class TransferenciasNuevoComponent implements OnInit {
     private stockService: StockService,
     private medidaService: MedidaService,
     private datePipe: DatePipe,
-    private movimientosCentralService: MovimientosCentralService,
-    private movimientosCentralDetalleService: MovimientosCentralDetalleService
+    //private movimientosCentralService: MovimientosCentralService,
+    //private movimientosCentralDetalleService: MovimientosCentralDetalleService,
+    private movimientosAlmacenService: MovimientosAlmacenService,
+    private movimientosAlmacenDetalleService: MovimientosAlmacenDetalleService
   ) {}
 
   datoPRODUCTO: any[] = [];
@@ -364,14 +368,255 @@ export class TransferenciasNuevoComponent implements OnInit {
     }
   }
 
-  idrespuestaalmacencentral: any;
+  idrptaMovimientoIngreso: any;
+  idrptaMovimientoEgreso: any;
   ConfirmarTransferencia() {
     if (
       this.form.get('detalleTransferencia')?.valid &&
       this.form.get('listaMovimiento')?.valid
     ) {
       Notiflix.Loading.circle('Guardando...');
-      const dataAlmacenCentral = {
+
+      const dataMovimientoIngreso = {
+        fecha: this.fechaFormateada,
+        tipo: 'INGRESO',
+        usuario: this.userid,
+        sucursal: this.usersucursal,
+        origen: 'TRANSFERENCIA',
+        origencodigo: '',
+        observaciones: '',
+      };
+
+      const dataMovimientoEgreso = {
+        fecha: this.fechaFormateada,
+        tipo: 'EGRESO',
+        usuario: this.userid,
+        sucursal: this.usersucursal,
+        origen: 'TRANSFERENCIA',
+        origencodigo: '',
+        observaciones: '',
+      };
+
+      forkJoin([
+        this.movimientosAlmacenService
+          .postMovimientos(dataMovimientoIngreso)
+          .pipe(
+            tap((responseMovimientoIngreso) => {
+              console.log(
+                'Registro de Ingreso exitoso',
+                responseMovimientoIngreso
+              );
+              this.idrptaMovimientoIngreso = responseMovimientoIngreso;
+            }),
+            concatMap(() =>
+              forkJoin(
+                this.form.value.listaMovimiento.map((producto: Producto) => {
+                  const dataMovimientoIngresoDetalle = {
+                    movimiento: this.idrptaMovimientoIngreso,
+                    producto: producto.idobtenido,
+                    cantidad: producto.cantidad,
+                    medida: producto.medida,
+                    lote: '',
+                    peso: '',
+                  };
+                  return this.movimientosAlmacenDetalleService.postMovimientosDetalle(
+                    dataMovimientoIngresoDetalle
+                  );
+                })
+              ).pipe(
+                catchError((errorDataDetalleIngreso) => {
+                  console.error(
+                    'Error al enviar la solicitud POST de MOVIMIENTODETALLE INGRESO:',
+                    errorDataDetalleIngreso
+                  );
+                  return of(null);
+                })
+              )
+            )
+          ),
+        this.movimientosAlmacenService
+          .postMovimientos(dataMovimientoEgreso)
+          .pipe(
+            tap((responseMovimientoEgreso) => {
+              console.log(
+                'Registro de Egreso exitoso',
+                responseMovimientoEgreso
+              );
+              this.idrptaMovimientoEgreso = responseMovimientoEgreso;
+            }),
+            concatMap(() =>
+              forkJoin(
+                this.form.value.listaMovimiento.map((producto: Producto) => {
+                  const dataMovimientoEgresoDetalle = {
+                    movimiento: this.idrptaMovimientoEgreso,
+                    producto: producto.idobtenido,
+                    cantidad: producto.cantidad,
+                    medida: producto.medida,
+                    lote: '',
+                    peso: '',
+                  };
+                  return this.movimientosAlmacenDetalleService.postMovimientosDetalle(
+                    dataMovimientoEgresoDetalle
+                  );
+                })
+              ).pipe(
+                catchError((errorDataDetalleEgreso) => {
+                  console.error(
+                    'Error al enviar la solicitud POST de MOVIMIENTODETALLE EGRESO:',
+                    errorDataDetalleEgreso
+                  );
+                  return of(null);
+                })
+              )
+            )
+          ),
+      ]).subscribe({
+        next: () => {
+          console.log('Todas las operaciones completadas');
+
+          Notiflix.Loading.remove();
+          const Toast = Swal.mixin({
+            toast: true,
+            position: 'bottom-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+          Toast.fire({
+            icon: 'success',
+            html: '<div style="font-size: 15px; font-weight: 700">Movimiento de transferencia realizada exitosamente...</div>',
+          });
+          this.router.navigate([rutas.almacen_transferencias]);
+        },
+        error: (errorData) => {
+          console.error('Error en alguna de las operaciones:', errorData);
+        },
+        complete: () => {},
+      });
+    } else {
+      alert('Faltan datos');
+    }
+  }
+}
+
+/*
+const dataMovimientoIngreso = {
+        fecha: this.fechaFormateada,
+        tipo: 'INGRESO',
+        usuario: this.userid,
+        sucursal: this.usersucursal,
+        origen: 'TRANSFERENCIA',
+        origencodigo: '',
+        observaciones: '',
+      };
+
+      this.movimientosAlmacenService
+        .postMovimientos(dataMovimientoIngreso)
+        .subscribe({
+          next: (responseMovimientoIngreso) => {
+            console.log(
+              'Registro de Ingreso exitoso',
+              responseMovimientoIngreso
+            );
+            this.idrptaMovimientoIngreso = responseMovimientoIngreso;
+
+            this.form.value.listaMovimiento.forEach((producto: Producto) => {
+              const dataMovimientoIngresoDetalle = {
+                movimiento: this.idrptaMovimientoIngreso,
+                producto: producto.idobtenido,
+                cantidad: producto.cantidad,
+                medida: producto.medida,
+                lote: '',
+                peso: '',
+              };
+              this.movimientosAlmacenDetalleService
+                .postMovimientosDetalle(dataMovimientoIngresoDetalle)
+                .subscribe({
+                  next: (responseMovimientoDetalleIngreso) => {
+                    console.log(
+                      'Entrada detalle registrada de Ingreso con éxito:',
+                      responseMovimientoDetalleIngreso
+                    );
+                  },
+                  error: (errorDataDetalleIngreso) => {
+                    console.error(
+                      'Error al enviar la solicitud POST de MOVIMIENTODETALLE INGRESO:',
+                      errorDataDetalleIngreso
+                    );
+                  },
+                  complete: () => {},
+                });
+            });
+          },
+          error: (errorDataIngreso) => {
+            console.log('Error al guardara ingreso', errorDataIngreso);
+          },
+          complete: () => {},
+        });
+
+      const dataMovimientoEgreso = {
+        fecha: this.fechaFormateada,
+        tipo: 'EGRESO',
+        usuario: this.userid,
+        sucursal: this.usersucursal,
+        origen: 'TRANSFERENCIA',
+        origencodigo: '',
+        observaciones: '',
+      };
+
+      this.movimientosAlmacenService
+        .postMovimientos(dataMovimientoEgreso)
+        .subscribe({
+          next: (responseMovimientoEgreso) => {
+            console.log(
+              'Registro de Ingreso exitoso',
+              responseMovimientoEgreso
+            );
+            this.idrptaMovimientoEgreso = responseMovimientoEgreso;
+
+            this.form.value.listaMovimiento.forEach((producto: Producto) => {
+              const dataMovimientoEgresoDetalle = {
+                movimiento: this.idrptaMovimientoEgreso,
+                producto: producto.idobtenido,
+                cantidad: producto.cantidad,
+                medida: producto.medida,
+                lote: '',
+                peso: '',
+              };
+              this.movimientosAlmacenDetalleService
+                .postMovimientosDetalle(dataMovimientoEgresoDetalle)
+                .subscribe({
+                  next: (responseMovimientoDetalleEgreso) => {
+                    console.log(
+                      'Entrada detalle registrada de Ingreso con éxito:',
+                      responseMovimientoDetalleEgreso
+                    );
+                  },
+                  error: (errorDataDetalleEgreso) => {
+                    console.error(
+                      'Error al enviar la solicitud POST de MOVIMIENTODETALLE EGRESO:',
+                      errorDataDetalleEgreso
+                    );
+                  },
+                  complete: () => {},
+                });
+            });
+          },
+          error: (errorDataEgreso) => {
+            console.log('Error al guardara ingreso', errorDataEgreso);
+          },
+          complete: () => {},
+        });
+
+*/
+
+/*
+
+const dataAlmacenCentral = {
         fecha: this.fechaFormateada,
         sucursal: this.usersucursal,
         usuario: this.userid,
@@ -445,10 +690,5 @@ export class TransferenciasNuevoComponent implements OnInit {
           },
         });
 
-      console.log(this.form.get('detalleTransferencia')?.value);
-      //console.log(this.form.get('listaMovimiento')?.value);
-    } else {
-      alert('Faltan datos');
-    }
-  }
-}
+
+*/

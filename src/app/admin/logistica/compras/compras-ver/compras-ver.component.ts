@@ -16,6 +16,7 @@ import { MedidaService } from 'src/app/shared/services/logistica/producto/medida
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 import { GeneralService } from 'src/app/shared/services/general.service';
 import { StockCentralService } from 'src/app/shared/services/logistica/stock-central/stock-central.service';
+import { StockService } from 'src/app/shared/services/almacen/stock/stock.service';
 
 import { DatePipe } from '@angular/common';
 
@@ -62,7 +63,8 @@ export class ComprasVerComponent implements OnInit {
     private generalService: GeneralService,
     private sucursalService: SucursalService,
     private stockCentralService: StockCentralService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private stockService: StockService
   ) {}
 
   compraId: number | null = null;
@@ -275,6 +277,7 @@ export class ComprasVerComponent implements OnInit {
   comprobanteTipo: data[] = [{ value: 'BOLETA' }, { value: 'FACTURA' }];
 
   dataFindStockCentral: any;
+  dataFindStock: any;
   confirmarCompra() {
     const compraData = {
       id: this.compraId,
@@ -300,27 +303,73 @@ export class ComprasVerComponent implements OnInit {
         });
 
         Object.values(productosAgrupados).forEach((producto: Producto) => {
-          const dataStockCentralPost = {
+          const dataStockPost = {
+            almacen: 1,
             producto: producto.producto_id,
             cantidad: producto.cantidad,
             medida: producto.unidad_medida,
           };
-          console.log(dataStockCentralPost);
 
-          const dataStockCentralUpdate = {
-            producto: producto.producto_id,
-            cantidad: producto.cantidad,
-            condicion: 'COMPRA-CONFIRMAR',
-          };
-
-          this.stockCentralService.getStockCentralAll().subscribe({
+          this.stockService.getStockAll().subscribe({
             next: (responseFind: any) => {
+              //SI ES UN TABLA VACIA, REGISTRAMOS EL PRIMER DATO DE LA TABLA
               if (responseFind == 'no hay resultados') {
-                //console.log('no hay resultados');
-                //HACEMOS UN PRIMER POST
-                this.stockCentralService
-                  .postStockCentral(dataStockCentralPost)
-                  .subscribe({
+                this.stockService.postStock(dataStockPost).subscribe({
+                  next: (responsePostStock) => {
+                    console.log(
+                      'Entrada registrada con éxito:',
+                      responsePostStock
+                    );
+                  },
+                  error: (errorData) => {
+                    Notiflix.Loading.remove();
+                    console.error(
+                      'Error al enviar la solicitud POST PRIMERA de STOCK A ALMACEN 1:',
+                      errorData
+                    );
+                  },
+                  complete: () => {},
+                });
+              }
+              //SI NO ES UNA TABLA VACIA, YA QUE BUSQUE
+              else {
+                this.dataFindStock = responseFind;
+                //buscamos algun producto que se encuentre en la tabla
+                const StockEncontrado = this.dataFindStock.find(
+                  (stoc: any) =>
+                    stoc.producto_id === producto.producto_id &&
+                    stoc.almacen_id === '1'
+                );
+                //SI ENCONTRAMOS HACEMOS EL PUT
+                if (StockEncontrado) {
+                  const nuevostock =
+                    StockEncontrado.cantidad + producto.cantidad;
+                  const dataStockUpdate = {
+                    producto: producto.producto_id,
+                    cantidad: nuevostock,
+                    condicion: 'COMPRA-CONFIRMAR',
+                  };
+
+                  this.stockService.updatedStock(dataStockUpdate).subscribe({
+                    next: (responseUpdateStock) => {
+                      console.log(
+                        'Entrada actualizada de stock con éxito:',
+                        responseUpdateStock
+                      );
+                    },
+                    error: (errorData) => {
+                      Notiflix.Loading.remove();
+                      console.error(
+                        'Error al enviar la solicitud PUT de STOCK:',
+                        errorData
+                      );
+                    },
+                    complete: () => {},
+                  });
+                }
+                //SI NO SE ENCUENTRA LA DATA QUE COINCIDA
+                else {
+                  this.stockService.postStock(dataStockPost).subscribe({
                     next: (responsePostStock) => {
                       console.log(
                         'Entrada registrada con éxito:',
@@ -330,67 +379,19 @@ export class ComprasVerComponent implements OnInit {
                     error: (errorData) => {
                       Notiflix.Loading.remove();
                       console.error(
-                        'Error al enviar la solicitud POST PRIMERA de SOTCKCENTRAL:',
+                        'Error al enviar la solicitud POST de SOTCKCENTRAL:',
                         errorData
                       );
                     },
                     complete: () => {},
                   });
-              } else {
-                this.dataFindStockCentral = responseFind;
-                //buscamos algun producto que se encuentre en la tabla
-                const StockEncontrado = this.dataFindStockCentral.find(
-                  (stoc: any) => stoc.producto_id === producto.producto_id
-                );
-                //SI ENCONTRAMOS HACEMOS EL PUT
-                if (StockEncontrado) {
-                  this.stockCentralService
-                    .updatedStockCentral(dataStockCentralUpdate)
-                    .subscribe({
-                      next: (responseUpdateStock) => {
-                        console.log(
-                          'Entrada registrada con éxito:',
-                          responseUpdateStock
-                        );
-                      },
-                      error: (errorData) => {
-                        Notiflix.Loading.remove();
-                        console.error(
-                          'Error al enviar la solicitud PUT de SOTCKCENTRAL:',
-                          errorData
-                        );
-                      },
-                      complete: () => {},
-                    });
-                  //console.log(dataStockCentralUpdate);
-                }
-                //SI NO ENCONTRAMOS, PROCEDEMOS A HACER EL POST
-                else {
-                  this.stockCentralService
-                    .postStockCentral(dataStockCentralPost)
-                    .subscribe({
-                      next: (responsePostStock) => {
-                        console.log(
-                          'Entrada registrada con éxito:',
-                          responsePostStock
-                        );
-                      },
-                      error: (errorData) => {
-                        Notiflix.Loading.remove();
-                        console.error(
-                          'Error al enviar la solicitud POST de SOTCKCENTRAL:',
-                          errorData
-                        );
-                      },
-                      complete: () => {},
-                    });
                 }
               }
             },
             error: (errorData) => {
               Notiflix.Loading.remove();
               console.error(
-                'Error al enviar al consultar datos de STOCKCENTRAL:',
+                'Error al enviar al consultar datos de STOCK',
                 errorData
               );
             },
@@ -427,7 +428,7 @@ export class ComprasVerComponent implements OnInit {
     });
   }
 
-  dataFindStockCentral2: any;
+  dataFindStock2: any;
   confirmar() {
     Notiflix.Loading.pulse('Confirmando compra...');
     //console.log(this.form.value);
@@ -441,16 +442,16 @@ export class ComprasVerComponent implements OnInit {
       proceso: 'CONFIRMADO',
       destino: this.form.get('comprobanteDetalle')?.value.suc_destino,
     };
-    //console.log(compraData2);
+    console.log(compraData2);
     this.comprasService.updatedCompra(compraData2).subscribe({
       next: (response) => {
         console.log(response);
 
         //INICIO PARA ACTUALIZAR STOCK
-        this.stockCentralService.getStockCentralAll().subscribe({
+        this.stockService.getStockAll().subscribe({
           next: (responseFind2: any) => {
             if (responseFind2 != 'no hay resultados') {
-              this.dataFindStockCentral2 = responseFind2;
+              this.dataFindStock2 = responseFind2;
 
               const productosAgrupados: { [id: string]: Producto } = {};
               this.datosProductosDetalle.forEach((producto: Producto) => {
@@ -466,35 +467,35 @@ export class ComprasVerComponent implements OnInit {
 
               Object.values(productosAgrupados).forEach(
                 (producto: Producto) => {
-                  const StockEncontrado2 = this.dataFindStockCentral2.find(
-                    (stoc: any) => stoc.producto_id === producto.producto_id
+                  const StockEncontrado2 = this.dataFindStock2.find(
+                    (stoc: any) =>
+                      stoc.producto_id === producto.producto_id &&
+                      stoc.almacen_id === '1'
                   );
                   if (StockEncontrado2) {
-                    //console.log(producto);
-                    //console.log(StockEncontrado2);
                     const nuevostock =
                       StockEncontrado2.cantidad - producto.cantidad;
 
-                    const dataCalculadaStockCentral = {
+                    const dataCalculadaStock = {
                       producto: StockEncontrado2.producto_id,
                       cantidad: nuevostock,
                       condicion: 'COMPRA-CONFIRMAR',
                     };
-                    console.log(dataCalculadaStockCentral);
+                    console.log(dataCalculadaStock);
 
-                    this.stockCentralService
-                      .updatedStockCentral(dataCalculadaStockCentral)
+                    this.stockService
+                      .updatedStock(dataCalculadaStock)
                       .subscribe({
                         next: (responseDataCalculada) => {
                           console.log(
-                            'Entrada registrada con éxito en stock central:',
+                            'Entrada actualizada con éxito en stock:',
                             responseDataCalculada
                           );
                         },
                         error: (errorData) => {
                           Notiflix.Loading.remove();
                           console.log(
-                            'Error al registrar dato calculado en stock central:',
+                            'Error al actualizar dato calculado en stock:',
                             errorData
                           );
                         },
@@ -508,7 +509,7 @@ export class ComprasVerComponent implements OnInit {
           error: (errorData) => {
             Notiflix.Loading.remove();
             console.log(
-              'Error al onsultar datos generales de stock central:',
+              'Error al consultar datos generales de stock central:',
               errorData
             );
           },
@@ -524,7 +525,6 @@ export class ComprasVerComponent implements OnInit {
         );
       },
       complete: () => {
-        //this.router.navigate([`/logistica/compra`]);
         this.router.navigate([rutas.logistica_compra]);
 
         Notiflix.Loading.remove();

@@ -6,7 +6,8 @@ import {
 } from 'src/app/shared/interfaces/almacen';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
-import { MovimientosCentralService } from 'src/app/shared/services/almacen/transferencias/movimientos-central.service';
+//import { MovimientosCentralService } from 'src/app/shared/services/almacen/transferencias/movimientos-central.service';
+import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
 import { GeneralService } from 'src/app/shared/services/general.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 import {
@@ -47,7 +48,8 @@ export class TransferenciasIndexComponent implements OnInit {
   constructor(
     private datePipe: DatePipe,
     private fb: FormBuilder,
-    public movimientosCentralService: MovimientosCentralService,
+    //public movimientosCentralService: MovimientosCentralService,
+    private movimientosAlmacenService: MovimientosAlmacenService,
     public generalService: GeneralService,
     private sucursalService: SucursalService
   ) {}
@@ -110,7 +112,7 @@ export class TransferenciasIndexComponent implements OnInit {
     //console.log(this.fechaVisualInicio, this.fechaVisualFin);
     // Mostrar resultados solo si se han ingresado fechas
 
-    this.movimientosCentralService.getMovimientosCentralAll().subscribe({
+    this.movimientosAlmacenService.getMovimientosAll().subscribe({
       next: (datosTRANSFERENCIA: any) => {
         this.datosTRANSFERENCIA = datosTRANSFERENCIA;
 
@@ -123,8 +125,10 @@ export class TransferenciasIndexComponent implements OnInit {
         this.datosTRANSFERENCIAS = this.datosTRANSFERENCIA.filter(
           (vent: any) =>
             vent.movimiento_fecha >= fechaInicioConHora &&
-            vent.movimiento_fecha <= fechaFinConHora
+            vent.movimiento_fecha <= fechaFinConHora &&
+            vent.movimiento_origen == 'TRANSFERENCIA'
         );
+        //console.log(this.datosTRANSFERENCIAS);
         this.datosTRANSFERENCIA = this.datosTRANSFERENCIAS;
         if (this.datosTRANSFERENCIAS === 'no hay resultados') {
           this.totalData = 0;

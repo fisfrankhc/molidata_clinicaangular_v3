@@ -15,6 +15,7 @@ import { ComprasDetalleService } from 'src/app/shared/services/logistica/compra/
 import { ProductoService } from 'src/app/shared/services/logistica/producto/producto.service';
 import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 import { StockCentralService } from 'src/app/shared/services/logistica/stock-central/stock-central.service';
+import { StockService } from 'src/app/shared/services/almacen/stock/stock.service';
 
 import { GeneralService } from 'src/app/shared/services/general.service';
 import { DatePipe } from '@angular/common';
@@ -60,7 +61,8 @@ export class ComprasNuevoComponent implements OnInit {
     private medidaService: MedidaService,
     private generalService: GeneralService,
     private stockCentralService: StockCentralService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private stockService: StockService
   ) {}
 
   public ruta = rutas;
@@ -360,7 +362,7 @@ export class ComprasNuevoComponent implements OnInit {
     }
   }
   //10416820959
-  dataFindStockCentral: any;
+  dataFindStock: any;
   ConfirmarCompraClick() {
     const compraData = {
       proveedor: this.form.value.proveedorDetalle['id'],
@@ -418,22 +420,76 @@ export class ComprasNuevoComponent implements OnInit {
             // Ahora productosAgrupados contiene los productos agrupados por ID
             Object.values(productosAgrupados).forEach((producto: Producto) => {
               producto.compra = this.compra;
-              //console.log(producto);
-              const dataStockCentralPost = {
+
+              const dataStockPost = {
+                almacen: 1,
                 producto: producto.producto,
                 cantidad: producto.cantidad,
                 medida: producto.medida,
               };
-              console.log(dataStockCentralPost);
 
-              this.stockCentralService.getStockCentralAll().subscribe({
+              this.stockService.getStockAll().subscribe({
                 next: (responseFind: any) => {
+                  //SI ES UN TABLA VACIA, REGISTRAMOS EL PRIMER DATO DE LA TABLA
                   if (responseFind == 'no hay resultados') {
-                    //console.log('no hay resultados');
-                    //HACEMOS UN PRIMER POST
-                    this.stockCentralService
-                      .postStockCentral(dataStockCentralPost)
-                      .subscribe({
+                    this.stockService.postStock(dataStockPost).subscribe({
+                      next: (responsePostStock) => {
+                        console.log(
+                          'Entrada registrada con éxito:',
+                          responsePostStock
+                        );
+                      },
+                      error: (errorData) => {
+                        Notiflix.Loading.remove();
+                        console.error(
+                          'Error al enviar la solicitud POST PRIMERA de STOCK A ALMACEN 1:',
+                          errorData
+                        );
+                      },
+                      complete: () => {},
+                    });
+                  }
+                  //SI NO ES UNA TABLA VACIA, YA QUE BUSQUE
+                  else {
+                    this.dataFindStock = responseFind;
+                    //buscamos algun producto que se encuentre en la tabla
+                    const StockEncontrado = this.dataFindStock.find(
+                      (stoc: any) =>
+                        stoc.producto_id === producto.producto &&
+                        stoc.almacen_id === '1'
+                    );
+                    //SI ENCONTRAMOS HACEMOS EL PUT
+                    if (StockEncontrado) {
+                      const nuevostock =
+                        StockEncontrado.cantidad + producto.cantidad;
+                      const dataStockUpdate = {
+                        producto: producto.producto,
+                        cantidad: nuevostock,
+                        condicion: 'COMPRA-NUEVA',
+                      };
+
+                      this.stockService
+                        .updatedStock(dataStockUpdate)
+                        .subscribe({
+                          next: (responseUpdateStock) => {
+                            console.log(
+                              'Entrada actualizada de stock con éxito:',
+                              responseUpdateStock
+                            );
+                          },
+                          error: (errorData) => {
+                            Notiflix.Loading.remove();
+                            console.error(
+                              'Error al enviar la solicitud PUT de STOCK:',
+                              errorData
+                            );
+                          },
+                          complete: () => {},
+                        });
+                    }
+                    //SI NO SE ENCUENTRA LA DATA QUE COINCIDA
+                    else {
+                      this.stockService.postStock(dataStockPost).subscribe({
                         next: (responsePostStock) => {
                           console.log(
                             'Entrada registrada con éxito:',
@@ -443,68 +499,12 @@ export class ComprasNuevoComponent implements OnInit {
                         error: (errorData) => {
                           Notiflix.Loading.remove();
                           console.error(
-                            'Error al enviar la solicitud POST PRIMERA de SOTCKCENTRAL:',
+                            'Error al enviar la solicitud POST de SOTCKCENTRAL:',
                             errorData
                           );
                         },
                         complete: () => {},
                       });
-                  } else {
-                    this.dataFindStockCentral = responseFind;
-                    //buscamos algun producto que se encuentre en la tabla
-                    const StockEncontrado = this.dataFindStockCentral.find(
-                      (stoc: any) => stoc.producto_id === producto.producto
-                    );
-                    //SI ENCONTRAMOS HACEMOS EL PUT
-                    if (StockEncontrado) {
-                      const nuevostock =
-                        StockEncontrado.cantidad + producto.cantidad;
-                      const dataStockCentralUpdate = {
-                        producto: producto.producto,
-                        cantidad: nuevostock,
-                        condicion: 'COMPRA-NUEVA',
-                      };
-                      
-                      this.stockCentralService
-                        .updatedStockCentral(dataStockCentralUpdate)
-                        .subscribe({
-                          next: (responseUpdateStock) => {
-                            console.log(
-                              'Entrada registrada con éxito:',
-                              responseUpdateStock
-                            );
-                          },
-                          error: (errorData) => {
-                            Notiflix.Loading.remove();
-                            console.error(
-                              'Error al enviar la solicitud PUT de SOTCKCENTRAL:',
-                              errorData
-                            );
-                          },
-                          complete: () => {},
-                        });
-                      //console.log(dataStockCentralUpdate);
-                    }
-                    //SI NO ENCONTRAMOS, PROCEDEMOS A HACER EL POST
-                    else {
-                      this.stockCentralService
-                        .postStockCentral(dataStockCentralPost)
-                        .subscribe({
-                          next: (responsePostStock) => {
-                            console.log(
-                              'Entrada registrada con éxito:',
-                              responsePostStock
-                            );
-                          },
-                          error: (errorData) => {
-                            Notiflix.Loading.remove();
-                            console.error(
-                              'Error al enviar la solicitud POST de SOTCKCENTRAL:',
-                              errorData
-                            );
-                          },
-                          complete: () => {},
-                        });
                     }
                   }
                 },
