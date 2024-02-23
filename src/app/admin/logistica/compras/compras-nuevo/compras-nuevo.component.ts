@@ -202,7 +202,11 @@ export class ComprasNuevoComponent implements OnInit {
     }
   }
 
-  compraMoneda: data[] = [{ value: 'SOLES' }, { value: 'DOLARES' }];
+  compraMoneda: data[] = [
+    { value: 'SOLES' },
+    { value: 'DOLARES' },
+    { value: 'PESOS ARGENTINOS' },
+  ];
   tipoPago: data[] = [{ value: 'CONTADO' }, { value: 'CREDITO' }];
   datosEMP: any;
   empresaAll() {
