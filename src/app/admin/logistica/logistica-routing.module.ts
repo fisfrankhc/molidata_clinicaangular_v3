@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from '../../auth/guard/auth.guard';
-import { StockCentral } from '../../shared/interfaces/logistica';
+//import { StockCentral } from '../../shared/interfaces/logistica';
+import { LogtransferenciasModule } from './logtransferencias/logtransferencias.module';
 
 const routes: Routes = [
   {
@@ -49,6 +50,15 @@ const routes: Routes = [
     loadChildren: () =>
       import('./stock-central/stock-central.module').then(
         (m) => m.StockCentralModule
+      ),
+    data: { expectedRoles: ['1', '2'] } as any,
+  },
+  {
+    path: 'transferencias',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./logtransferencias/logtransferencias.module').then(
+        (m) => m.LogtransferenciasModule
       ),
     data: { expectedRoles: ['1', '2'] } as any,
   },

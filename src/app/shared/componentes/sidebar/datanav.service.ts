@@ -218,6 +218,18 @@ export class DatanavService {
                 },
               ],
             },
+            {
+              menuValue: 'Transferencias',
+              route: 'logistica/transferencias',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '2',
+                },
+              ],
+            },
           ],
         },
 
