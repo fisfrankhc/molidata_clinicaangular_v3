@@ -13,6 +13,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import * as Notiflix from 'notiflix';
 
 @Component({
   selector: 'app-logrevtransferencia-index',
@@ -84,6 +85,7 @@ export class LogrevtransferenciaIndexComponent implements OnInit {
           fechaSeleccionadaFin !== undefined
         ) {
           this.transferenciasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+          Notiflix.Loading.remove();
         }
       },
       error: () => {},
@@ -98,6 +100,10 @@ export class LogrevtransferenciaIndexComponent implements OnInit {
   });
   datosTRANSFERENCIAS: any;
   private transferenciasAll(fechaInicio: string, fechaFin: string): void {
+    //Notiflix.Loading.circle('Obteniendo datos...');
+    Notiflix.Loading.standard('Loading...', {
+      backgroundColor: 'rgba(0,0,0,0.1)',
+    });
     this.trasnferenciasList = [];
     this.serialNumberArray = [];
 
@@ -123,8 +129,10 @@ export class LogrevtransferenciaIndexComponent implements OnInit {
             vent.movimiento_fecha >= fechaInicioConHora &&
             vent.movimiento_fecha <= fechaFinConHora &&
             vent.movimiento_origen == 'TRANSFERENCIA' &&
-            vent.movimiento_tipo == 'INGRESO'
+            vent.movimiento_tipo == 'INGRESO' &&
+            vent.movimiento_observaciones == ''
         );
+        Notiflix.Loading.remove();
         //console.log(this.datosTRANSFERENCIAS);
         this.datosTRANSFERENCIA = this.datosTRANSFERENCIAS;
         if (this.datosTRANSFERENCIAS === 'no hay resultados') {
@@ -166,6 +174,7 @@ export class LogrevtransferenciaIndexComponent implements OnInit {
         //console.log(this.datosTRANSFERENCIA);
       },
       error: (errorData) => {
+        Notiflix.Loading.remove();
         console.error(errorData);
       },
       complete: () => {

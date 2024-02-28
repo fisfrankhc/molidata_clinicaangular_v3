@@ -306,7 +306,7 @@ export class LogrevtransferenciaVerComponent implements OnInit {
   }
 
   aceptarTransferencia(): void {
-    // Notiflix.Loading.pulse('Actualizando stock de transferencia...');
+    Notiflix.Loading.pulse('Actualizando stock de transferencia...');
     const dataAceptada = {
       id: this.movimientoId,
       observacion: 'TRANSFERENCIA ACEPTADA',
