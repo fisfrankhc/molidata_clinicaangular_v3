@@ -76,7 +76,6 @@ export class LogtransferenciasNuevoComponent implements OnInit {
   ngOnInit(): void {
     const initialForm = this.fb.group({
       detalleTransferencia: this.fb.group({
-        idsucursal_origen: ['', Validators.required],
         sucursal_origen: ['', Validators.required],
         fecha: ['', Validators.required],
       }),
@@ -143,6 +142,7 @@ export class LogtransferenciasNuevoComponent implements OnInit {
       complete: () => {},
     });
   }
+  public selectedValue!: string;
 
   datosSUC: any;
   nombreSucursal!: string;
@@ -152,13 +152,13 @@ export class LogtransferenciasNuevoComponent implements OnInit {
         this.datosSUC = datosSUC;
 
         // Realiza la lógica para obtener el nombre de la sucursal aquí
-        const sucursalEncontrada = this.datosSUC.find(
+        /* const sucursalEncontrada = this.datosSUC.find(
           (sucursal: any) => sucursal.suc_id === this.usersucursal
         );
-        this.form.get('detalleTransferencia')?.patchValue({
+        /* this.form.get('detalleTransferencia')?.patchValue({
           idsucursal_origen: sucursalEncontrada.suc_id,
           sucursal_origen: sucursalEncontrada.suc_nombre,
-        });
+        }); */
       },
       error: (errorData) => {},
       complete: () => {},
@@ -202,10 +202,6 @@ export class LogtransferenciasNuevoComponent implements OnInit {
         descripcion: option.prod_descripcion,
       }));
   }
-
-  tipoOrigen: data[] = [{ value: 'INGRESO' }, { value: 'SALIDA' }];
-  movmientoOrigen1: data[] = [{ value: 'STOCK INICIAL' }, { value: 'COMPRA' }];
-  movmientoOrigen2: data[] = [{ value: 'VENTA' }, { value: 'MERMA' }];
 
   //PARA EL 2DO FORMGROUP
   onProductSelected(event: any) {
@@ -372,27 +368,30 @@ export class LogtransferenciasNuevoComponent implements OnInit {
       this.form.get('listaMovimiento')?.valid
     ) {
       Notiflix.Loading.circle('Guardando...');
+      const dataMovimientoEgreso = {
+        fecha: this.fechaFormateada,
+        tipo: 'EGRESO',
+        usuario: this.userid,
+        //sucursal: this.usersucursal,
+        sucursal: '1',
+        origen: 'TRANSFERENCIA',
+        origencodigo: '',
+        observaciones: '',
+      };
 
       const dataMovimientoIngreso = {
         fecha: this.fechaFormateada,
         tipo: 'INGRESO',
         usuario: this.userid,
-        sucursal: this.usersucursal,
+        //sucursal: this.usersucursal,
+        sucursal: this.form.get('detalleTransferencia.sucursal_origen')?.value,
         origen: 'TRANSFERENCIA',
         origencodigo: '',
         observaciones: '',
       };
 
-      const dataMovimientoEgreso = {
-        fecha: this.fechaFormateada,
-        tipo: 'EGRESO',
-        usuario: this.userid,
-        sucursal: this.usersucursal,
-        origen: 'TRANSFERENCIA',
-        origencodigo: '',
-        observaciones: '',
-      };
-
+      //console.log(dataMovimientoEgreso);
+      //console.log(dataMovimientoIngreso);
       forkJoin([
         this.movimientosAlmacenService
           .postMovimientos(dataMovimientoIngreso)

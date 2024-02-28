@@ -343,7 +343,8 @@ export class ComprasVerComponent implements OnInit {
                 //SI ENCONTRAMOS HACEMOS EL PUT
                 if (StockEncontrado) {
                   const nuevostock =
-                    StockEncontrado.cantidad + producto.cantidad;
+                    Number(StockEncontrado.cantidad) +
+                    Number(producto.cantidad);
                   const dataStockUpdate = {
                     producto: producto.producto_id,
                     cantidad: nuevostock,
@@ -429,8 +430,8 @@ export class ComprasVerComponent implements OnInit {
   }
 
   dataFindStock2: any;
-  confirmar() {
-    Notiflix.Loading.pulse('Confirmando compra...');
+  actualizarDatosEntrega() {
+    Notiflix.Loading.pulse('Actualizando datos de entrega...');
     //console.log(this.form.value);
     const compraData2 = {
       id: this.compraId,
@@ -448,7 +449,7 @@ export class ComprasVerComponent implements OnInit {
         console.log(response);
 
         //INICIO PARA ACTUALIZAR STOCK
-        this.stockService.getStockAll().subscribe({
+        /* this.stockService.getStockAll().subscribe({
           next: (responseFind2: any) => {
             if (responseFind2 != 'no hay resultados') {
               this.dataFindStock2 = responseFind2;
@@ -514,7 +515,7 @@ export class ComprasVerComponent implements OnInit {
             );
           },
           complete: () => {},
-        });
+        }); */
         //FIN
       },
       error: (errorData) => {

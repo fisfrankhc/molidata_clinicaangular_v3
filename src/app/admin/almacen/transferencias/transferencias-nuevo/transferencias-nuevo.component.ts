@@ -148,6 +148,7 @@ export class TransferenciasNuevoComponent implements OnInit {
     });
   }
 
+  public selectedValue!: string;
   datosSUC: any;
   nombreSucursal!: string;
   sucursalAll() {
@@ -156,13 +157,13 @@ export class TransferenciasNuevoComponent implements OnInit {
         this.datosSUC = datosSUC;
 
         // Realiza la lógica para obtener el nombre de la sucursal aquí
-        const sucursalEncontrada = this.datosSUC.find(
+        /* const sucursalEncontrada = this.datosSUC.find(
           (sucursal: any) => sucursal.suc_id === this.usersucursal
         );
         this.form.get('detalleTransferencia')?.patchValue({
           idsucursal_origen: sucursalEncontrada.suc_id,
           sucursal_origen: sucursalEncontrada.suc_nombre,
-        });
+        }); */
       },
       error: (errorData) => {},
       complete: () => {},

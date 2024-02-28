@@ -206,7 +206,7 @@ export class DatanavService {
                 },
               ],
             },
-            {
+            /* {
               menuValue: 'Stock Central',
               route: 'logistica/stock-central',
               rol: [
@@ -217,7 +217,7 @@ export class DatanavService {
                   valor: '2',
                 },
               ],
-            },
+            }, */
             {
               menuValue: 'Transferencias',
               route: 'logistica/transferencias',
@@ -400,6 +400,18 @@ export class DatanavService {
             {
               menuValue: 'Transferencias',
               route: 'almacen/transferencias',
+              rol: [
+                {
+                  valor: '1',
+                },
+                {
+                  valor: '5',
+                },
+              ],
+            },
+            {
+              menuValue: 'Stocks',
+              route: 'almacen/stocks',
               rol: [
                 {
                   valor: '1',

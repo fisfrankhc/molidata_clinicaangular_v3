@@ -406,7 +406,7 @@ export class ComprasNuevoComponent implements OnInit {
               complete: () => {},
             });
 
-            //GUARDAMOS CADA PRODUCTRO EN STOCK CENTRAL
+            //GUARDAMOS CADA PRODUCTRO EN STOCK
             const productosAgrupados: { [id: string]: Producto } = {};
             this.form.value.listaCompra.forEach((producto: Producto) => {
               const idProducto = producto.idobtenido;
@@ -465,7 +465,9 @@ export class ComprasNuevoComponent implements OnInit {
                     //SI ENCONTRAMOS HACEMOS EL PUT
                     if (StockEncontrado) {
                       const nuevostock =
-                        StockEncontrado.cantidad + producto.cantidad;
+                        Number(StockEncontrado.cantidad) +
+                        Number(producto.cantidad);
+
                       const dataStockUpdate = {
                         producto: producto.producto,
                         cantidad: nuevostock,
@@ -503,7 +505,7 @@ export class ComprasNuevoComponent implements OnInit {
                         error: (errorData) => {
                           Notiflix.Loading.remove();
                           console.error(
-                            'Error al enviar la solicitud POST de SOTCKCENTRAL:',
+                            'Error al enviar la solicitud POST de STOCK:',
                             errorData
                           );
                         },

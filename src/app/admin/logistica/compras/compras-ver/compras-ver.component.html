@@ -171,7 +171,7 @@
                                                 *ngIf="datoCOMPRA[0] && datoCOMPRA[0]['proceso'] === 'CONFIRMADO'"
                                                 class="btn btn-success" data-bs-toggle="modal"
                                                 data-bs-target="#agregar_datos_entrega"
-                                                style="margin: 5px; padding: 11px">AGREGAR DATOS DE ENTREGA</a>
+                                                style="margin: 5px; padding: 11px">ACTUALIZAR DATOS DE ENTREGA</a>
                                         </div>
 
                                     </div>
@@ -241,7 +241,7 @@
                                                             class="btn btn-primary paid-cancel-btn">Cancelar</a>
                                                     </div>
                                                     <div class="col-6">
-                                                        <button (click)="confirmar()" type="submit"
+                                                        <button (click)="actualizarDatosEntrega()" type="submit"
                                                             [disabled]="form.get('comprobanteDetalle')?.invalid"
                                                             data-bs-dismiss="modal"
                                                             class="btn btn-primary paid-continue-btn"

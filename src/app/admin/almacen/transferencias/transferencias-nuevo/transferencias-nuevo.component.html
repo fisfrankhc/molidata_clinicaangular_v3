@@ -36,9 +36,16 @@
                                         <div class="col-12 col-md-6 col-xl-4">
                                             <div class="form-group local-forms">
                                                 <label>SUCURSAL: </label>
-                                                <input class="form-control" formControlName="sucursal_origen"
+                                                <!-- <input class="form-control" formControlName="sucursal_origen"
                                                     style="background-color: #ffffff; border: 0;" type="text"
-                                                    [value]="nombreSucursal" readonly>
+                                                    [value]="nombreSucursal" readonly> -->
+                                                <mat-select [(ngModel)]="selectedValue"
+                                                    formControlName="sucursal_origen" class="form-control select"
+                                                    placeholder="Seleccione sucursal">
+                                                    <mat-option *ngFor="let data of datosSUC" [value]="data.suc_id">
+                                                        {{data.suc_nombre}}
+                                                    </mat-option>
+                                                </mat-select>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 col-xl-4">
@@ -58,10 +65,10 @@
                                         <thead>
                                             <tr>
                                                 <th class="col-sm-1">CODIGO</th>
-                                                <th class="col-md-5">NOMBRE</th>
+                                                <th class="col-md-9">NOMBRE</th>
                                                 <th class="col-md-1">MEDIDA</th>
                                                 <th class="col-md-1">CANTIDAD</th>
-                                                <th>OBS.</th>
+                                                <!-- <th>OBS.</th> -->
                                                 <th> </th>
                                             </tr>
                                         </thead>
@@ -99,10 +106,10 @@
                                                     <input class="form-control " style="" type="text"
                                                         formControlName="cantidadbuscado">
                                                 </td>
-                                                <td>
+                                                <!-- <td>
                                                     <input class="form-control " style="" type="text"
                                                         formControlName="observacionbuscado">
-                                                </td>
+                                                </td> -->
                                                 <td><a #addToListLink href="javascript:void(0)"
                                                         class="text-success font-18 add-table-invoice"
                                                         title="Agregar Producto" (click)="agregarALista()"><i
@@ -123,7 +130,7 @@
                                                 <th>PRODUCTO</th>
                                                 <th>CANTIDAD</th>
                                                 <th>MEDIDA</th>
-                                                <th>OBS.</th>
+                                                <!-- <th>OBS.</th> -->
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -139,12 +146,12 @@
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td style="max-width: 150px;">
+                                                <td style="max-width: 80px;">
                                                     <input type="text" class="form-control"
                                                         [value]="producto.codigoobtenido"
                                                         style="background-color: var(--bs-secondary-bg);" readonly>
                                                 </td>
-                                                <td style="width: 450px;">
+                                                <td style="width: 550px;">
                                                     <input type="hidden" class="form-control"
                                                         [value]="producto.nombreobtenido">
                                                     <input type="text" class="form-control"
@@ -162,12 +169,12 @@
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
-                                                <td>
+                                                <!-- <td>
                                                     <input type="text" class="form-control"
                                                         [value]="producto.observacion"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
-                                                </td>
+                                                </td> -->
                                                 <td class="add-remove text-end">
                                                     <a class="remove-btn" (click)="eliminarProducto(i)"><i
                                                             class="fa fa-trash-alt"></i></a>

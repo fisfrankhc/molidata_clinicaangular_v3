@@ -48,6 +48,13 @@ const routes: Routes = [
       ),
     data: { expectedRoles: ['1', '5'] } as any,
   },
+  {
+    path: 'stocks',
+    canActivate: [authGuard],
+    loadChildren: () =>
+      import('./stocks/stocks.module').then((m) => m.StocksModule),
+    data: { expectedRoles: ['1', '5'] } as any,
+  },
 ];
 
 @NgModule({

@@ -75,6 +75,10 @@ export class rutas {
     return this.baseUrl + '/logistica/transferencias/nuevo';
   }
 
+  public static get logistica_transferencias_revisartransferencia(): string {
+    return this.baseUrl + '/logistica/transferencias/revisar-transferencia';
+  }
+
   public static get despacho_venta(): string {
     return this.baseUrl + '/despacho/venta';
   }
@@ -131,6 +135,10 @@ export class rutas {
   }
   public static get almacen_transferencias_nuevo(): string {
     return this.baseUrl + '/almacen/transferencias/nuevo';
+  }
+
+  public static get almacen_stocks(): string {
+    return this.baseUrl + '/almacen/stocks';
   }
 
   public static get contable_comprobante(): string {

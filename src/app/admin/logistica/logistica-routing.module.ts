@@ -44,7 +44,7 @@ const routes: Routes = [
       ),
     data: { expectedRoles: ['1', '2'] } as any,
   },
-  {
+  /* {
     path: 'stock-central',
     canActivate: [authGuard],
     loadChildren: () =>
@@ -52,7 +52,7 @@ const routes: Routes = [
         (m) => m.StockCentralModule
       ),
     data: { expectedRoles: ['1', '2'] } as any,
-  },
+  }, */
   {
     path: 'transferencias',
     canActivate: [authGuard],

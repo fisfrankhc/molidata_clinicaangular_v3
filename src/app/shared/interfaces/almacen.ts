@@ -17,6 +17,21 @@ export interface Movimientos {
   nombreSucursal: string; //PARA VISTA
 }
 
+export interface Movimientos_Detalle {
+  detalle_id: number;
+  movimiento_id: number;
+  producto_id: number;
+  cantidad: number;
+  unidad_medida: number;
+  fecha_vencimiento: Date;
+  lote: number;
+  peso: string;
+  nombreProducto: string; //PARA VISTA
+  codigoProducto: string; //PARA VISTA
+  descripcionProducto: string; //PARA VISTA
+  nombreMedida: string; //PARA VISTA
+}
+
 export interface Requerimientos {
   requerimiento_id: number;
   requerimiento_fecha: Date;

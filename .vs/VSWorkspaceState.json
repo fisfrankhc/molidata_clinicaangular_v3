@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\admin",
+    "\\src\\app\\admin\\almacen",
+    "\\src\\app\\admin\\almacen\\movimientos-almacen",
+    "\\src\\app\\admin\\almacen\\movimientos-almacen\\movimientos-almacen-nuevo"
+  ],
+  "SelectedNode": "\\src\\app\\admin\\almacen\\movimientos-almacen\\movimientos-almacen-nuevo\\movimientos-almacen-nuevo.component.ts",
+  "PreviewInSolutionExplorer": false
+}
