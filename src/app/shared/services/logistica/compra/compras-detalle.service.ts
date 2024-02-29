@@ -12,6 +12,8 @@ export class ComprasDetalleService {
   private dominioUrl = this.urlService.dominio;
   private apiUrl = `${this.dominioUrl}/clinico/logistica/compra-detalle.php`;
 
+  private apiUrlReporte = `${this.dominioUrl}/clinico/logistica/compra-detalle-reporte.php`;
+
   getComprasDetalleAll(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}`);
   }
@@ -23,5 +25,15 @@ export class ComprasDetalleService {
     const params = new HttpParams({ fromObject: datos });
     return this.http.post<any>(this.apiUrl, params.toString(), { headers });
   }
-  
+
+  getCompraDetalleReporte(
+    proceso: string,
+    estado: string,
+    fechaInicio: string,
+    fechaFinal: string
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrlReporte}?proceso=${proceso}&estado=${estado}&fechaInicio=${fechaInicio}&fechaFinal=${fechaFinal}`
+    );
+  }
 }

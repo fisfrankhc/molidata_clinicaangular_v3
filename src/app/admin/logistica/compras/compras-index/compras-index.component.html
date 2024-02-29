@@ -26,7 +26,7 @@
                         <!-- Table Header -->
                         <div class="page-table-header mb-2">
                             <div class="row align-items-center">
-                                <div class="col-12 col-md-6 col-xl-6">
+                                <div class="col-12 col-md-6 col-xl-5">
                                     <div class="doctor-table-blk">
                                         <h3>M&oacute;dulo de Compras</h3>
                                         <div class="doctor-search-blk">
@@ -74,7 +74,7 @@
                                                         [for]="picker2"></mat-datepicker-toggle>
                                                 </div>
                                             </div>
-                                            <div class="col-12 col-md-6 col-xl-3">
+                                            <div class="col-12 col-md-12 col-xl-3">
                                                 <div class="doctor-submit">
                                                     <button type="submit" [disabled]="form.invalid"
                                                         class="btn btn-primary submit-list-form me-2"
@@ -84,8 +84,11 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-auto text-end float-end ms-auto download-grp">
-                                    <a href="javascript:;"><img src="assets/img/icons/pdf-icon-04.svg" alt=""></a>
+                                <div class="col-12 col-md-6 col-xl-2 text-center float-end ms-auto download-grp">
+                                    <a (click)="exportReporteProductosExcel()" [class.disabled]="!resultadoMostrar"
+                                        href="javascript:;" style="font-size: 10px;"><img
+                                            src="assets/img/icons/pdf-icon-04.svg" alt="">Reporte
+                                        Por Producto</a>
                                 </div>
                             </div>
                         </div>

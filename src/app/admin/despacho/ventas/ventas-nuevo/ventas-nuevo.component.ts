@@ -72,25 +72,6 @@ export class VentasNuevoComponent implements OnInit {
   datoPRODUCTO: any[] = [];
 
   ngOnInit(): void {
-    /*     Swal.fire({
-      position: 'bottom-end',
-      icon: 'warning',
-      title:
-        '<i class="fas fa-check-circle" style="font-size: 15px;"></i> Your work has been saved',
-      width: '300px',
-      heightAuto: true,
-      timerProgressBar: true, // Muestra una barra de progreso
-      showConfirmButton: false,
-      timer: 1500,
-      //iconHtml: '<i class="fas fa-check-circle" style="font-size: 24px;"></i>',
-      didOpen: (toast) => {
-        const titleElement = toast.querySelector('.swal2-title') as HTMLElement;
-        const iconElement = toast.querySelector('.swal2-icon') as HTMLElement;
-        titleElement.style.fontSize = '15px'; // Ajustar el tamaño del texto
-        iconElement.style.fontSize = '10px'; // Ajustar el tamaño del ícono
-      },
-    }); */
-
     const initialForm = this.fb.group({
       clienteDetalle: this.fb.group({
         id: ['', Validators.required],
@@ -155,6 +136,7 @@ export class VentasNuevoComponent implements OnInit {
     this.productoService.getProductosAll().subscribe({
       next: (data: any) => {
         this.datoPRODUCTO = data;
+        console.log(this.datoPRODUCTO);
         this.stockAll();
       },
       error: (_erroData) => {},
@@ -171,21 +153,24 @@ export class VentasNuevoComponent implements OnInit {
         this.datoStock = data;
         console.log(data);
         // Mapea los nombres de datos de ventas
-        this.datoStock = this.datoStock.map((stockValor: Stock) => {
-          //PARA PROVEEDOR
-          const datoStocks = this.datoPRODUCTO.find(
-            (prod: any) =>
-              stockValor.producto_id === prod.prod_id &&
-              stockValor.almacen_id === this.usersucursal &&
-              stockValor.unidad_medida === prod.med_id
-          );
-          if (datoStocks) {
-            datoStocks.cantidadStockSucursal = stockValor.cantidad;
-            datoStocks.almacen_id = stockValor.almacen_id;
-            datoStocks.stock_id = stockValor.stock_id;
-          }
-          return datoStocks;
-        });
+        this.datoStock = this.datoStock
+          .map((stockValor: Stock) => {
+            //PARA PROVEEDOR
+            const datoStocks = this.datoPRODUCTO.find(
+              (prod: any) =>
+                stockValor.producto_id === prod.prod_id &&
+                stockValor.almacen_id === this.usersucursal &&
+                stockValor.unidad_medida === prod.med_id
+            );
+            console.log(datoStocks);
+            if (datoStocks) {
+              datoStocks.cantidadStockSucursal = stockValor.cantidad;
+              datoStocks.almacen_id = stockValor.almacen_id;
+              datoStocks.stock_id = stockValor.stock_id;
+            }
+            return datoStocks ? datoStocks : null; // Devuelve null si datoStocks es undefined
+          })
+          .filter((datoStock) => datoStock !== null); // Filtra los valores null (es decir, los que eran undefined)
         console.log(this.datoStock);
       },
       error: (_erroData) => {},
@@ -237,14 +222,57 @@ export class VentasNuevoComponent implements OnInit {
     }
   }
 
+  /* 
+        filteredOptions!:
+          | Observable<
+              {
+                stock: any;
+                id: string;
+                nombre: string;
+                descripcion: string;
+              }[]
+            >
+          | undefined;
+        filteresOption() {
+          this.filteredOptions = this.form
+            .get('productoBuscado.nombrebproducto')
+            ?.valueChanges.pipe(
+              startWith(''),
+              map((value) => this._filter(value as string))
+            ) as
+            | Observable<
+                { id: string; nombre: string; stock: number; descripcion: string }[]
+              >
+            | undefined;
+        }
+        private _filter(
+          value: string | null
+        ): { id: string; nombre: string; stock: number; descripcion: string }[] {
+          if (!value) {
+            return this.datoStock.map((option) => ({
+              id: option.prod_id,
+              nombre: option.prod_nombre,
+              stock: option.cantidadStockSucursal,
+              descripcion: option.prod_descripcion,
+            }));
+          }
+
+          const filterValue = value.toLowerCase();
+          return this.datoStock
+            .filter((option) =>
+              option.prod_nombre.toLowerCase().includes(filterValue)
+            )
+            .map((option) => ({
+              id: option.prod_id,
+              nombre: option.prod_nombre,
+              stock: option.cantidadStockSucursal,
+              descripcion: option.prod_descripcion,
+            }));
+  }*/
+
   filteredOptions!:
     | Observable<
-        {
-          stock: any;
-          id: string;
-          nombre: string;
-          descripcion: string;
-        }[]
+        { id: string; nombre: string; stock: number; descripcion: string }[]
       >
     | undefined;
   filteresOption() {
@@ -263,12 +291,7 @@ export class VentasNuevoComponent implements OnInit {
     value: string | null
   ): { id: string; nombre: string; stock: number; descripcion: string }[] {
     if (!value) {
-      /* return this.datoPRODUCTO.map((option) => ({
-        id: option.prod_id,
-        nombre: option.prod_nombre,
-        descripcion: option.prod_descripcion,
-      })); */
-      return this.datoStock.map((option) => ({
+      return this.datoPRODUCTO.map((option) => ({
         id: option.prod_id,
         nombre: option.prod_nombre,
         stock: option.cantidadStockSucursal,
@@ -277,7 +300,7 @@ export class VentasNuevoComponent implements OnInit {
     }
 
     const filterValue = value.toLowerCase();
-    return this.datoStock
+    return this.datoPRODUCTO
       .filter((option) =>
         option.prod_nombre.toLowerCase().includes(filterValue)
       )
@@ -288,13 +311,17 @@ export class VentasNuevoComponent implements OnInit {
         descripcion: option.prod_descripcion,
       }));
   }
+
   //PARA EL 2DO FORMGROUP
   onProductSelected(event: any) {
     const selectedProduct = event.option.value;
+    console.log(selectedProduct);
     console.log('Este el valor de selectedProduct: ' + selectedProduct);
+    console.log(selectedProduct);
     const productoSeleccionado = this.datoPRODUCTO.find(
       (producto) => producto.prod_nombre == selectedProduct
     );
+    console.log(productoSeleccionado);
     //console.log(productoSeleccionado);
     if (productoSeleccionado) {
       const medida = this.datosMED.find(

@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
 import { ComprasService } from 'src/app/shared/services/logistica/compra/compras.service';
+import { ComprasDetalleService } from 'src/app/shared/services/logistica/compra/compras-detalle.service';
 import { Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { pageSelection, Compra } from 'src/app/shared/interfaces/logistica';
 import { ProveedoresService } from 'src/app/shared/services/logistica/proveedor/proveedores.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
+
+import * as ExcelJS from 'exceljs';
 
 import {
   FormBuilder,
@@ -28,7 +31,8 @@ export class ComprasIndexComponent implements OnInit {
     private fb: FormBuilder,
     public comprasService: ComprasService,
     public proveedoresService: ProveedoresService,
-    private sucursalService: SucursalService
+    private sucursalService: SucursalService,
+    private comprasDetalleService: ComprasDetalleService
   ) {}
 
   public comprasList: Array<Compra> = [];
@@ -370,5 +374,279 @@ export class ComprasIndexComponent implements OnInit {
       // Realizar la lógica de filtrado según el rango de fechas (fechaInicio y fechaFin)
       this.comprasAll(fechaInicio, fechaFin);
     }
+  }
+  dataReporte: any;
+  reporteDataDetalleReporte: any;
+  exportReporteProductosExcel(): void {
+    const fechaInicio = this.form.value.fechacomprainicio;
+    const fechaFinal = this.form.value.fechacomprafin;
+    if (fechaInicio && fechaFinal) {
+      this.dataReporte = {
+        proceso: 'CONFIRMADO',
+        estado: '1',
+        fechaInicio: this.datePipe.transform(fechaInicio, 'yyyy-MM-dd'),
+        fechaFinal: this.datePipe.transform(fechaFinal, 'yyyy-MM-dd'),
+      };
+    }
+    console.log(this.dataReporte);
+
+    this.comprasDetalleService
+      .getCompraDetalleReporte(
+        this.dataReporte.proceso,
+        this.dataReporte.estado,
+        this.dataReporte.fechaInicio,
+        this.dataReporte.fechaFinal
+      )
+      .subscribe({
+        next: (responseDataDetalleReporte) => {
+          this.reporteDataDetalleReporte = responseDataDetalleReporte;
+          console.log(
+            'SOLCIITUD RECIBIDA CON EXITO ',
+            responseDataDetalleReporte
+          );
+        },
+        error: () => {},
+        complete: () => {
+          //EXCEL
+          const workbook = new ExcelJS.Workbook();
+          const worksheet = workbook.addWorksheet('Sheet1');
+
+          /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+          // Agrega una fila para el título del reporte
+          const titleRow = worksheet.addRow([
+            '',
+            'REPORTE DE PRODUCTOS COMPRADOS POR SUCURSAL Y FECHAS',
+          ]);
+          titleRow.font = { bold: true, size: 16 };
+          titleRow.alignment = { vertical: 'middle', horizontal: 'center' };
+          worksheet.mergeCells(`B${titleRow.number}:G${titleRow.number}`);
+          // Aplica estilo al fondo del título solo a las celdas combinadas
+          const titleRange = worksheet.getCell(`B${titleRow.number}`);
+          titleRange.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
+          };
+          // Aplica bordes delgados a las celdas combinadas
+          titleRange.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+          titleRow.height = 30;
+
+          const datosRow = worksheet.addRow([
+            '',
+            'PROVEEDOR',
+            'TODOS',
+            'DEL',
+            this.datePipe.transform(this.dataReporte.fechaInicio, 'dd-MM-yyyy'),
+            'AL',
+            this.datePipe.transform(this.dataReporte.fechaFinal, 'dd-MM-yyyy'),
+          ]);
+
+          datosRow.height = 20;
+
+          // Configura bordes para las columnas B a G
+          for (let col = 2; col <= 7; col++) {
+            const cell = datosRow.getCell(col);
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' },
+            };
+            cell.alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            };
+            if (col == 2 || col == 4 || col == 6) {
+              cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'DCE6F1' }, // Color de fondo azul claro
+              };
+            }
+          }
+
+          // Espaciador entre el título y los encabezados
+          worksheet.addRow([]); // Esto agrega una fila vacía
+
+          /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+          // Estilo para los encabezados
+          const headerStyle = {
+            font: { bold: true, size: 12 },
+            fill: {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'A1C1E7' }, // Color de fondo azul claro
+            } as ExcelJS.Fill,
+          };
+
+          // Agrega encabezados con estilo y asigna anchos
+          const headers = [
+            { header: 'CODIGO DE PRODUCTO', key: 'codigoProducto' },
+            { header: 'PRODUCTO NOMBRE', key: 'nombreProducto' },
+            { header: 'DESCRIPCION PRODUCTO', key: 'descripcionProducto' },
+            { header: 'CODIGO DE VENTA', key: 'venta_id' },
+            { header: 'CLIENTE NOMBRE', key: 'nombreCliente' },
+            { header: 'FECHA DE VENTA', key: 'venta_fecha' },
+            { header: 'CANTIDAD DE VENTA', key: 'cantidad_venta' },
+            { header: 'PRECIO DE VENTA', key: 'precio_venta' },
+            { header: 'USUARIO VENTA', key: 'nombreUsuarioVenta' },
+            { header: 'TIPO DE PAGO', key: 'tipoPago' },
+            { header: 'ESTADO DE VENTA', key: 'venta_proceso' },
+          ];
+
+          // Ajusta la altura de la fila de encabezados
+          const headerRow = worksheet.addRow(
+            headers.map((header) => header.header)
+          );
+          headerRow.height = 35; // Altura del header
+
+          headerRow.eachCell((cell, colNumber) => {
+            cell.fill = headerStyle.fill;
+            cell.font = headerStyle.font;
+
+            // Centra el texto en la celda
+            cell.alignment = { vertical: 'middle', horizontal: 'center' };
+          });
+
+          // Configura bordes para la fila de encabezados
+          headerRow.eachCell((cell) => {
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' },
+            };
+          });
+
+          // Configura el formato de la fila de encabezado
+          headerRow.alignment = {
+            vertical: 'middle',
+            horizontal: 'center',
+            wrapText: true, // Ajustar Texto
+          };
+          // Agrega datos
+          this.reporteDataDetalleReporte.forEach((data: any) => {
+            // Redondea el valor de data.montotal a 2 decimales
+            //const precio_venta = data.precio_venta.toFixed(2);
+
+            const row = [
+              data.codigoProducto,
+              data.nombreProducto,
+              data.descripcionProducto,
+              parseInt(data.venta_id),
+              data.nombreCliente,
+              data.venta_fecha,
+              parseInt(data.cantidad_venta),
+              parseFloat(data.precio_venta),
+              data.nombreUsuarioVenta,
+              data.tipoPago,
+              data.venta_proceso,
+            ];
+
+            const excelRow = worksheet.addRow(row);
+            excelRow.height = 20; // Altura del header
+
+            // Configura bordes para las celdas en la fila de datos
+            excelRow.eachCell((cell) => {
+              cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' },
+              };
+            });
+
+            // Centra las celdas específicas en la fila de datos
+            excelRow.getCell(1).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // CODIGO DE PRODUCTO
+            excelRow.getCell(2).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // PRODUCTO NOMBRE
+            excelRow.getCell(3).alignment = {
+              vertical: 'middle',
+              horizontal: 'justify',
+            }; // DESCRIPCION DE PRPDUCTO
+            excelRow.getCell(4).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // CODIGO DE VENTA
+            excelRow.getCell(5).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // CLIENTE NOMBRE
+            excelRow.getCell(6).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // FECHA DE VENTA
+            excelRow.getCell(7).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // CANTIDAD DE VENTA
+            excelRow.getCell(8).alignment = {
+              vertical: 'middle',
+              horizontal: 'right',
+              wrapText: true, // Habilitar ajuste de texto
+              indent: 1, // Ajusta el valor según sea necesario
+            }; // PRECIO DE VENTA
+            excelRow.getCell(9).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // USUARIO DE VENTA
+            excelRow.getCell(10).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // TIPO DE PAGO
+            excelRow.getCell(11).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // ESTADO DE VENTA
+            // Configura el formato de la celda para la columna del monto
+            const montoCell1 = excelRow.getCell(7);
+            montoCell1.numFmt = '#,##0'; // Formato de número
+            const montoCell2 = excelRow.getCell(8);
+            montoCell2.numFmt = '#,##0.00'; // Formato de número con 2 decimales
+          });
+
+          // Ajustar el ancho de las columnas A, B y C
+          worksheet.getColumn('A').width = 15; // Ancho de la columna A
+          worksheet.getColumn('B').width = 40; // Ancho de la columna B
+          worksheet.getColumn('C').width = 45; // Ancho de la columna C
+          worksheet.getColumn('D').width = 20; // Ancho de la columna D
+          worksheet.getColumn('E').width = 40; // Ancho de la columna E
+          worksheet.getColumn('F').width = 20; // Ancho de la columna F
+          worksheet.getColumn('G').width = 17; // Ancho de la columna G
+          worksheet.getColumn('H').width = 15; // Ancho de la columna H
+          worksheet.getColumn('I').width = 15; // Ancho de la columna I
+          worksheet.getColumn('J').width = 25; // Ancho de la columna J
+          worksheet.getColumn('K').width = 15; // Ancho de la columna K
+
+          // Descargar el archivo Excel
+          workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
+            const blob = new Blob([data], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download =
+              'Reporte de Compras x Producto del ' +
+              this.dataReporte.fechaInicio +
+              ' al ' +
+              this.dataReporte.fechaFinal +
+              '.xlsx';
+            //a.download = 'Reporte de Ventas Pagadas de la Sucursal.xlsx';
+            a.click();
+            window.URL.revokeObjectURL(url);
+          });
+        },
+      });
   }
 }

@@ -102,7 +102,7 @@ export class LogrevtransferenciaIndexComponent implements OnInit {
   private transferenciasAll(fechaInicio: string, fechaFin: string): void {
     //Notiflix.Loading.circle('Obteniendo datos...');
     Notiflix.Loading.standard('Loading...', {
-      backgroundColor: 'rgba(0,0,0,0.1)',
+      backgroundColor: 'rgba(0,0,255,0.1)',
     });
     this.trasnferenciasList = [];
     this.serialNumberArray = [];
