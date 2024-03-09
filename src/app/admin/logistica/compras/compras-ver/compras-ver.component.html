@@ -88,6 +88,38 @@
                                     </div>
                                 </div>
                             </div>
+                            <div formGroupName="comprobanteDetalle">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="form-group local-forms">
+                                            <label style="position: initial;">Tipo de Comprobante: <span
+                                                    class="login-danger">*</span></label>
+                                            <mat-select class="form-control select" placeholder="Seleccione un opcion"
+                                                formControlName="comprobante_tipo">
+                                                <mat-option *ngFor="let data of comprobanteTipo" [value]="data.value">
+                                                    {{data.value}}
+                                                </mat-option>
+                                            </mat-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="form-group local-forms">
+                                            <label style="position: initial;">N&uacute;mero de serie:
+                                                <span class="login-danger">*</span></label>
+                                            <input class="form-control" type="text" formControlName="comprobante_serie"
+                                                style="text-align: center;">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-xl-4">
+                                        <div class="form-group local-forms">
+                                            <label style="position: initial;">N&uacute;mero comprobante:
+                                                <span class="login-danger">*</span></label>
+                                            <input class="form-control" type="number"
+                                                formControlName="comprobante_numero" style="text-align: center;">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="invoice-add-table" style="padding-top: 0px;">
                                 <h4>Carrito de compra</h4>
@@ -167,18 +199,18 @@
                                                 class="btn btn-primary" type="submit" name="proforma"
                                                 (click)="confirmarCompra()" style="margin: 5px;">CONFIRMAR
                                                 COMPRA</button>
-                                            <a href="javascript:void(0);"
+                                            <!-- <a href="javascript:void(0);"
                                                 *ngIf="datoCOMPRA[0] && datoCOMPRA[0]['proceso'] === 'CONFIRMADO'"
                                                 class="btn btn-success" data-bs-toggle="modal"
                                                 data-bs-target="#agregar_datos_entrega"
-                                                style="margin: 5px; padding: 11px">ACTUALIZAR DATOS DE ENTREGA</a>
+                                                style="margin: 5px; padding: 11px">ACTUALIZAR DATOS DE ENTREGA</a> -->
                                         </div>
 
                                     </div>
                                 </div>
                             </div>
                             <!-- Save Invoices Modal -->
-                            <div class="modal custom-modal fade" id="agregar_datos_entrega" role="dialog">
+                            <!-- <div class="modal custom-modal fade" id="agregar_datos_entrega" role="dialog">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-body" formGroupName="comprobanteDetalle">
@@ -252,7 +284,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- /Save Invoices Modal -->
                         </form>
                     </div>

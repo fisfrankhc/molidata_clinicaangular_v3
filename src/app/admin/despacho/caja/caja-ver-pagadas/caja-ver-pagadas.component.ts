@@ -39,6 +39,8 @@ import Swal from 'sweetalert2';
 import { NgStyle } from '@angular/common';
 import { ComprobantesDetalleService } from 'src/app//shared/services/contable/comprobantes/comprobantes-detalle.service';
 
+import { ElementRef, ViewChild } from '@angular/core'; // Importa ElementRef y ViewChild
+
 @Component({
   selector: 'app-caja-ver-pagadas',
   templateUrl: './caja-ver-pagadas.component.html',
@@ -465,6 +467,8 @@ export class CajaVerPagadasComponent implements OnInit {
   comprobanteDatoSerie: any;
   comprobanteDatoNumero: any;
 
+  // Dentro de tu componente, declara una variable que haga referencia al modal
+  @ViewChild('pregunta_emitir') preguntaEmitirModal: ElementRef | undefined;
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   emitirComprobante() {
     const valorInputTipoBoleta =
@@ -558,7 +562,10 @@ export class CajaVerPagadasComponent implements OnInit {
       error: (errorData) => {
         console.log('Error al postear comprobante', errorData);
       },
-      complete: () => {},
+      complete: () => {
+        // Luego, dentro de tu función emitirComprobante(), después de completar todas las operaciones, añade esta línea para cerrar el modal:
+        this.preguntaEmitirModal?.nativeElement.modal('hide');
+      },
     });
   }
 
@@ -571,6 +578,7 @@ export class CajaVerPagadasComponent implements OnInit {
           this.datosCOMPROBANTES = 'No hay resultados';
         } else {
           this.datosCOMPROBANTES = datosCOMPROBANTES;
+          console.log(this.datosCOMPROBANTES);
           // Buscar el cliente correspondiente en datosCLI
           this.datosCOMPROBANTES = this.datosCOMPROBANTES.find(
             (comp: any) => Number(comp.venta_id) === this.ventaId

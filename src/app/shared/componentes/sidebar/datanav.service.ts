@@ -397,7 +397,7 @@ export class DatanavService {
                 },
               ],
             },
-            {
+            /* {
               menuValue: 'Transferencias',
               route: 'almacen/transferencias',
               rol: [
@@ -408,7 +408,7 @@ export class DatanavService {
                   valor: '5',
                 },
               ],
-            },
+            }, */
             {
               menuValue: 'Stocks',
               route: 'almacen/stocks',

@@ -30,7 +30,7 @@
                             <div class="row align-items-center">
                                 <div class="col-12 col-md-6 col-xl-7">
                                     <div class="doctor-table-blk">
-                                        <h3>LISTA DE INGRESOS</h3>
+                                        <h3>LISTA DE MOVIMIENTOS</h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
                                                 <input class="form-control" placeholder="Escribe aqui"
@@ -39,9 +39,6 @@
                                                 <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
                                             </div>
                                             <div class="add-group">
-                                                <a [routerLink]="ruta.almacen_movimientosalmacen_nuevo"
-                                                    class="btn btn-primary add-pluss ms-2"><img
-                                                        src="assets/img/icons/plus.svg" alt=""> &nbsp;Nuevo Ingreso</a>
                                                 <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"
                                                     (click)="actualizarIngresos()"><img
                                                         src="assets/img/icons/re-fresh.svg" alt=""></a>
@@ -85,6 +82,20 @@
                                         </div>
                                     </form>
                                 </div>
+                                <div class="col-12 col-md-6 col-xl-6" style="margin-top: 10px;">
+                                    <div class="add-group">
+                                        <a [routerLink]="ruta.almacen_movimientosalmacen_nuevo"
+                                            class="btn btn-primary add-pluss ms-2"><img src="assets/img/icons/plus.svg"
+                                                alt=""> &nbsp;Nuevo Ingreso</a>
+                                        <a [routerLink]="ruta.almacen_movimientosalmacen_transferencias"
+                                            class="btn btn-warning" style="color: #fff; margin: 0 5px;">Revisar
+                                            Transferencias </a>
+                                        <a [routerLink]="ruta.almacen_movimientosalmacen_salidas"
+                                            class="btn btn-primary add-pluss ms-2"><img src="assets/img/icons/plus.svg"
+                                                alt=""> &nbsp;Nueva Salida</a>
+
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <!-- /Table Header -->
@@ -102,6 +113,8 @@
                                         <th mat-sort-header="#">#</th>
                                         <th mat-sort-header="almacen_id">FECHA</th>
                                         <th mat-sort-header="producto_id">USUARIO</th>
+                                        <th mat-sort-header="movimiento_tipo">TIPO MOV.</th>
+                                        <th mat-sort-header="nombreSucursal">SUCURSAL D.</th>
 
                                     </tr>
                                 </thead>
@@ -117,6 +130,8 @@
                                             <td>{{data.movimiento_id}}</td>
                                             <td>{{data.movimiento_fecha}}</td>
                                             <td>{{data.nombreUsuario}}</td>
+                                            <td>{{data.movimiento_tipo}}</td>
+                                            <td>{{data.nombreSucursal}}</td>
                                             <!--                                             <td class="text-end">
                                                 <div class="dropdown dropdown-action">
                                                     <a href="javascript:void(0);" class="action-icon dropdown-toggle"

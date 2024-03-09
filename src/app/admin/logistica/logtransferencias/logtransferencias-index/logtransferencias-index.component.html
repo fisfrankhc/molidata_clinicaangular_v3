@@ -86,13 +86,6 @@
                                     </form>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <a [routerLink]="ruta.logistica_transferencias_revisartransferencia"
-                                        class="btn btn-warning" style="color: #fff;">Revisar Transferencias </a>
-                                </div>
-
-                            </div>
                         </div>
                         <!-- /Table Header -->
 
@@ -109,6 +102,7 @@
                                         <th mat-sort-header="movimiento_id">#</th>
                                         <th mat-sort-header="movimiento_fecha">FECHA</th>
                                         <th mat-sort-header="nombreUsuario">USUARIO</th>
+                                        <th mat-sort-header="movimiento_tipo">TIPO MOV.</th>
                                         <th mat-sort-header="nombreSucursal">SUCURSAL D.</th>
 
                                     </tr>
@@ -124,6 +118,7 @@
                                             <td>{{data.movimiento_id}}</td>
                                             <td>{{data.movimiento_fecha}}</td>
                                             <td>{{data.nombreUsuario}}</td>
+                                            <td>{{data.movimiento_tipo}}</td>
                                             <td>{{data.nombreSucursal}}</td>
                                             <!--                                             <td class="text-end">
                                                 <div class="dropdown dropdown-action">

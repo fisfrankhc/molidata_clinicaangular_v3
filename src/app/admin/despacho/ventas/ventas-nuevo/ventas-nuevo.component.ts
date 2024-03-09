@@ -460,203 +460,207 @@ export class VentasNuevoComponent implements OnInit {
       this.form.get('clienteDetalle')?.valid &&
       this.form.get('listaVenta')?.valid
     ) {
-      this.form.value.listaVenta.forEach((producto: Producto) => {
-        //PARA SUMAR LAS CANTIDADES DE LOS PRODUCTOS
-        const idobtenido = producto.idobtenido;
-        const cantidad = +producto.cantidad;
-        cantidadesPorId[idobtenido] = cantidadesPorId[idobtenido] || {
-          almacen: this.usersucursal,
-          producto: producto.producto,
-          cantidad: 0,
-          medida: producto.medida,
-          stock_id: '', //ID DEL STOCK PARA EL PUT
-        };
-        cantidadesPorId[idobtenido].cantidad += cantidad;
-
-        //PARA PODER VISUALIZAR EL ELEMENTO QUE SE SOBREPASA Y MARCARLO CON ROJO
-        const datosFind0 = this.datoStock.find(
-          (prod: any) => prod.prod_id === cantidadesPorId[idobtenido].producto
-        );
-        const operacionCantidad0 = parseFloat(
-          (
-            datosFind0.cantidadStockSucursal -
-            cantidadesPorId[idobtenido].cantidad
-          ).toFixed(2)
-        );
-        producto.estiloRojo = operacionCantidad0 < 0;
-        //FIN
-      });
-
-      let todosProductosCumplen = true; // Variable de bandera
-      const productosCumplenCriterio: {
-        id: number;
-        cantidad: number;
-        producto: number;
-      }[] = []; // Almacena los productos que cumplen con el criterio
-
-      //PARA EL PUT
-      Object.keys(cantidadesPorId).forEach((id) => {
-        const datosFind = this.datoStock.find(
-          (prod: any) => prod.prod_id === cantidadesPorId[id].producto
-        );
-        const operacionCantidad = parseFloat(
-          (
-            datosFind.cantidadStockSucursal - cantidadesPorId[id].cantidad
-          ).toFixed(2)
-        );
-        const stockSucursal = this.datoStock.find(
-          (stock: any) =>
-            stock.prod_id === cantidadesPorId[id].producto &&
-            stock.med_id === cantidadesPorId[id].medida &&
-            stock.almacen_id === this.usersucursal
-        );
-        cantidadesPorId[id].stock_id = stockSucursal.stock_id;
-
-        if (operacionCantidad < 0) {
-          todosProductosCumplen = false;
-        } else {
-          productosCumplenCriterio.push({
-            id: cantidadesPorId[id].stock_id,
-            cantidad: operacionCantidad,
-            producto: cantidadesPorId[id].producto,
-          });
-        }
-      });
-
-      // Verifica la variable de bandera antes de imprimir
-      if (todosProductosCumplen) {
-        //SI LOS PRECIOS NO SON IGUALES/HUBO ALGUN AJUSTE
-        if (!this.preciosIguales) {
-          //console.log(this.preciosIguales);
-          const { value: codigo } = await Swal.fire({
-            title:
-              'Ingrese c&oacute;digo de validaci&oacute;n para modificar precio',
-            input: 'text', //inputLabel: 'Tu codigo de validacion',
-            inputPlaceholder: 'Ingrese aqui',
-            inputAttributes: {
-              autocomplete: 'off', // Desactivar el autocompletado
-            },
-          });
-          if (codigo) {
-            //Swal.fire(`Entered Code: ${codigo}`);
-            this.sucursalService.getSucursalAll().subscribe({
-              next: (datas) => {
-                this.datasucursalall = datas;
-                const dataSucursal = this.datasucursalall.find(
-                  (suc: any) => suc.suc_id === this.usersucursal
-                );
-
-                if (codigo == dataSucursal.codigo_autorizacion) {
-                  //console.log('EL CODIGO ES CORRECTO');
-                  //SI EL CODIGO ES CORRECTO, PROCEDEMOS A GUARDAR
-                  this.ventasService.postVentas(ventaData).subscribe({
-                    next: (response) => {
-                      this.venta = response;
-
-                      this.form.value.listaVenta.forEach(
-                        (producto: Producto) => {
-                          // Agregamos el ID de venta obtenido al objeto producto
-                          producto.venta = this.venta;
-
-                          // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
-                          this.ventasDetalleService
-                            .postVentasDetalle(producto)
-                            .subscribe({
-                              next: (response) => {
-                                console.log(
-                                  'Entrada registrada con éxito:',
-                                  response
-                                );
-                              },
-                              error: (errorData) => {
-                                console.error(
-                                  'Error al enviar la solicitud POST de VENTADETALLE:',
-                                  errorData
-                                );
-                              },
-                              complete: () => {},
-                            });
-                          //FIN DE VENTA-DETALLE
-                        }
-                      );
-                    },
-                    error: (errorData) => {
-                      console.error(
-                        'Error al enviar la solicitud POST de VENTA:',
-                        errorData
-                      );
-                    },
-                    complete: () => {
-                      //this.router.navigate(['despacho/venta']);
-                      this.router.navigate([rutas.despacho_venta]);
-                    },
-                  });
-                } else {
-                  Swal.fire({
-                    title: 'El codigo es incorrecto',
-                    icon: 'error',
-                    timer: 2500,
-                  });
-                }
-              },
-              error: () => {},
-              complete: () => {},
-            });
-          } else {
-            Swal.fire('No ingres&oacute; un c&oacute;digo');
-          }
-        }
-        //NO HUBO ALGUN AJUSTE
-        else {
-          //console.log('Todo es correcto');
-          //HACER EL POST
-          this.ventasService.postVentas(ventaData).subscribe({
-            next: (response) => {
-              this.venta = response;
-
-              this.form.value.listaVenta.forEach((producto: Producto) => {
-                // Agregamos el ID de venta obtenido al objeto producto
-                producto.venta = this.venta;
-
-                // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
-                this.ventasDetalleService
-                  .postVentasDetalle(producto)
-                  .subscribe({
-                    next: (response) => {
-                      console.log('Entrada registrada con éxito:', response);
-                    },
-                    error: (errorData) => {
-                      console.error(
-                        'Error al enviar la solicitud POST de VENTADETALLE:',
-                        errorData
-                      );
-                    },
-                    complete: () => {},
-                  });
-                //FIN DE VENTA-DETALLE
-              });
-            },
-            error: (errorData) => {
-              console.error(
-                'Error al enviar la solicitud POST de VENTA:',
-                errorData
-              );
-            },
-            complete: () => {
-              //this.router.navigate(['despacho/venta']);
-              this.router.navigate([rutas.despacho_venta]);
-            },
-          });
-        }
+      if (this.form.get('listaVenta')?.value == '') {
+        alert('No ha añadido productos');
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          timerProgressBar: true, // Muestra una barra de progreso
-          showConfirmButton: false,
-          timer: 4000,
-          text: 'HAY UNO O MAS PRODUCTOS QUE NO CUENTAN CON EL STOCK',
+        this.form.value.listaVenta.forEach((producto: Producto) => {
+          //PARA SUMAR LAS CANTIDADES DE LOS PRODUCTOS
+          const idobtenido = producto.idobtenido;
+          const cantidad = +producto.cantidad;
+          cantidadesPorId[idobtenido] = cantidadesPorId[idobtenido] || {
+            almacen: this.usersucursal,
+            producto: producto.producto,
+            cantidad: 0,
+            medida: producto.medida,
+            stock_id: '', //ID DEL STOCK PARA EL PUT
+          };
+          cantidadesPorId[idobtenido].cantidad += cantidad;
+
+          //PARA PODER VISUALIZAR EL ELEMENTO QUE SE SOBREPASA Y MARCARLO CON ROJO
+          const datosFind0 = this.datoStock.find(
+            (prod: any) => prod.prod_id === cantidadesPorId[idobtenido].producto
+          );
+          const operacionCantidad0 = parseFloat(
+            (
+              datosFind0.cantidadStockSucursal -
+              cantidadesPorId[idobtenido].cantidad
+            ).toFixed(2)
+          );
+          producto.estiloRojo = operacionCantidad0 < 0;
+          //FIN
         });
+
+        let todosProductosCumplen = true; // Variable de bandera
+        const productosCumplenCriterio: {
+          id: number;
+          cantidad: number;
+          producto: number;
+        }[] = []; // Almacena los productos que cumplen con el criterio
+
+        //PARA EL PUT
+        Object.keys(cantidadesPorId).forEach((id) => {
+          const datosFind = this.datoStock.find(
+            (prod: any) => prod.prod_id === cantidadesPorId[id].producto
+          );
+          const operacionCantidad = parseFloat(
+            (
+              datosFind.cantidadStockSucursal - cantidadesPorId[id].cantidad
+            ).toFixed(2)
+          );
+          const stockSucursal = this.datoStock.find(
+            (stock: any) =>
+              stock.prod_id === cantidadesPorId[id].producto &&
+              stock.med_id === cantidadesPorId[id].medida &&
+              stock.almacen_id === this.usersucursal
+          );
+          cantidadesPorId[id].stock_id = stockSucursal.stock_id;
+
+          if (operacionCantidad < 0) {
+            todosProductosCumplen = false;
+          } else {
+            productosCumplenCriterio.push({
+              id: cantidadesPorId[id].stock_id,
+              cantidad: operacionCantidad,
+              producto: cantidadesPorId[id].producto,
+            });
+          }
+        });
+
+        // Verifica la variable de bandera antes de imprimir
+        if (todosProductosCumplen) {
+          //SI LOS PRECIOS NO SON IGUALES/HUBO ALGUN AJUSTE
+          if (!this.preciosIguales) {
+            //console.log(this.preciosIguales);
+            const { value: codigo } = await Swal.fire({
+              title:
+                'Ingrese c&oacute;digo de validaci&oacute;n para modificar precio',
+              input: 'text', //inputLabel: 'Tu codigo de validacion',
+              inputPlaceholder: 'Ingrese aqui',
+              inputAttributes: {
+                autocomplete: 'off', // Desactivar el autocompletado
+              },
+            });
+            if (codigo) {
+              //Swal.fire(`Entered Code: ${codigo}`);
+              this.sucursalService.getSucursalAll().subscribe({
+                next: (datas) => {
+                  this.datasucursalall = datas;
+                  const dataSucursal = this.datasucursalall.find(
+                    (suc: any) => suc.suc_id === this.usersucursal
+                  );
+
+                  if (codigo == dataSucursal.codigo_autorizacion) {
+                    //console.log('EL CODIGO ES CORRECTO');
+                    //SI EL CODIGO ES CORRECTO, PROCEDEMOS A GUARDAR
+                    this.ventasService.postVentas(ventaData).subscribe({
+                      next: (response) => {
+                        this.venta = response;
+
+                        this.form.value.listaVenta.forEach(
+                          (producto: Producto) => {
+                            // Agregamos el ID de venta obtenido al objeto producto
+                            producto.venta = this.venta;
+
+                            // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+                            this.ventasDetalleService
+                              .postVentasDetalle(producto)
+                              .subscribe({
+                                next: (response) => {
+                                  console.log(
+                                    'Entrada registrada con éxito:',
+                                    response
+                                  );
+                                },
+                                error: (errorData) => {
+                                  console.error(
+                                    'Error al enviar la solicitud POST de VENTADETALLE:',
+                                    errorData
+                                  );
+                                },
+                                complete: () => {},
+                              });
+                            //FIN DE VENTA-DETALLE
+                          }
+                        );
+                      },
+                      error: (errorData) => {
+                        console.error(
+                          'Error al enviar la solicitud POST de VENTA:',
+                          errorData
+                        );
+                      },
+                      complete: () => {
+                        //this.router.navigate(['despacho/venta']);
+                        this.router.navigate([rutas.despacho_venta]);
+                      },
+                    });
+                  } else {
+                    Swal.fire({
+                      title: 'El codigo es incorrecto',
+                      icon: 'error',
+                      timer: 2500,
+                    });
+                  }
+                },
+                error: () => {},
+                complete: () => {},
+              });
+            } else {
+              Swal.fire('No ingres&oacute; un c&oacute;digo');
+            }
+          }
+          //NO HUBO ALGUN AJUSTE
+          else {
+            //console.log('Todo es correcto');
+            //HACER EL POST
+            this.ventasService.postVentas(ventaData).subscribe({
+              next: (response) => {
+                this.venta = response;
+
+                this.form.value.listaVenta.forEach((producto: Producto) => {
+                  // Agregamos el ID de venta obtenido al objeto producto
+                  producto.venta = this.venta;
+
+                  // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+                  this.ventasDetalleService
+                    .postVentasDetalle(producto)
+                    .subscribe({
+                      next: (response) => {
+                        console.log('Entrada registrada con éxito:', response);
+                      },
+                      error: (errorData) => {
+                        console.error(
+                          'Error al enviar la solicitud POST de VENTADETALLE:',
+                          errorData
+                        );
+                      },
+                      complete: () => {},
+                    });
+                  //FIN DE VENTA-DETALLE
+                });
+              },
+              error: (errorData) => {
+                console.error(
+                  'Error al enviar la solicitud POST de VENTA:',
+                  errorData
+                );
+              },
+              complete: () => {
+                //this.router.navigate(['despacho/venta']);
+                this.router.navigate([rutas.despacho_venta]);
+              },
+            });
+          }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            timerProgressBar: true, // Muestra una barra de progreso
+            showConfirmButton: false,
+            timer: 4000,
+            text: 'HAY UNO O MAS PRODUCTOS QUE NO CUENTAN CON EL STOCK',
+          });
+        }
       }
     }
   }
@@ -685,203 +689,207 @@ export class VentasNuevoComponent implements OnInit {
       this.form.get('clienteDetalle')?.valid &&
       this.form.get('listaVenta')?.valid
     ) {
-      this.form.value.listaVenta.forEach((producto: Producto) => {
-        //PARA SUMAR LAS CANTIDADES DE LOS PRODUCTOS
-        const idobtenido = producto.idobtenido;
-        const cantidad = +producto.cantidad;
-        cantidadesPorId[idobtenido] = cantidadesPorId[idobtenido] || {
-          almacen: this.usersucursal,
-          producto: producto.producto,
-          cantidad: 0,
-          medida: producto.medida,
-          stock_id: '', //ID DEL STOCK PARA EL PUT
-        };
-        cantidadesPorId[idobtenido].cantidad += cantidad;
-
-        //PARA PODER VISUALIZAR EL ELEMENTO QUE SE SOBREPASA Y MARCARLO CON ROJO
-        const datosFind0 = this.datoStock.find(
-          (prod: any) => prod.prod_id === cantidadesPorId[idobtenido].producto
-        );
-        const operacionCantidad0 = parseFloat(
-          (
-            datosFind0.cantidadStockSucursal -
-            cantidadesPorId[idobtenido].cantidad
-          ).toFixed(2)
-        );
-        producto.estiloRojo = operacionCantidad0 < 0;
-        //FIN
-      });
-
-      let todosProductosCumplen = true; // Variable de bandera
-      const productosCumplenCriterio: {
-        id: number;
-        cantidad: number;
-        producto: number;
-      }[] = []; // Almacena los productos que cumplen con el criterio
-
-      //PARA EL PUT
-      Object.keys(cantidadesPorId).forEach((id) => {
-        const datosFind = this.datoStock.find(
-          (prod: any) => prod.prod_id === cantidadesPorId[id].producto
-        );
-        const operacionCantidad = parseFloat(
-          (
-            datosFind.cantidadStockSucursal - cantidadesPorId[id].cantidad
-          ).toFixed(2)
-        );
-        const stockSucursal = this.datoStock.find(
-          (stock: any) =>
-            stock.prod_id === cantidadesPorId[id].producto &&
-            stock.med_id === cantidadesPorId[id].medida &&
-            stock.almacen_id === this.usersucursal
-        );
-        cantidadesPorId[id].stock_id = stockSucursal.stock_id;
-
-        if (operacionCantidad < 0) {
-          todosProductosCumplen = false;
-        } else {
-          productosCumplenCriterio.push({
-            id: cantidadesPorId[id].stock_id,
-            cantidad: operacionCantidad,
-            producto: cantidadesPorId[id].producto,
-          });
-        }
-      });
-
-      // Verifica la variable de bandera antes de imprimir
-      if (todosProductosCumplen) {
-        //HACER EL POST
-        //SI LOS PRECIOS NO SON IGUALES/HUBO ALGUN AJUSTE
-        if (!this.preciosIguales) {
-          const { value: codigo } = await Swal.fire({
-            title:
-              'Ingrese c&oacute;digo de validaci&oacute;n para modificar precio',
-            input: 'text', //inputLabel: 'Tu codigo de validacion',
-            inputPlaceholder: 'Ingrese aqui',
-            inputAttributes: {
-              autocomplete: 'off', // Desactivar el autocompletado
-            },
-          });
-
-          if (codigo) {
-            this.sucursalService.getSucursalAll().subscribe({
-              next: (datas) => {
-                this.datasucursalall = datas;
-                const dataSucursal = this.datasucursalall.find(
-                  (suc: any) => suc.suc_id === this.usersucursal
-                );
-
-                if (codigo == dataSucursal.codigo_autorizacion) {
-                  //console.log('Codigo es correcto');
-                  //POST VENTAS
-                  this.ventasService.postVentas(ventaData).subscribe({
-                    next: (response) => {
-                      this.venta = response;
-
-                      this.form.value.listaVenta.forEach(
-                        (producto: Producto) => {
-                          // Agregamos el ID de venta obtenido al objeto producto
-                          producto.venta = this.venta;
-
-                          // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
-                          this.ventasDetalleService
-                            .postVentasDetalle(producto)
-                            .subscribe({
-                              next: (response) => {
-                                console.log(
-                                  'Entrada registrada con éxito:',
-                                  response
-                                );
-                              },
-                              error: (errorData) => {
-                                console.error(
-                                  'Error al enviar la solicitud POST de VENTADETALLE:',
-                                  errorData
-                                );
-                              },
-                              complete: () => {},
-                            });
-                          //FIN DE VENTA-DETALLE
-                        }
-                      );
-                    },
-                    error: (errorData) => {
-                      console.error(
-                        'Error al enviar la solicitud POST de VENTA:',
-                        errorData
-                      );
-                    },
-                    complete: () => {
-                      //this.router.navigate(['/despacho/caja']);
-                      this.router.navigate([rutas.despacho_caja]);
-                    },
-                  });
-                } else {
-                  Swal.fire({
-                    title: 'El codigo es incorrecto',
-                    icon: 'error',
-                    timer: 2500,
-                  });
-                }
-              },
-              error: () => {},
-              complete: () => {},
-            });
-          } else {
-            Swal.fire('No ingres&oacute; un c&oacute;digo');
-          }
-        }
-        //NO HUBO ALGUN AJUSTE
-        else {
-          console.log('Todo es correcto');
-          //SI NO HAY ALGUN CAMBIO EN LOS PRECIOS, HACEMOS EL POST
-          this.ventasService.postVentas(ventaData).subscribe({
-            next: (response) => {
-              this.venta = response;
-
-              this.form.value.listaVenta.forEach((producto: Producto) => {
-                // Agregamos el ID de venta obtenido al objeto producto
-                producto.venta = this.venta;
-
-                // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
-                this.ventasDetalleService
-                  .postVentasDetalle(producto)
-                  .subscribe({
-                    next: (response) => {
-                      console.log('Entrada registrada con éxito:', response);
-                    },
-                    error: (errorData) => {
-                      console.error(
-                        'Error al enviar la solicitud POST de VENTADETALLE:',
-                        errorData
-                      );
-                    },
-                    complete: () => {},
-                  });
-                //FIN DE VENTA-DETALLE
-              });
-            },
-            error: (errorData) => {
-              console.error(
-                'Error al enviar la solicitud POST de VENTA:',
-                errorData
-              );
-            },
-            complete: () => {
-              //this.router.navigate(['/despacho/caja']);
-              this.router.navigate([rutas.despacho_caja]);
-            },
-          });
-        }
+      if (this.form.get('listaVenta')?.value == '') {
+        alert('No ha añadido productos');
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          timerProgressBar: true, // Muestra una barra de progreso
-          showConfirmButton: false,
-          timer: 4000,
-          text: 'HAY UNO O MAS PRODUCTOS QUE NO CUENTAN CON EL STOCK',
+        this.form.value.listaVenta.forEach((producto: Producto) => {
+          //PARA SUMAR LAS CANTIDADES DE LOS PRODUCTOS
+          const idobtenido = producto.idobtenido;
+          const cantidad = +producto.cantidad;
+          cantidadesPorId[idobtenido] = cantidadesPorId[idobtenido] || {
+            almacen: this.usersucursal,
+            producto: producto.producto,
+            cantidad: 0,
+            medida: producto.medida,
+            stock_id: '', //ID DEL STOCK PARA EL PUT
+          };
+          cantidadesPorId[idobtenido].cantidad += cantidad;
+
+          //PARA PODER VISUALIZAR EL ELEMENTO QUE SE SOBREPASA Y MARCARLO CON ROJO
+          const datosFind0 = this.datoStock.find(
+            (prod: any) => prod.prod_id === cantidadesPorId[idobtenido].producto
+          );
+          const operacionCantidad0 = parseFloat(
+            (
+              datosFind0.cantidadStockSucursal -
+              cantidadesPorId[idobtenido].cantidad
+            ).toFixed(2)
+          );
+          producto.estiloRojo = operacionCantidad0 < 0;
+          //FIN
         });
+
+        let todosProductosCumplen = true; // Variable de bandera
+        const productosCumplenCriterio: {
+          id: number;
+          cantidad: number;
+          producto: number;
+        }[] = []; // Almacena los productos que cumplen con el criterio
+
+        //PARA EL PUT
+        Object.keys(cantidadesPorId).forEach((id) => {
+          const datosFind = this.datoStock.find(
+            (prod: any) => prod.prod_id === cantidadesPorId[id].producto
+          );
+          const operacionCantidad = parseFloat(
+            (
+              datosFind.cantidadStockSucursal - cantidadesPorId[id].cantidad
+            ).toFixed(2)
+          );
+          const stockSucursal = this.datoStock.find(
+            (stock: any) =>
+              stock.prod_id === cantidadesPorId[id].producto &&
+              stock.med_id === cantidadesPorId[id].medida &&
+              stock.almacen_id === this.usersucursal
+          );
+          cantidadesPorId[id].stock_id = stockSucursal.stock_id;
+
+          if (operacionCantidad < 0) {
+            todosProductosCumplen = false;
+          } else {
+            productosCumplenCriterio.push({
+              id: cantidadesPorId[id].stock_id,
+              cantidad: operacionCantidad,
+              producto: cantidadesPorId[id].producto,
+            });
+          }
+        });
+
+        // Verifica la variable de bandera antes de imprimir
+        if (todosProductosCumplen) {
+          //HACER EL POST
+          //SI LOS PRECIOS NO SON IGUALES/HUBO ALGUN AJUSTE
+          if (!this.preciosIguales) {
+            const { value: codigo } = await Swal.fire({
+              title:
+                'Ingrese c&oacute;digo de validaci&oacute;n para modificar precio',
+              input: 'text', //inputLabel: 'Tu codigo de validacion',
+              inputPlaceholder: 'Ingrese aqui',
+              inputAttributes: {
+                autocomplete: 'off', // Desactivar el autocompletado
+              },
+            });
+
+            if (codigo) {
+              this.sucursalService.getSucursalAll().subscribe({
+                next: (datas) => {
+                  this.datasucursalall = datas;
+                  const dataSucursal = this.datasucursalall.find(
+                    (suc: any) => suc.suc_id === this.usersucursal
+                  );
+
+                  if (codigo == dataSucursal.codigo_autorizacion) {
+                    //console.log('Codigo es correcto');
+                    //POST VENTAS
+                    this.ventasService.postVentas(ventaData).subscribe({
+                      next: (response) => {
+                        this.venta = response;
+
+                        this.form.value.listaVenta.forEach(
+                          (producto: Producto) => {
+                            // Agregamos el ID de venta obtenido al objeto producto
+                            producto.venta = this.venta;
+
+                            // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+                            this.ventasDetalleService
+                              .postVentasDetalle(producto)
+                              .subscribe({
+                                next: (response) => {
+                                  console.log(
+                                    'Entrada registrada con éxito:',
+                                    response
+                                  );
+                                },
+                                error: (errorData) => {
+                                  console.error(
+                                    'Error al enviar la solicitud POST de VENTADETALLE:',
+                                    errorData
+                                  );
+                                },
+                                complete: () => {},
+                              });
+                            //FIN DE VENTA-DETALLE
+                          }
+                        );
+                      },
+                      error: (errorData) => {
+                        console.error(
+                          'Error al enviar la solicitud POST de VENTA:',
+                          errorData
+                        );
+                      },
+                      complete: () => {
+                        //this.router.navigate(['/despacho/caja']);
+                        this.router.navigate([rutas.despacho_caja]);
+                      },
+                    });
+                  } else {
+                    Swal.fire({
+                      title: 'El codigo es incorrecto',
+                      icon: 'error',
+                      timer: 2500,
+                    });
+                  }
+                },
+                error: () => {},
+                complete: () => {},
+              });
+            } else {
+              Swal.fire('No ingres&oacute; un c&oacute;digo');
+            }
+          }
+          //NO HUBO ALGUN AJUSTE
+          else {
+            console.log('Todo es correcto');
+            //SI NO HAY ALGUN CAMBIO EN LOS PRECIOS, HACEMOS EL POST
+            this.ventasService.postVentas(ventaData).subscribe({
+              next: (response) => {
+                this.venta = response;
+
+                this.form.value.listaVenta.forEach((producto: Producto) => {
+                  // Agregamos el ID de venta obtenido al objeto producto
+                  producto.venta = this.venta;
+
+                  // Ahora, realizamos la solicitud POST para guardar cada producto individualmente
+                  this.ventasDetalleService
+                    .postVentasDetalle(producto)
+                    .subscribe({
+                      next: (response) => {
+                        console.log('Entrada registrada con éxito:', response);
+                      },
+                      error: (errorData) => {
+                        console.error(
+                          'Error al enviar la solicitud POST de VENTADETALLE:',
+                          errorData
+                        );
+                      },
+                      complete: () => {},
+                    });
+                  //FIN DE VENTA-DETALLE
+                });
+              },
+              error: (errorData) => {
+                console.error(
+                  'Error al enviar la solicitud POST de VENTA:',
+                  errorData
+                );
+              },
+              complete: () => {
+                //this.router.navigate(['/despacho/caja']);
+                this.router.navigate([rutas.despacho_caja]);
+              },
+            });
+          }
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            timerProgressBar: true, // Muestra una barra de progreso
+            showConfirmButton: false,
+            timer: 4000,
+            text: 'HAY UNO O MAS PRODUCTOS QUE NO CUENTAN CON EL STOCK',
+          });
+        }
       }
     }
   }

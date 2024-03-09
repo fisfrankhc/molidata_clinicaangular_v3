@@ -12,13 +12,6 @@ const routes: Routes = [
     path: 'nuevo',
     component: LogtransferenciasNuevoComponent,
   },
-  {
-    path: 'revisar-transferencia',
-    loadChildren: () =>
-      import('./logrevtransferencia/logrevtransferencia.module').then(
-        (m) => m.LogrevtransferenciaModule
-      ),
-  },
 ];
 
 @NgModule({

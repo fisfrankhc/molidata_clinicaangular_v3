@@ -6,17 +6,17 @@
             <div class="row">
                 <div class="col-sm-12">
                     <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a>LOG&Iacute;STICA </a></li>
+                        <li class="breadcrumb-item"><a>ALMAC&Eacute;N </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.logistica_transferencias">TRANSFERENCIAS</a>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.almacen_movimientosalmacen">MOVIMIENTOS DE
+                                ALMACEN</a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item"><a
-                                [routerLink]="ruta.logistica_transferencias_revisartransferencia">REVISAR
-                                TRANSFERENCIAS</a>
+                                [routerLink]="ruta.almacen_movimientosalmacen_salidas">SALIDAS</a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item active">Lista</li>
+                        <li class="breadcrumb-item active">Bandeja</li>
                     </ul>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                             <div class="row align-items-center">
                                 <div class="col-12 col-md-6 col-xl-7">
                                     <div class="doctor-table-blk">
-                                        <h3>CONFIRMAR TRANSFERENCIAS </h3>
+                                        <h3>MOVIMIENTOS DE SALIDA </h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
                                                 <input class="form-control" placeholder="Escribe aqui"
@@ -43,6 +43,9 @@
                                                 <a class="btn"><img src="assets/img/icons/search-normal.svg" alt=""></a>
                                             </div>
                                             <div class="add-group">
+                                                <a [routerLink]="ruta.almacen_movimientosalmacen_transferencias_nuevo"
+                                                    class="btn btn-primary add-pluss ms-2" style="width: 45px;"><img
+                                                        src="assets/img/icons/plus.svg" alt=""></a>
                                                 <a href="javascript:;" class="btn btn-primary doctor-refresh ms-2"
                                                     (click)="actualizarTransferencias()"><img
                                                         src="assets/img/icons/re-fresh.svg" alt=""></a>
@@ -103,8 +106,9 @@
                                         <th mat-sort-header="movimiento_id">#</th>
                                         <th mat-sort-header="movimiento_fecha">FECHA</th>
                                         <th mat-sort-header="nombreUsuario">USUARIO</th>
+                                        <th mat-sort-header="movimiento_tipo">TIPO</th>
                                         <th mat-sort-header="movimiento_origen">MOVIMIENTO</th>
-                                        <th mat-sort-header="nombreSucursal">SUCURSAL DESTINO.</th>
+                                        <th mat-sort-header="nombreSucursal">SUCURSAL</th>
                                         <th class="col-1"></th>
 
                                     </tr>
@@ -120,6 +124,7 @@
                                             <td>{{data.movimiento_id}}</td>
                                             <td>{{data.movimiento_fecha}}</td>
                                             <td>{{data.nombreUsuario}}</td>
+                                            <td>{{data.movimiento_tipo }}</td>
                                             <td>{{data.movimiento_origen }}</td>
                                             <td>{{data.nombreSucursal}}</td>
                                             <td class="text-end">

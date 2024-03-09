@@ -23,7 +23,7 @@ import { catchError, concatMap, map, startWith, tap } from 'rxjs/operators';
 
 import Swal from 'sweetalert2';
 import * as Notiflix from 'notiflix';
-import { Stock } from '../../../../shared/interfaces/logistica';
+import { Stock } from 'src/app/shared/interfaces/logistica';
 
 interface Producto {
   estiloRojo: boolean;
@@ -42,11 +42,11 @@ interface data {
 }
 
 @Component({
-  selector: 'app-logtransferencias-nuevo',
-  templateUrl: './logtransferencias-nuevo.component.html',
-  styleUrls: ['./logtransferencias-nuevo.component.scss'],
+  selector: 'app-transferencias-nuevo',
+  templateUrl: './transferencias-nuevo.component.html',
+  styleUrls: ['./transferencias-nuevo.component.scss'],
 })
-export class LogtransferenciasNuevoComponent implements OnInit {
+export class TransferenciasNuevoComponent implements OnInit {
   form: FormGroup = new FormGroup({}); // Declaración con valor inicial;
   usersucursal = localStorage.getItem('usersucursal');
   userid = localStorage.getItem('userid');
@@ -114,6 +114,7 @@ export class LogtransferenciasNuevoComponent implements OnInit {
     this.filteresOption();
     this.sucursalAll();
     this.stockAll();
+    this.stockProductos();
     //this.movimientosAll();
     // Agregar suscriptor para el evento valueChanges del campo nombrebproducto en caso este vacio
     this.form
@@ -148,11 +149,16 @@ export class LogtransferenciasNuevoComponent implements OnInit {
   public selectedValue!: string;
 
   datosSUC: any;
+  datosSUCU: any;
   nombreSucursal!: string;
   sucursalAll() {
     this.sucursalService.getSucursalAll().subscribe({
       next: (datosSUC: any) => {
         this.datosSUC = datosSUC;
+        //FILTRAMOS LA SUCURSAL AL CUAL PERTENECE EL USUARIO
+        this.datosSUCU = this.datosSUC.filter(
+          (sucursal: any) => sucursal.suc_id !== this.usersucursal
+        );
       },
       error: (errorData) => {},
       complete: () => {},
@@ -165,29 +171,36 @@ export class LogtransferenciasNuevoComponent implements OnInit {
       next: (dataStockResponse) => {
         this.datosSTOCK = dataStockResponse;
         console.log(this.datosSTOCK);
+        //this.stockProductos();
       },
       error: () => {},
-      complete: () => {
-        this.stockProductos();
-      },
+      complete: () => {},
     });
   }
 
+  datosSTOCK2: any;
   datoPRODUCTOSTOCK: any[] = [];
   stockProductos(): void {
-    let almacen_id_deseado = '1'; // El almacen_id que quieres filtrar
-    // Filtrar productos basados en el almacen_id
-    let productosFiltrados = this.datoPRODUCTO.filter((producto: any) => {
-      // Verificar si hay alguna entrada en datosSTOCK que coincida con el producto_id y almacen_id
-      return this.datosSTOCK.some((stock: any) => {
-        return (
-          stock.producto_id === producto.prod_id &&
-          stock.almacen_id === almacen_id_deseado
-        );
-      });
+    this.stockService.getStockAll().subscribe({
+      next: (dataStockResponse2) => {
+        this.datosSTOCK2 = dataStockResponse2;
+        let almacen_id_deseado = this.usersucursal; // El almacen_id que quieres filtrar
+        // Filtrar productos basados en el almacen_id
+        let productosFiltrados = this.datoPRODUCTO.filter((producto: any) => {
+          // Verificar si hay alguna entrada en datosSTOCK que coincida con el producto_id y almacen_id
+          return this.datosSTOCK.some((stock: any) => {
+            return (
+              stock.producto_id === producto.prod_id &&
+              stock.almacen_id === almacen_id_deseado
+            );
+          });
+        });
+        this.datoPRODUCTOSTOCK = productosFiltrados;
+        console.log(productosFiltrados);
+      },
+      error: () => {},
+      complete: () => {},
     });
-    this.datoPRODUCTOSTOCK = productosFiltrados;
-    console.log(productosFiltrados);
   }
 
   filteredOptions!:
@@ -395,19 +408,18 @@ export class LogtransferenciasNuevoComponent implements OnInit {
       if (this.form.get('listaMovimiento')?.value == '') {
         alert('No ha añadido productos');
       } else {
-        //Notiflix.Loading.circle('Guardando...');
         const dataMovimientoEgreso = {
           fecha: this.fechaFormateada,
           tipo: 'EGRESO',
           usuario: this.userid,
           //sucursal: this.usersucursal,
-          sucursal: '1',
+          sucursal: this.usersucursal,
           origen: 'TRANSFERENCIA',
           origencodigo: '',
           observaciones: '',
         };
 
-        const dataMovimientoIngreso = {
+        /* const dataMovimientoIngreso = {
           fecha: this.fechaFormateada,
           tipo: 'INGRESO',
           usuario: this.userid,
@@ -415,9 +427,9 @@ export class LogtransferenciasNuevoComponent implements OnInit {
           sucursal: this.form.get('detalleTransferencia.sucursal_origen')
             ?.value,
           origen: 'TRANSFERENCIA',
-          origencodigo: '',
+          origencodigo: this.idrptaMovimientoEgreso,
           observaciones: '',
-        };
+        }; */
 
         //console.log(dataMovimientoEgreso);
         //console.log(dataMovimientoIngreso);
@@ -432,7 +444,7 @@ export class LogtransferenciasNuevoComponent implements OnInit {
           const stockEncontrada = this.datosSTOCK.find(
             (stoc: any) =>
               stoc.producto_id === producto.idobtenido &&
-              stoc.almacen_id === '1'
+              stoc.almacen_id === this.usersucursal
           );
           if (stockEncontrada) {
             console.log(stockEncontrada, 'SE ENCONTRO EL PRODUCTO');
@@ -465,7 +477,189 @@ export class LogtransferenciasNuevoComponent implements OnInit {
         //SI NO HAY NINGUN PROBLEMA CON EL STOCK, PROCEDEMOS A REALIZAR LA TRANSFERENCIA
         else {
           console.log('TODO ES CORRECTO');
-          forkJoin([
+          Notiflix.Loading.circle('Guardando transferencia...');
+
+          this.movimientosAlmacenService
+            .postMovimientos(dataMovimientoEgreso)
+            .pipe(
+              tap((responseMovimientoEgreso) => {
+                console.log(
+                  'Registro de Egreso exitoso',
+                  responseMovimientoEgreso
+                );
+                this.idrptaMovimientoEgreso = responseMovimientoEgreso;
+              }),
+              concatMap(() =>
+                forkJoin(
+                  this.form.value.listaMovimiento.map((producto: Producto) => {
+                    const dataMovimientoEgresoDetalle = {
+                      movimiento: this.idrptaMovimientoEgreso,
+                      producto: producto.idobtenido,
+                      cantidad: producto.cantidad,
+                      medida: producto.medida,
+                      lote: '',
+                      peso: '',
+                    };
+                    return this.movimientosAlmacenDetalleService.postMovimientosDetalle(
+                      dataMovimientoEgresoDetalle
+                    );
+                  })
+                ).pipe(
+                  catchError((errorDataDetalleEgreso) => {
+                    Notiflix.Loading.remove();
+                    console.error(
+                      'Error al enviar la solicitud POST de MOVIMIENTODETALLE EGRESO:',
+                      errorDataDetalleEgreso
+                    );
+                    return of(null);
+                  })
+                )
+              )
+            )
+            .subscribe({
+              next: () => {
+                console.log('Registro de Egreso completado');
+
+                // Definir dataMovimientoIngreso después de obtener idrptaMovimientoEgreso
+                const dataMovimientoIngreso = {
+                  fecha: this.fechaFormateada,
+                  tipo: 'INGRESO',
+                  usuario: this.userid,
+                  sucursal: this.form.get(
+                    'detalleTransferencia.sucursal_origen'
+                  )?.value,
+                  origen: 'TRANSFERENCIA',
+                  origencodigo: this.idrptaMovimientoEgreso,
+                  observaciones: '',
+                };
+
+                // Continúa con la llamada para postMovimientos de ingreso
+                this.movimientosAlmacenService
+                  .postMovimientos(dataMovimientoIngreso)
+                  .pipe(
+                    tap((responseMovimientoIngreso) => {
+                      console.log(
+                        'Registro de Ingreso exitoso',
+                        responseMovimientoIngreso
+                      );
+                      this.idrptaMovimientoIngreso = responseMovimientoIngreso;
+                    }),
+                    concatMap(() =>
+                      forkJoin(
+                        // Segundo recorrido para guardar detalles de ingreso
+                        this.form.value.listaMovimiento.map(
+                          (producto: Producto) => {
+                            const dataMovimientoIngresoDetalle = {
+                              movimiento: this.idrptaMovimientoIngreso,
+                              producto: producto.idobtenido,
+                              cantidad: producto.cantidad,
+                              medida: producto.medida,
+                              lote: '',
+                              peso: '',
+                            };
+                            return this.movimientosAlmacenDetalleService.postMovimientosDetalle(
+                              dataMovimientoIngresoDetalle
+                            );
+                          }
+                        )
+                      ).pipe(
+                        catchError((errorDataDetalleIngreso) => {
+                          Notiflix.Loading.remove();
+                          console.error(
+                            'Error al enviar la solicitud POST de MOVIMIENTODETALLE INGRESO:',
+                            errorDataDetalleIngreso
+                          );
+                          return of(null);
+                        })
+                      )
+                    )
+                  )
+                  .subscribe({
+                    next: () => {
+                      console.log('Todas las operaciones completadas');
+                      Notiflix.Loading.remove();
+                      const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'bottom-end',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                          toast.onmouseenter = Swal.stopTimer;
+                          toast.onmouseleave = Swal.resumeTimer;
+                        },
+                      });
+                      Toast.fire({
+                        icon: 'success',
+                        html: '<div style="font-size: 15px; font-weight: 700">Movimiento de transferencia realizada exitosamente...</div>',
+                      });
+                      this.router.navigate([rutas.almacen_movimientosalmacen]);
+                    },
+                    error: (errorData) => {
+                      Notiflix.Loading.remove();
+                      console.error(
+                        'Error en alguna de las operaciones:',
+                        errorData
+                      );
+                    },
+                    complete: () => {},
+                  });
+              },
+              error: (errorData) => {
+                Notiflix.Loading.remove();
+                console.error('Error en alguna de las operaciones:', errorData);
+              },
+              complete: () => {},
+            });
+        }
+      }
+    } else {
+      alert('Faltan datos');
+    }
+  }
+}
+
+/* 
+forkJoin([
+            this.movimientosAlmacenService
+              .postMovimientos(dataMovimientoEgreso)
+              .pipe(
+                tap((responseMovimientoEgreso) => {
+                  console.log(
+                    'Registro de Egreso exitoso',
+                    responseMovimientoEgreso
+                  );
+                  this.idrptaMovimientoEgreso = responseMovimientoEgreso;
+                }),
+                concatMap(() =>
+                  forkJoin(
+                    this.form.value.listaMovimiento.map(
+                      (producto: Producto) => {
+                        const dataMovimientoEgresoDetalle = {
+                          movimiento: this.idrptaMovimientoEgreso,
+                          producto: producto.idobtenido,
+                          cantidad: producto.cantidad,
+                          medida: producto.medida,
+                          lote: '',
+                          peso: '',
+                        };
+                        return this.movimientosAlmacenDetalleService.postMovimientosDetalle(
+                          dataMovimientoEgresoDetalle
+                        );
+                      }
+                    )
+                  ).pipe(
+                    catchError((errorDataDetalleEgreso) => {
+                      Notiflix.Loading.remove();
+                      console.error(
+                        'Error al enviar la solicitud POST de MOVIMIENTODETALLE EGRESO:',
+                        errorDataDetalleEgreso
+                      );
+                      return of(null);
+                    })
+                  )
+                )
+            ),
             this.movimientosAlmacenService
               .postMovimientos(dataMovimientoIngreso)
               .pipe(
@@ -496,6 +690,7 @@ export class LogtransferenciasNuevoComponent implements OnInit {
                     )
                   ).pipe(
                     catchError((errorDataDetalleIngreso) => {
+                      Notiflix.Loading.remove();
                       console.error(
                         'Error al enviar la solicitud POST de MOVIMIENTODETALLE INGRESO:',
                         errorDataDetalleIngreso
@@ -505,48 +700,10 @@ export class LogtransferenciasNuevoComponent implements OnInit {
                   )
                 )
               ),
-            this.movimientosAlmacenService
-              .postMovimientos(dataMovimientoEgreso)
-              .pipe(
-                tap((responseMovimientoEgreso) => {
-                  console.log(
-                    'Registro de Egreso exitoso',
-                    responseMovimientoEgreso
-                  );
-                  this.idrptaMovimientoEgreso = responseMovimientoEgreso;
-                }),
-                concatMap(() =>
-                  forkJoin(
-                    this.form.value.listaMovimiento.map(
-                      (producto: Producto) => {
-                        const dataMovimientoEgresoDetalle = {
-                          movimiento: this.idrptaMovimientoEgreso,
-                          producto: producto.idobtenido,
-                          cantidad: producto.cantidad,
-                          medida: producto.medida,
-                          lote: '',
-                          peso: '',
-                        };
-                        return this.movimientosAlmacenDetalleService.postMovimientosDetalle(
-                          dataMovimientoEgresoDetalle
-                        );
-                      }
-                    )
-                  ).pipe(
-                    catchError((errorDataDetalleEgreso) => {
-                      console.error(
-                        'Error al enviar la solicitud POST de MOVIMIENTODETALLE EGRESO:',
-                        errorDataDetalleEgreso
-                      );
-                      return of(null);
-                    })
-                  )
-                )
-              ),
           ]).subscribe({
             next: () => {
               console.log('Todas las operaciones completadas');
-
+              
               Notiflix.Loading.remove();
               const Toast = Swal.mixin({
                 toast: true,
@@ -566,14 +723,10 @@ export class LogtransferenciasNuevoComponent implements OnInit {
               this.router.navigate([rutas.logistica_transferencias]);
             },
             error: (errorData) => {
+              Notiflix.Loading.remove();
               console.error('Error en alguna de las operaciones:', errorData);
             },
             complete: () => {},
           });
-        }
-      }
-    } else {
-      alert('Faltan datos');
-    }
-  }
-}
+
+*/

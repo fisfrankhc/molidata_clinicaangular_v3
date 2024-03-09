@@ -75,10 +75,6 @@ export class rutas {
     return this.baseUrl + '/logistica/transferencias/nuevo';
   }
 
-  public static get logistica_transferencias_revisartransferencia(): string {
-    return this.baseUrl + '/logistica/transferencias/revisar-transferencia';
-  }
-
   public static get despacho_venta(): string {
     return this.baseUrl + '/despacho/venta';
   }
@@ -130,11 +126,18 @@ export class rutas {
     return this.baseUrl + '/almacen/movimientos-almacen/nuevo';
   }
 
-  public static get almacen_transferencias(): string {
-    return this.baseUrl + '/almacen/transferencias';
+  public static get almacen_movimientosalmacen_transferencias(): string {
+    return this.baseUrl + '/almacen/movimientos-almacen/transferencias';
   }
-  public static get almacen_transferencias_nuevo(): string {
-    return this.baseUrl + '/almacen/transferencias/nuevo';
+  public static get almacen_movimientosalmacen_transferencias_nuevo(): string {
+    return this.baseUrl + '/almacen/movimientos-almacen/transferencias/nuevo';
+  }
+
+  public static get almacen_movimientosalmacen_salidas(): string {
+    return this.baseUrl + '/almacen/movimientos-almacen/salidas';
+  }
+  public static get almacen_movimientosalmacen_salidas_nuevo(): string {
+    return this.baseUrl + '/almacen/movimientos-almacen/salidas/nuevo';
   }
 
   public static get almacen_stocks(): string {

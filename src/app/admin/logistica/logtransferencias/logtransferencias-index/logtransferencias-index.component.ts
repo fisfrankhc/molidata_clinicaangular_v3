@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
-import {
-  pageSelection,
-  MovimientosCentral,
-} from 'src/app/shared/interfaces/almacen';
+import { pageSelection, Movimientos } from 'src/app/shared/interfaces/almacen';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
 import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
@@ -24,10 +21,10 @@ import { DatePipe } from '@angular/common';
 export class LogtransferenciasIndexComponent implements OnInit {
   public ruta = rutas;
 
-  datosTRANSFERENCIA: MovimientosCentral[] = [];
+  datosTRANSFERENCIA: Movimientos[] = [];
 
-  public trasnferenciasList: Array<MovimientosCentral> = [];
-  dataSource!: MatTableDataSource<MovimientosCentral>;
+  public trasnferenciasList: Array<Movimientos> = [];
+  dataSource!: MatTableDataSource<Movimientos>;
 
   public showFilter = false;
   public searchDataValue: string = '';
@@ -136,7 +133,7 @@ export class LogtransferenciasIndexComponent implements OnInit {
 
         // Mapea los nombres de datos de ventas
         this.datosTRANSFERENCIA = this.datosTRANSFERENCIA.map(
-          (movimiento: MovimientosCentral) => {
+          (movimiento: Movimientos) => {
             //PARA PROVEEDOR
             const usuario = this.datosUSUARIOS.find(
               (user: any) => user.user_id === movimiento.usuario_id
@@ -170,7 +167,7 @@ export class LogtransferenciasIndexComponent implements OnInit {
         console.error(errorData);
       },
       complete: () => {
-        this.dataSource = new MatTableDataSource<MovimientosCentral>(
+        this.dataSource = new MatTableDataSource<Movimientos>(
           this.trasnferenciasList
         );
         this.calculateTotalPages(this.totalFilteredData, this.pageSize);
@@ -180,7 +177,7 @@ export class LogtransferenciasIndexComponent implements OnInit {
 
   totalFilteredData: any;
   private paginateData(): void {
-    this.datosTRANSFERENCIA.map((res: MovimientosCentral, index: number) => {
+    this.datosTRANSFERENCIA.map((res: Movimientos, index: number) => {
       const serialNumber = index + 1;
       if (index >= this.skip && serialNumber <= this.limit) {
         this.trasnferenciasList.push(res);
@@ -194,7 +191,7 @@ export class LogtransferenciasIndexComponent implements OnInit {
     this.searchDataValue = value; // Almacena el valor de búsqueda
     // Realiza el filtro en todos los datos (this.datosTRANSFERENCIA)
     const filteredData = this.datosTRANSFERENCIA.filter(
-      (movimiento: MovimientosCentral) => {
+      (movimiento: Movimientos) => {
         return (
           (movimiento.movimiento_id &&
             movimiento.movimiento_id
@@ -208,6 +205,10 @@ export class LogtransferenciasIndexComponent implements OnInit {
               .includes(value.toLowerCase())) ||
           (movimiento.nombreUsuario &&
             movimiento.nombreUsuario
+              .toLowerCase()
+              .includes(value.toLowerCase())) ||
+          (movimiento.movimiento_tipo &&
+            movimiento.movimiento_tipo
               .toLowerCase()
               .includes(value.toLowerCase())) ||
           (movimiento.nombreSucursal &&
@@ -231,7 +232,7 @@ export class LogtransferenciasIndexComponent implements OnInit {
       this.calculateTotalPages(filteredData.length, this.pageSize);
     }
     // Actualiza la vista
-    this.dataSource = new MatTableDataSource<MovimientosCentral>(
+    this.dataSource = new MatTableDataSource<Movimientos>(
       this.trasnferenciasList
     );
   }
@@ -301,7 +302,7 @@ export class LogtransferenciasIndexComponent implements OnInit {
     ) {
       this.transferenciasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
     }
-    this.dataSource = new MatTableDataSource<MovimientosCentral>(
+    this.dataSource = new MatTableDataSource<Movimientos>(
       this.trasnferenciasList
     ); // Agregar esta línea
   }

@@ -9,6 +9,8 @@ import { ProveedoresService } from 'src/app/shared/services/logistica/proveedor/
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 
 import * as ExcelJS from 'exceljs';
+import * as Notiflix from 'notiflix';
+import Swal from 'sweetalert2';
 
 import {
   FormBuilder,
@@ -111,6 +113,7 @@ export class ComprasIndexComponent implements OnInit {
   resultadoMostrar: any;
   datosCOMPRA: Compra[] = [];
   private comprasAll(fechaInicio: string, fechaFin: string): void {
+    Notiflix.Loading.standard('Loading...');
     this.comprasList = [];
     this.serialNumberArray = [];
 
@@ -155,7 +158,7 @@ export class ComprasIndexComponent implements OnInit {
 
           return compra;
         });
-
+        Notiflix.Loading.remove();
         // Aplicar filtro solo si searchDataValue está definido
         if (this.searchDataValue) {
           this.searchData(this.searchDataValue);
@@ -378,6 +381,7 @@ export class ComprasIndexComponent implements OnInit {
   dataReporte: any;
   reporteDataDetalleReporte: any;
   exportReporteProductosExcel(): void {
+    Notiflix.Loading.pulse('Generando reporte de compra...');
     const fechaInicio = this.form.value.fechacomprainicio;
     const fechaFinal = this.form.value.fechacomprafin;
     if (fechaInicio && fechaFinal) {
@@ -405,7 +409,10 @@ export class ComprasIndexComponent implements OnInit {
             responseDataDetalleReporte
           );
         },
-        error: () => {},
+        error: (errorData) => {
+          Notiflix.Loading.remove();
+          console.log('ALGO SALIO MAL EN EL REPORTE', errorData);
+        },
         complete: () => {
           //EXCEL
           const workbook = new ExcelJS.Workbook();
@@ -486,17 +493,23 @@ export class ComprasIndexComponent implements OnInit {
 
           // Agrega encabezados con estilo y asigna anchos
           const headers = [
-            { header: 'CODIGO DE PRODUCTO', key: 'codigoProducto' },
-            { header: 'PRODUCTO NOMBRE', key: 'nombreProducto' },
-            { header: 'DESCRIPCION PRODUCTO', key: 'descripcionProducto' },
-            { header: 'CODIGO DE VENTA', key: 'venta_id' },
-            { header: 'CLIENTE NOMBRE', key: 'nombreCliente' },
-            { header: 'FECHA DE VENTA', key: 'venta_fecha' },
-            { header: 'CANTIDAD DE VENTA', key: 'cantidad_venta' },
-            { header: 'PRECIO DE VENTA', key: 'precio_venta' },
-            { header: 'USUARIO VENTA', key: 'nombreUsuarioVenta' },
-            { header: 'TIPO DE PAGO', key: 'tipoPago' },
-            { header: 'ESTADO DE VENTA', key: 'venta_proceso' },
+            { header: 'ID COMPRA', key: 'compra_id' },
+            { header: 'PROVEEDOR', key: 'razon_social' },
+            { header: 'FECHA COMPRA', key: 'compra_fecha' },
+            { header: 'MONEDA', key: ' compra_moneda' },
+            { header: 'TIPO DE PAGO', key: 'tipo_pago' },
+            { header: 'PROCESO', key: 'proceso' },
+            { header: 'USUARIO VENTA', key: 'user_nombre' },
+            { header: 'CODIGO DE PRODUCTO', key: 'prod_codigo' },
+            { header: 'PRODUCTO NOMBRE', key: 'prod_nombre' },
+            { header: 'DESCRIPCION PRODUCTO', key: 'prod_descripcion' },
+            { header: 'CANTIDAD', key: 'cantidad' },
+            { header: 'MEDIDA', key: 'med_nombre' },
+            { header: 'PRECIO COMPRA', key: 'precio_compra' },
+            { header: 'TIPO COMPROBANTE', key: 'comprobante_tipo' },
+            { header: 'SERIE DE COMPROBANTE', key: 'comprobante_serie' },
+            { header: 'NRO DE SERIE', key: 'comprobante_numero' },
+            { header: 'DESTINO', key: 'suc_nombre' },
           ];
 
           // Ajusta la altura de la fila de encabezados
@@ -533,23 +546,49 @@ export class ComprasIndexComponent implements OnInit {
           this.reporteDataDetalleReporte.forEach((data: any) => {
             // Redondea el valor de data.montotal a 2 decimales
             //const precio_venta = data.precio_venta.toFixed(2);
-
+            if (
+              data.comprobante_tipo === '' ||
+              data.comprobante_tipo === null
+            ) {
+              data.comprobante_tipo = '-';
+            }
+            if (
+              data.comprobante_serie === '' ||
+              data.comprobante_serie === null
+            ) {
+              data.comprobante_serie = '-';
+            }
+            if (
+              data.comprobante_numero === '' ||
+              data.comprobante_numero === null
+            ) {
+              data.comprobante_numero = '-';
+            }
+            if (data.suc_nombre === '' || data.suc_nombre === null) {
+              data.suc_nombre = '-';
+            }
             const row = [
-              data.codigoProducto,
-              data.nombreProducto,
-              data.descripcionProducto,
-              parseInt(data.venta_id),
-              data.nombreCliente,
-              data.venta_fecha,
-              parseInt(data.cantidad_venta),
-              parseFloat(data.precio_venta),
-              data.nombreUsuarioVenta,
-              data.tipoPago,
-              data.venta_proceso,
+              parseInt(data.compra_id),
+              data.razon_social,
+              data.compra_fecha,
+              data.compra_moneda,
+              data.tipo_pago,
+              data.proceso,
+              data.user_nombre,
+              data.prod_codigo,
+              data.prod_nombre,
+              data.prod_descripcion,
+              parseInt(data.cantidad),
+              data.med_nombre,
+              parseFloat(data.precio_compra),
+              data.comprobante_tipo,
+              data.comprobante_serie,
+              data.comprobante_numero,
+              data.suc_nombre,
             ];
 
             const excelRow = worksheet.addRow(row);
-            excelRow.height = 20; // Altura del header
+            excelRow.height = 28.5; // Altura del header
 
             // Configura bordes para las celdas en la fila de datos
             excelRow.eachCell((cell) => {
@@ -565,68 +604,101 @@ export class ComprasIndexComponent implements OnInit {
             excelRow.getCell(1).alignment = {
               vertical: 'middle',
               horizontal: 'center',
-            }; // CODIGO DE PRODUCTO
+            }; // ID COMPRA
             excelRow.getCell(2).alignment = {
               vertical: 'middle',
-              horizontal: 'center',
-            }; // PRODUCTO NOMBRE
+              horizontal: 'justify',
+            }; // PROVEEDOR
             excelRow.getCell(3).alignment = {
               vertical: 'middle',
-              horizontal: 'justify',
-            }; // DESCRIPCION DE PRPDUCTO
+              horizontal: 'center',
+            }; // FECHA COMPRA
             excelRow.getCell(4).alignment = {
               vertical: 'middle',
               horizontal: 'center',
-            }; // CODIGO DE VENTA
+            }; // MONEDA
             excelRow.getCell(5).alignment = {
               vertical: 'middle',
               horizontal: 'center',
-            }; // CLIENTE NOMBRE
+            }; // TIPO DE PAGO
             excelRow.getCell(6).alignment = {
               vertical: 'middle',
               horizontal: 'center',
-            }; // FECHA DE VENTA
+            }; // PROCESO
             excelRow.getCell(7).alignment = {
               vertical: 'middle',
               horizontal: 'center',
-            }; // CANTIDAD DE VENTA
+            }; // USUARIO VENTA
             excelRow.getCell(8).alignment = {
               vertical: 'middle',
-              horizontal: 'right',
+              horizontal: 'center',
               wrapText: true, // Habilitar ajuste de texto
-              indent: 1, // Ajusta el valor según sea necesario
-            }; // PRECIO DE VENTA
+            }; // CODIGO DE PRODUCTO
             excelRow.getCell(9).alignment = {
               vertical: 'middle',
               horizontal: 'center',
-            }; // USUARIO DE VENTA
+              wrapText: true, // Habilitar ajuste de texto
+            }; // PRODUCTO NOMBRE
             excelRow.getCell(10).alignment = {
               vertical: 'middle',
               horizontal: 'center',
-            }; // TIPO DE PAGO
+              wrapText: true, // Habilitar ajuste de texto
+            }; // DESCRIPCION PRODUCTO
             excelRow.getCell(11).alignment = {
               vertical: 'middle',
+              horizontal: 'right',
+              indent: 1, // Ajusta el valor según sea necesario (sangria a la derecha)
+            }; // CANTIDAD
+            excelRow.getCell(12).alignment = {
+              vertical: 'middle',
               horizontal: 'center',
-            }; // ESTADO DE VENTA
+            }; // MEDIDA
+            excelRow.getCell(13).alignment = {
+              vertical: 'middle',
+              horizontal: 'right',
+              indent: 1, // Ajusta el valor según sea necesario (sangria a la derecha)
+            }; // PRECIO COMPRA
+            excelRow.getCell(14).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // TIPO COMPROBANTE
+            excelRow.getCell(15).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // SERIE DE COMPROBANTE
+            excelRow.getCell(16).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // NRO DE SERIE
+            excelRow.getCell(17).alignment = {
+              vertical: 'middle',
+              horizontal: 'center',
+            }; // DESTINO
             // Configura el formato de la celda para la columna del monto
-            const montoCell1 = excelRow.getCell(7);
+            const montoCell1 = excelRow.getCell(11);
             montoCell1.numFmt = '#,##0'; // Formato de número
-            const montoCell2 = excelRow.getCell(8);
+            const montoCell2 = excelRow.getCell(13);
             montoCell2.numFmt = '#,##0.00'; // Formato de número con 2 decimales
           });
 
           // Ajustar el ancho de las columnas A, B y C
-          worksheet.getColumn('A').width = 15; // Ancho de la columna A
+          worksheet.getColumn('A').width = 11; // Ancho de la columna A
           worksheet.getColumn('B').width = 40; // Ancho de la columna B
-          worksheet.getColumn('C').width = 45; // Ancho de la columna C
-          worksheet.getColumn('D').width = 20; // Ancho de la columna D
-          worksheet.getColumn('E').width = 40; // Ancho de la columna E
+          worksheet.getColumn('C').width = 18; // Ancho de la columna C
+          worksheet.getColumn('D').width = 15; // Ancho de la columna D
+          worksheet.getColumn('E').width = 18; // Ancho de la columna E
           worksheet.getColumn('F').width = 20; // Ancho de la columna F
-          worksheet.getColumn('G').width = 17; // Ancho de la columna G
+          worksheet.getColumn('G').width = 18; // Ancho de la columna G
           worksheet.getColumn('H').width = 15; // Ancho de la columna H
-          worksheet.getColumn('I').width = 15; // Ancho de la columna I
-          worksheet.getColumn('J').width = 25; // Ancho de la columna J
+          worksheet.getColumn('I').width = 35; // Ancho de la columna I
+          worksheet.getColumn('J').width = 45; // Ancho de la columna J
           worksheet.getColumn('K').width = 15; // Ancho de la columna K
+          worksheet.getColumn('L').width = 16; // Ancho de la columna L
+          worksheet.getColumn('M').width = 14; // Ancho de la columna M
+          worksheet.getColumn('N').width = 16; // Ancho de la columna N
+          worksheet.getColumn('O').width = 16; // AOcho de la columna N
+          worksheet.getColumn('P').width = 13; // AnchP de la columna O
+          worksheet.getColumn('Q').width = 20; // Ancho de la columna K
 
           // Descargar el archivo Excel
           workbook.xlsx.writeBuffer().then((data: ArrayBuffer) => {
@@ -642,9 +714,12 @@ export class ComprasIndexComponent implements OnInit {
               ' al ' +
               this.dataReporte.fechaFinal +
               '.xlsx';
-            //a.download = 'Reporte de Ventas Pagadas de la Sucursal.xlsx';
             a.click();
             window.URL.revokeObjectURL(url);
+            Notiflix.Loading.remove();
+            Notiflix.Notify.success('Descargado con &eacute;xito.', {
+              position: 'right-bottom',
+            });
           });
         },
       });

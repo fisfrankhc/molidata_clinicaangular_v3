@@ -7,20 +7,20 @@ import { ComprasVerComponent } from './compras-ver/compras-ver.component';
 const routes: Routes = [
   {
     path: '',
-    component: ComprasIndexComponent
+    component: ComprasIndexComponent,
   },
   {
     path: 'nuevo',
-    component: ComprasNuevoComponent
+    component: ComprasNuevoComponent,
   },
   {
     path: 'ver/:compra_id',
-    component: ComprasVerComponent
-  }
+    component: ComprasVerComponent,
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class ComprasRoutingModule { }
+export class ComprasRoutingModule {}

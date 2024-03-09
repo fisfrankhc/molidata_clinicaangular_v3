@@ -112,21 +112,23 @@ export class CajaVerComponent implements OnInit {
         this.datoStock = data;
         //console.log(data);
         // Mapea los nombres de datos de ventas
-        this.datoStock = this.datoStock.map((stockValor: Stock) => {
-          //PARA PROVEEDOR
-          const datoStocks = this.datosPRO.find(
-            (prod: any) =>
-              stockValor.producto_id === prod.prod_id &&
-              stockValor.almacen_id === this.usersucursal &&
-              stockValor.unidad_medida === prod.med_id
-          );
-          if (datoStocks) {
-            datoStocks.cantidadStockSucursal = stockValor.cantidad;
-            datoStocks.almacen_id = stockValor.almacen_id;
-            datoStocks.stock_id = stockValor.stock_id;
-          }
-          return datoStocks;
-        });
+        this.datoStock = this.datoStock
+          .map((stockValor: Stock) => {
+            //PARA PROVEEDOR
+            const datoStocks = this.datosPRO.find(
+              (prod: any) =>
+                stockValor.producto_id === prod.prod_id &&
+                stockValor.almacen_id === this.usersucursal &&
+                stockValor.unidad_medida === prod.med_id
+            );
+            if (datoStocks) {
+              datoStocks.cantidadStockSucursal = stockValor.cantidad;
+              datoStocks.almacen_id = stockValor.almacen_id;
+              datoStocks.stock_id = stockValor.stock_id;
+            }
+            return datoStocks ? datoStocks : null; // Devuelve null si datoStocks es undefined
+          })
+          .filter((datoStock) => datoStock !== null); // Filtra los valores null (es decir, los que eran
         //console.log(this.datoStock);
       },
       error: (_erroData) => {},
@@ -276,6 +278,7 @@ export class CajaVerComponent implements OnInit {
         const datosFind = this.datoStock.find(
           (prod: any) => prod.prod_id === cantidadesPorId[id].producto
         );
+        console.log();
         const operacionCantidad = parseFloat(
           (
             datosFind.cantidadStockSucursal - cantidadesPorId[id].cantidad

@@ -8,7 +8,12 @@
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a>ALMAC&Eacute;N </a></li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
-                        <li class="breadcrumb-item"><a [routerLink]="ruta.almacen_transferencias">TRANFERENCIAS </a>
+                        <li class="breadcrumb-item"><a [routerLink]="ruta.almacen_movimientosalmacen">MOVIMIENTOS DE
+                                ALMACEN</a>
+                        </li>
+                        <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
+                        <li class="breadcrumb-item"><a
+                                [routerLink]="ruta.almacen_movimientosalmacen_transferencias">TRANSFERENCIAS</a>
                         </li>
                         <li class="breadcrumb-item"><i class="feather icon-chevron-right"></i></li>
                         <li class="breadcrumb-item active">Nueva Transferencia</li>
@@ -32,17 +37,12 @@
                                 </div>
                                 <div formGroupName="detalleTransferencia">
                                     <div class="row">
-                                        <input type="hidden" formControlName="idsucursal_origen">
                                         <div class="col-12 col-md-6 col-xl-4">
                                             <div class="form-group local-forms">
                                                 <label>SUCURSAL: </label>
-                                                <!-- <input class="form-control" formControlName="sucursal_origen"
-                                                    style="background-color: #ffffff; border: 0;" type="text"
-                                                    [value]="nombreSucursal" readonly> -->
-                                                <mat-select [(ngModel)]="selectedValue"
-                                                    formControlName="sucursal_origen" class="form-control select"
-                                                    placeholder="Seleccione sucursal">
-                                                    <mat-option *ngFor="let data of datosSUC" [value]="data.suc_id">
+                                                <mat-select formControlName="sucursal_origen"
+                                                    class="form-control select" placeholder="Seleccione sucursal">
+                                                    <mat-option *ngFor="let data of datosSUCU" [value]="data.suc_id">
                                                         {{data.suc_nombre}}
                                                     </mat-option>
                                                 </mat-select>
@@ -160,6 +160,7 @@
                                                 </td>
                                                 <td style="max-width: 100px;">
                                                     <input type="text" class="form-control" [value]="producto.cantidad"
+                                                        [class.estilo-rojo]="producto.estiloRojo"
                                                         style="text-align: center; background-color: var(--bs-secondary-bg);"
                                                         readonly>
                                                 </td>
@@ -203,16 +204,15 @@
                                      -->
                                     <div class="upload-sign">
                                         <div class="form-group float-end mb-0">
-                                            <button class="btn btn-primary" type="submit"
-                                                [disabled]="form.get('detalleTransferencia')?.invalid"
-                                                style="margin: 5px;">REGISTRAR TRANSFERENCIA</button>
+                                            <button class="btn btn-primary" type="submit" style="margin: 5px;"
+                                                [disabled]="this.form.get('detalleTransferencia')?.invalid">REALIZAR
+                                                TRANSFERENCIA</button>
                                             <a class="btn btn-light cancel-form"
-                                                [routerLink]="ruta.almacen_transferencias">Cancelar</a>
+                                                [routerLink]="ruta.logistica_transferencias">Cancelar</a>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </form>
                     </div>
                 </div>

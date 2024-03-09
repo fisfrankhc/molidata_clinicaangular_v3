@@ -10,7 +10,19 @@ const routes: Routes = [
   },
   {
     path: 'nuevo',
-    component: MovimientosAlmacenNuevoComponent
+    component: MovimientosAlmacenNuevoComponent,
+  },
+  {
+    path: 'transferencias',
+    loadChildren: () =>
+      import('./transferencias/transferencias.module').then(
+        (m) => m.TransferenciasModule
+      ),
+  },
+  {
+    path: 'salidas',
+    loadChildren: () =>
+      import('./salidas/salidas.module').then((m) => m.SalidasModule),
   },
 ];
 

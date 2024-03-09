@@ -21,7 +21,7 @@
                 <div class="card invoices-add-card">
                     <div class="card-body">
                         <form class="invoices-form" [formGroup]="form">
-                            <div class="invoices-main-form" style="margin-bottom: 8px; padding-bottom: 0px;">
+                            <div class="invoices-main-form" style="margin-bottom: 20px; padding-bottom: 0px;">
                                 <div formGroupName="proveedorDetalle">
                                     <div class="row">
                                         <div class="col-12">
@@ -96,6 +96,52 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="invoices-main-form" style="padding-bottom: 0px;margin-bottom: 20px;">
+                                <div formGroupName="comprobanteDetalle">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms">
+                                                <label>Tipo de Comprobante: <span class="login-danger">*</span></label>
+                                                <mat-select class="form-control select"
+                                                    placeholder="Seleccione un opcion"
+                                                    formControlName="comprobante_tipo">
+                                                    <mat-option *ngFor="let data of comprobanteTipo"
+                                                        [value]="data.value">
+                                                        {{data.value}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms">
+                                                <label>N&uacute;mero de serie:
+                                                    <span class="login-danger">*</span></label>
+                                                <input class="form-control" type="text"
+                                                    formControlName="comprobante_serie" style="text-align: center;">
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms">
+                                                <label>N&uacute;mero comprobante:
+                                                    <span class="login-danger">*</span></label>
+                                                <input class="form-control" type="number"
+                                                    formControlName="comprobante_numero" style="text-align: center;">
+                                            </div>
+                                        </div>
+                                        <!-- <div class="form-group local-forms">
+                                                                        <label style="position: initial;">Sucursal de destino: <span
+                                                                                class="login-danger">*</span></label>
+                                                                        <mat-select class="form-control select" placeholder="Seleccione una opcion"
+                                                                            formControlName="suc_destino">
+                                                                            <mat-option *ngFor="let data of datoSUC" [value]="data.suc_id">
+                                                                                {{data.suc_nombre}}
+                                                                            </mat-option>
+                                                                        </mat-select>
+                                                                    </div> -->
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-12 col-sm-12" formGroupName="productoBuscado">
                                 <div class="table-responsive">
                                     <table class="table border-0 custom-table invoices-table">

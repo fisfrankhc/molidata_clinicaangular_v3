@@ -16,14 +16,15 @@ import { DatePipe } from '@angular/common';
 import * as Notiflix from 'notiflix';
 
 @Component({
-  selector: 'app-logrevtransferencia-index',
-  templateUrl: './logrevtransferencia-index.component.html',
-  styleUrls: ['./logrevtransferencia-index.component.scss'],
+  selector: 'app-transferencias-index',
+  templateUrl: './transferencias-index.component.html',
+  styleUrls: ['./transferencias-index.component.scss'],
 })
-export class LogrevtransferenciaIndexComponent implements OnInit {
+export class TransferenciasIndexComponent implements OnInit {
   public ruta = rutas;
 
   datosTRANSFERENCIA: Movimientos[] = [];
+  usersucursal: any = localStorage.getItem('usersucursal');
 
   public trasnferenciasList: Array<Movimientos> = [];
   dataSource!: MatTableDataSource<Movimientos>;
@@ -125,12 +126,13 @@ export class LogrevtransferenciaIndexComponent implements OnInit {
         const fechaInicioConHora = fechaInicioE + ' 00:00:00';
         const fechaFinConHora = fechaFinE + ' 23:59:59';
         this.datosTRANSFERENCIAS = this.datosTRANSFERENCIA.filter(
-          (vent: any) =>
-            vent.movimiento_fecha >= fechaInicioConHora &&
-            vent.movimiento_fecha <= fechaFinConHora &&
-            vent.movimiento_origen == 'TRANSFERENCIA' &&
-            vent.movimiento_tipo == 'INGRESO' &&
-            vent.movimiento_observaciones == ''
+          (trans: any) =>
+            trans.movimiento_fecha >= fechaInicioConHora &&
+            trans.movimiento_fecha <= fechaFinConHora &&
+            trans.movimiento_origen == 'TRANSFERENCIA' &&
+            trans.movimiento_tipo == 'INGRESO' &&
+            trans.movimiento_observaciones == '' &&
+            trans.sucursal_id === this.usersucursal
         );
         Notiflix.Loading.remove();
         //console.log(this.datosTRANSFERENCIAS);

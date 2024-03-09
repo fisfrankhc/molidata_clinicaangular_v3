@@ -25,6 +25,7 @@ import { map, startWith } from 'rxjs/operators';
 
 import * as Notiflix from 'notiflix';
 import Swal from 'sweetalert2';
+import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 
 interface Producto {
   idobtenido: string;
@@ -62,7 +63,8 @@ export class ComprasNuevoComponent implements OnInit {
     private generalService: GeneralService,
     private stockCentralService: StockCentralService,
     private datePipe: DatePipe,
-    private stockService: StockService
+    private stockService: StockService,
+    private sucursalService: SucursalService
   ) {}
 
   public ruta = rutas;
@@ -81,6 +83,12 @@ export class ComprasNuevoComponent implements OnInit {
         tipo_pago: ['', Validators.required],
         idempresa: ['', Validators.required],
         empresa: ['', Validators.required],
+      }),
+      comprobanteDetalle: this.fb.group({
+        comprobante_tipo: ['', Validators.required],
+        comprobante_serie: ['', Validators.required],
+        comprobante_numero: ['', Validators.required],
+        //suc_destino: ['', Validators.required],
       }),
       productoBuscado: this.fb.group({
         idbuscado: [''],
@@ -108,6 +116,7 @@ export class ComprasNuevoComponent implements OnInit {
     this.medidasAll();
     this.filteresOption();
     this.empresaAll();
+    this.sucursalAll();
   }
 
   datosMED: any;
@@ -120,6 +129,18 @@ export class ComprasNuevoComponent implements OnInit {
       complete: () => {},
     });
   }
+
+  datoSUC: any[] = [];
+  sucursalAll(): void {
+    this.sucursalService.getSucursalAll().subscribe({
+      next: (datoSUC: any) => {
+        this.datoSUC = datoSUC;
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
+  comprobanteTipo: data[] = [{ value: 'BOLETA' }, { value: 'FACTURA' }];
 
   filteredOptions!:
     | Observable<{ id: string; nombre: string; descripcion: string }[]>
@@ -331,222 +352,513 @@ export class ComprasNuevoComponent implements OnInit {
       destino: '',
     };
     if (this.form.valid) {
-      this.comprasService.postCompras(compraData).subscribe({
-        next: (response) => {
-          this.compra = response;
+      if (this.form.get('listaCompra')?.value == '') {
+        alert('No ha añadido productos');
+      } else {
+        Notiflix.Loading.pulse('Guardando la compra para almacen central...');
+        this.comprasService.postCompras(compraData).subscribe({
+          next: (response) => {
+            this.compra = response;
 
-          this.form.value.listaCompra.forEach((producto: Producto) => {
-            producto.compra = this.compra;
+            this.form.value.listaCompra.forEach((producto: Producto) => {
+              producto.compra = this.compra;
 
-            this.comprasDetalleService.postComprasDetalle(producto).subscribe({
-              next: (response) => {
-                console.log('Entrada registrada con éxito:', response);
-              },
-              error: (errorData) => {
-                console.error(
-                  'Error al enviar la solicitud POST de COMPRADETALLE:',
-                  errorData
-                );
-              },
-              complete: () => {},
+              this.comprasDetalleService
+                .postComprasDetalle(producto)
+                .subscribe({
+                  next: (response) => {
+                    console.log('Entrada registrada con éxito:', response);
+                  },
+                  error: (errorData) => {
+                    console.error(
+                      'Error al enviar la solicitud POST de COMPRADETALLE:',
+                      errorData
+                    );
+                  },
+                  complete: () => {},
+                });
             });
-          });
-        },
-        error: (errorData) => {
-          console.error(
-            'Error al enviar la solicitud POST de COMPRA:',
-            errorData
-          );
-        },
-        complete: () => {
-          //this.router.navigate(['/logistica/compra']);
-          this.router.navigate([rutas.logistica_compra]);
-        },
-      });
+          },
+          error: (errorData) => {
+            Notiflix.Loading.remove();
+            console.error(
+              'Error al enviar la solicitud POST de COMPRA:',
+              errorData
+            );
+          },
+          complete: () => {
+            Notiflix.Loading.remove();
+            //this.router.navigate(['/logistica/compra']);
+            this.router.navigate([rutas.logistica_compra]);
+            const Toast = Swal.mixin({
+              toast: true,
+              position: 'bottom-end',
+              showConfirmButton: false,
+              timer: 2500,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+              },
+            });
+            Toast.fire({
+              icon: 'success',
+              //title: 'Stock minimo guardado',
+              html: '<div style="font-size: 15px; font-weight: 700">Cotizacion registrada exitosamente</div>',
+            });
+          },
+        });
+      }
     }
   }
   //10416820959
   dataFindStock: any;
   ConfirmarCompraClick() {
-    const compraData = {
-      proveedor: this.form.value.proveedorDetalle['id'],
-      fecha: this.fechaFormateada,
-      moneda: this.form.value.compraDetalle['compra_moneda'],
-      empresa: this.form.value.compraDetalle['idempresa'],
-      pago: this.form.value.compraDetalle['tipo_pago'],
-      usuario: this.userid,
-      proceso: 'CONFIRMADO',
-      comprobante: '',
-      seriecomprobante: '',
-      numerocomprobante: '',
-      destino: '',
-    };
     if (this.form.valid) {
-      Notiflix.Loading.pulse('Guardando la compra...');
-      //HACEMOS EL POST DE COMPRAS
-      this.comprasService.postCompras(compraData).subscribe({
-        next: (response) => {
-          this.compra = response;
-          console.log('Compra registrada con éxito:', this.compra);
-          this.form.value.listaCompra.forEach((producto: Producto) => {
-            producto.compra = this.compra;
-
-            //GUARDAMOS INFORMACION EN COMPRA_DETALLE
-            this.comprasDetalleService.postComprasDetalle(producto).subscribe({
-              next: (response) => {
-                console.log('Entrada registrada con éxito:', response);
-              },
-              error: (errorData) => {
-                Notiflix.Loading.remove();
-                console.error(
-                  'Error al enviar la solicitud POST de COMPRADETALLE:',
-                  errorData
-                );
-              },
-              complete: () => {},
-            });
-
-            //GUARDAMOS CADA PRODUCTRO EN STOCK
-            const productosAgrupados: { [id: string]: Producto } = {};
-            this.form.value.listaCompra.forEach((producto: Producto) => {
-              const idProducto = producto.idobtenido;
-              if (productosAgrupados[idProducto]) {
-                // Si ya existe el producto en la lista agrupada, se suma la cantidad
-                productosAgrupados[idProducto].cantidad += producto.cantidad;
-                productosAgrupados[idProducto].subtotalagregado +=
-                  producto.subtotalagregado;
-              } else {
-                // Si no existe, se agrega el producto a la lista agrupada
-                productosAgrupados[idProducto] = { ...producto };
+      if (this.form.get('listaCompra')?.value == '') {
+        alert('No ha añadido productos');
+      } else {
+        const swalWithBootstrapButtons = Swal.mixin({
+          customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger',
+          },
+          buttonsStyling: false,
+        });
+        swalWithBootstrapButtons
+          .fire({
+            title: 'Elija una opci&oacute;n',
+            //text: "You won't be able to revert this!",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'PARA SUCURSAL',
+            cancelButtonText: 'ALMACEN CENTRAL',
+            reverseButtons: true,
+          })
+          .then(async (result) => {
+            //PARA SUCURSAL
+            if (result.isConfirmed) {
+              const inputOptions: any = {};
+              for (const data of this.datoSUC) {
+                inputOptions[data.suc_id] = data.suc_nombre;
               }
-            });
+              const { value: sucursalIDE } = await Swal.fire({
+                title: 'SELECCIONE UNA SUCURSAL',
+                input: 'select',
+                inputPlaceholder: 'Seleccione...',
+                inputOptions: inputOptions,
+                showCancelButton: true,
+              });
+              if (sucursalIDE) {
+                //Swal.fire(`You selected: ${sucursalIDE}`);
+                const compraData = {
+                  proveedor: this.form.value.proveedorDetalle['id'],
+                  fecha: this.fechaFormateada,
+                  moneda: this.form.value.compraDetalle['compra_moneda'],
+                  empresa: this.form.value.compraDetalle['idempresa'],
+                  pago: this.form.value.compraDetalle['tipo_pago'],
+                  usuario: this.userid,
+                  proceso: 'CONFIRMADO',
+                  comprobante:
+                    this.form.value.comprobanteDetalle['comprobante_tipo'],
+                  seriecomprobante:
+                    this.form.value.comprobanteDetalle['comprobante_serie'],
+                  numerocomprobante:
+                    this.form.value.comprobanteDetalle['comprobante_numero'],
+                  destino: sucursalIDE,
+                };
+                console.log(compraData);
+                Notiflix.Loading.pulse('Guardando la compra para sucursal...');
+                this.comprasService.postCompras(compraData).subscribe({
+                  next: (response) => {
+                    this.compra = response;
+                    console.log('Compra registrada con éxito:', this.compra);
+                    this.form.value.listaCompra.forEach(
+                      (producto: Producto) => {
+                        producto.compra = this.compra;
 
-            // Ahora productosAgrupados contiene los productos agrupados por ID
-            Object.values(productosAgrupados).forEach((producto: Producto) => {
-              producto.compra = this.compra;
+                        //GUARDAMOS INFORMACION EN COMPRA_DETALLE
+                        this.comprasDetalleService
+                          .postComprasDetalle(producto)
+                          .subscribe({
+                            next: (response) => {
+                              console.log(
+                                'Entrada registrada con éxito:',
+                                response
+                              );
+                            },
+                            error: (errorData) => {
+                              Notiflix.Loading.remove();
+                              console.error(
+                                'Error al enviar la solicitud POST de COMPRADETALLE:',
+                                errorData
+                              );
+                            },
+                            complete: () => {},
+                          });
 
-              const dataStockPost = {
-                almacen: 1,
-                producto: producto.producto,
-                cantidad: producto.cantidad,
-                medida: producto.medida,
-              };
-
-              this.stockService.getStockAll().subscribe({
-                next: (responseFind: any) => {
-                  //SI ES UN TABLA VACIA, REGISTRAMOS EL PRIMER DATO DE LA TABLA
-                  if (responseFind == 'no hay resultados') {
-                    this.stockService.postStock(dataStockPost).subscribe({
-                      next: (responsePostStock) => {
-                        console.log(
-                          'Entrada registrada con éxito:',
-                          responsePostStock
+                        //GUARDAMOS CADA PRODUCTRO EN STOCK
+                        const productosAgrupados: { [id: string]: Producto } =
+                          {};
+                        this.form.value.listaCompra.forEach(
+                          (producto: Producto) => {
+                            const idProducto = producto.idobtenido;
+                            if (productosAgrupados[idProducto]) {
+                              // Si ya existe el producto en la lista agrupada, se suma la cantidad
+                              productosAgrupados[idProducto].cantidad +=
+                                producto.cantidad;
+                              productosAgrupados[idProducto].subtotalagregado +=
+                                producto.subtotalagregado;
+                            } else {
+                              // Si no existe, se agrega el producto a la lista agrupada
+                              productosAgrupados[idProducto] = { ...producto };
+                            }
+                          }
                         );
-                      },
-                      error: (errorData) => {
-                        Notiflix.Loading.remove();
-                        console.error(
-                          'Error al enviar la solicitud POST PRIMERA de STOCK A ALMACEN 1:',
-                          errorData
+
+                        // Ahora productosAgrupados contiene los productos agrupados por ID
+                        Object.values(productosAgrupados).forEach(
+                          (producto: Producto) => {
+                            producto.compra = this.compra;
+
+                            const dataStockPost = {
+                              almacen: sucursalIDE,
+                              producto: producto.producto,
+                              cantidad: producto.cantidad,
+                              medida: producto.medida,
+                            };
+
+                            this.stockService.getStockAll().subscribe({
+                              next: (responseFind: any) => {
+                                //SI ES UN TABLA VACIA, REGISTRAMOS EL PRIMER DATO DE LA TABLA
+                                if (responseFind == 'no hay resultados') {
+                                  this.stockService
+                                    .postStock(dataStockPost)
+                                    .subscribe({
+                                      next: (responsePostStock) => {
+                                        console.log(
+                                          'Entrada registrada con éxito:',
+                                          responsePostStock
+                                        );
+                                      },
+                                      error: (errorData) => {
+                                        Notiflix.Loading.remove();
+                                        console.error(
+                                          'Error al enviar la solicitud POST PRIMERA de STOCK A ALMACEN 1:',
+                                          errorData
+                                        );
+                                      },
+                                      complete: () => {},
+                                    });
+                                }
+                                //SI NO ES UNA TABLA VACIA, YA QUE BUSQUE
+                                else {
+                                  this.dataFindStock = responseFind;
+                                  //buscamos algun producto que se encuentre en la tabla
+                                  const StockEncontrado =
+                                    this.dataFindStock.find(
+                                      (stoc: any) =>
+                                        stoc.producto_id ===
+                                          producto.producto &&
+                                        stoc.almacen_id === sucursalIDE
+                                    );
+                                  //SI ENCONTRAMOS HACEMOS EL PUT
+                                  if (StockEncontrado) {
+                                    const nuevostock =
+                                      Number(StockEncontrado.cantidad) +
+                                      Number(producto.cantidad);
+
+                                    const dataStockUpdate = {
+                                      producto: producto.producto,
+                                      cantidad: nuevostock,
+                                      condicion: 'COMPRA-NUEVA',
+                                    };
+
+                                    this.stockService
+                                      .updatedStock(dataStockUpdate)
+                                      .subscribe({
+                                        next: (responseUpdateStock) => {
+                                          console.log(
+                                            'Entrada actualizada de stock con éxito:',
+                                            responseUpdateStock
+                                          );
+                                        },
+                                        error: (errorData) => {
+                                          Notiflix.Loading.remove();
+                                          console.error(
+                                            'Error al enviar la solicitud PUT de STOCK:',
+                                            errorData
+                                          );
+                                        },
+                                        complete: () => {},
+                                      });
+                                  }
+                                  //SI NO SE ENCUENTRA LA DATA QUE COINCIDA
+                                  else {
+                                    this.stockService
+                                      .postStock(dataStockPost)
+                                      .subscribe({
+                                        next: (responsePostStock) => {
+                                          console.log(
+                                            'Entrada registrada con éxito:',
+                                            responsePostStock
+                                          );
+                                        },
+                                        error: (errorData) => {
+                                          Notiflix.Loading.remove();
+                                          console.error(
+                                            'Error al enviar la solicitud POST de STOCK:',
+                                            errorData
+                                          );
+                                        },
+                                        complete: () => {},
+                                      });
+                                  }
+                                }
+                              },
+                              error: () => {},
+                              complete: () => {},
+                            });
+                          }
                         );
-                      },
-                      complete: () => {},
-                    });
-                  }
-                  //SI NO ES UNA TABLA VACIA, YA QUE BUSQUE
-                  else {
-                    this.dataFindStock = responseFind;
-                    //buscamos algun producto que se encuentre en la tabla
-                    const StockEncontrado = this.dataFindStock.find(
-                      (stoc: any) =>
-                        stoc.producto_id === producto.producto &&
-                        stoc.almacen_id === '1'
+                      }
                     );
-                    //SI ENCONTRAMOS HACEMOS EL PUT
-                    if (StockEncontrado) {
-                      const nuevostock =
-                        Number(StockEncontrado.cantidad) +
-                        Number(producto.cantidad);
 
-                      const dataStockUpdate = {
-                        producto: producto.producto,
-                        cantidad: nuevostock,
-                        condicion: 'COMPRA-NUEVA',
-                      };
+                    Notiflix.Loading.remove();
+                    const Toast = Swal.mixin({
+                      toast: true,
+                      position: 'bottom-end',
+                      showConfirmButton: false,
+                      timer: 2500,
+                      timerProgressBar: true,
+                      didOpen: (toast) => {
+                        toast.onmouseenter = Swal.stopTimer;
+                        toast.onmouseleave = Swal.resumeTimer;
+                      },
+                    });
+                    Toast.fire({
+                      icon: 'success',
+                      //title: 'Stock minimo guardado',
+                      html: '<div style="font-size: 15px; font-weight: 700">Compra para sucursal registrada exitosamente</div>',
+                    });
+                  },
+                  error: (errorData) => {
+                    Notiflix.Loading.remove();
+                    console.error(errorData);
+                  },
+                  complete: () => {
+                    //this.router.navigate(['/logistica/compra']);
+                    this.router.navigate([rutas.logistica_compra]);
+                  },
+                });
+              } else {
+                Swal.fire('No seleccion&oacute; una sucursal');
+              }
+            }
+            //ALMACEN CENTRAL
+            else if (result.dismiss === Swal.DismissReason.cancel) {
+              Notiflix.Loading.pulse(
+                'Guardando la compra para almacen central...'
+              );
+              //HACEMOS EL POST DE COMPRAS
+              //alert('PROCEDEMOS PARA ALMACEN CENTRAL');
+              const compraData = {
+                proveedor: this.form.value.proveedorDetalle['id'],
+                fecha: this.fechaFormateada,
+                moneda: this.form.value.compraDetalle['compra_moneda'],
+                empresa: this.form.value.compraDetalle['idempresa'],
+                pago: this.form.value.compraDetalle['tipo_pago'],
+                usuario: this.userid,
+                proceso: 'CONFIRMADO',
+                comprobante:
+                  this.form.value.comprobanteDetalle['comprobante_tipo'],
+                seriecomprobante:
+                  this.form.value.comprobanteDetalle['comprobante_serie'],
+                numerocomprobante:
+                  this.form.value.comprobanteDetalle['comprobante_numero'],
+                destino: 1,
+              };
+              console.log(compraData);
+              this.comprasService.postCompras(compraData).subscribe({
+                next: (response) => {
+                  this.compra = response;
+                  console.log('Compra registrada con éxito:', this.compra);
+                  this.form.value.listaCompra.forEach((producto: Producto) => {
+                    producto.compra = this.compra;
 
-                      this.stockService
-                        .updatedStock(dataStockUpdate)
-                        .subscribe({
-                          next: (responseUpdateStock) => {
-                            console.log(
-                              'Entrada actualizada de stock con éxito:',
-                              responseUpdateStock
-                            );
-                          },
-                          error: (errorData) => {
-                            Notiflix.Loading.remove();
-                            console.error(
-                              'Error al enviar la solicitud PUT de STOCK:',
-                              errorData
-                            );
-                          },
-                          complete: () => {},
-                        });
-                    }
-                    //SI NO SE ENCUENTRA LA DATA QUE COINCIDA
-                    else {
-                      this.stockService.postStock(dataStockPost).subscribe({
-                        next: (responsePostStock) => {
+                    //GUARDAMOS INFORMACION EN COMPRA_DETALLE
+                    this.comprasDetalleService
+                      .postComprasDetalle(producto)
+                      .subscribe({
+                        next: (response) => {
                           console.log(
                             'Entrada registrada con éxito:',
-                            responsePostStock
+                            response
                           );
                         },
                         error: (errorData) => {
                           Notiflix.Loading.remove();
                           console.error(
-                            'Error al enviar la solicitud POST de STOCK:',
+                            'Error al enviar la solicitud POST de COMPRADETALLE:',
                             errorData
                           );
                         },
                         complete: () => {},
                       });
-                    }
-                  }
-                },
-                error: () => {},
-                complete: () => {},
-              });
-            });
-          });
 
-          Notiflix.Loading.remove();
-          const Toast = Swal.mixin({
-            toast: true,
-            position: 'bottom-end',
-            showConfirmButton: false,
-            timer: 2500,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-              toast.onmouseenter = Swal.stopTimer;
-              toast.onmouseleave = Swal.resumeTimer;
-            },
+                    //GUARDAMOS CADA PRODUCTRO EN STOCK
+                    const productosAgrupados: { [id: string]: Producto } = {};
+                    this.form.value.listaCompra.forEach(
+                      (producto: Producto) => {
+                        const idProducto = producto.idobtenido;
+                        if (productosAgrupados[idProducto]) {
+                          // Si ya existe el producto en la lista agrupada, se suma la cantidad
+                          productosAgrupados[idProducto].cantidad +=
+                            producto.cantidad;
+                          productosAgrupados[idProducto].subtotalagregado +=
+                            producto.subtotalagregado;
+                        } else {
+                          // Si no existe, se agrega el producto a la lista agrupada
+                          productosAgrupados[idProducto] = { ...producto };
+                        }
+                      }
+                    );
+
+                    // Ahora productosAgrupados contiene los productos agrupados por ID
+                    Object.values(productosAgrupados).forEach(
+                      (producto: Producto) => {
+                        producto.compra = this.compra;
+
+                        const dataStockPost = {
+                          almacen: 1,
+                          producto: producto.producto,
+                          cantidad: producto.cantidad,
+                          medida: producto.medida,
+                        };
+
+                        this.stockService.getStockAll().subscribe({
+                          next: (responseFind: any) => {
+                            //SI ES UN TABLA VACIA, REGISTRAMOS EL PRIMER DATO DE LA TABLA
+                            if (responseFind == 'no hay resultados') {
+                              this.stockService
+                                .postStock(dataStockPost)
+                                .subscribe({
+                                  next: (responsePostStock) => {
+                                    console.log(
+                                      'Entrada registrada con éxito:',
+                                      responsePostStock
+                                    );
+                                  },
+                                  error: (errorData) => {
+                                    Notiflix.Loading.remove();
+                                    console.error(
+                                      'Error al enviar la solicitud POST PRIMERA de STOCK A ALMACEN 1:',
+                                      errorData
+                                    );
+                                  },
+                                  complete: () => {},
+                                });
+                            }
+                            //SI NO ES UNA TABLA VACIA, YA QUE BUSQUE
+                            else {
+                              this.dataFindStock = responseFind;
+                              //buscamos algun producto que se encuentre en la tabla
+                              const StockEncontrado = this.dataFindStock.find(
+                                (stoc: any) =>
+                                  stoc.producto_id === producto.producto &&
+                                  stoc.almacen_id === '1'
+                              );
+                              //SI ENCONTRAMOS HACEMOS EL PUT
+                              if (StockEncontrado) {
+                                const nuevostock =
+                                  Number(StockEncontrado.cantidad) +
+                                  Number(producto.cantidad);
+
+                                const dataStockUpdate = {
+                                  producto: producto.producto,
+                                  cantidad: nuevostock,
+                                  condicion: 'COMPRA-NUEVA',
+                                };
+
+                                this.stockService
+                                  .updatedStock(dataStockUpdate)
+                                  .subscribe({
+                                    next: (responseUpdateStock) => {
+                                      console.log(
+                                        'Entrada actualizada de stock con éxito:',
+                                        responseUpdateStock
+                                      );
+                                    },
+                                    error: (errorData) => {
+                                      Notiflix.Loading.remove();
+                                      console.error(
+                                        'Error al enviar la solicitud PUT de STOCK:',
+                                        errorData
+                                      );
+                                    },
+                                    complete: () => {},
+                                  });
+                              }
+                              //SI NO SE ENCUENTRA LA DATA QUE COINCIDA
+                              else {
+                                this.stockService
+                                  .postStock(dataStockPost)
+                                  .subscribe({
+                                    next: (responsePostStock) => {
+                                      console.log(
+                                        'Entrada registrada con éxito:',
+                                        responsePostStock
+                                      );
+                                    },
+                                    error: (errorData) => {
+                                      Notiflix.Loading.remove();
+                                      console.error(
+                                        'Error al enviar la solicitud POST de STOCK:',
+                                        errorData
+                                      );
+                                    },
+                                    complete: () => {},
+                                  });
+                              }
+                            }
+                          },
+                          error: () => {},
+                          complete: () => {},
+                        });
+                      }
+                    );
+                  });
+
+                  Notiflix.Loading.remove();
+                  const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'bottom-end',
+                    showConfirmButton: false,
+                    timer: 2500,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                      toast.onmouseenter = Swal.stopTimer;
+                      toast.onmouseleave = Swal.resumeTimer;
+                    },
+                  });
+                  Toast.fire({
+                    icon: 'success',
+                    //title: 'Stock minimo guardado',
+                    html: '<div style="font-size: 15px; font-weight: 700">Compra en almacen central registrada exitosamente</div>',
+                  });
+                },
+                error: (errorData) => {
+                  Notiflix.Loading.remove();
+                  console.error(errorData);
+                },
+                complete: () => {
+                  //this.router.navigate(['/logistica/compra']);
+                  this.router.navigate([rutas.logistica_compra]);
+                },
+              });
+            }
           });
-          Toast.fire({
-            icon: 'success',
-            //title: 'Stock minimo guardado',
-            html: '<div style="font-size: 15px; font-weight: 700">Compra registrada exitosamente</div>',
-          });
-        },
-        error: (errorData) => {
-          Notiflix.Loading.remove();
-          console.error(errorData);
-        },
-        complete: () => {
-          //this.router.navigate(['/logistica/compra']);
-          this.router.navigate([rutas.logistica_compra]);
-        },
-      });
+      }
     }
   }
 

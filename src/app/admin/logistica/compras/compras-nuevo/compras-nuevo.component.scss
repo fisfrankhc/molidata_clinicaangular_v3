@@ -1,0 +1,12 @@
+div.swal2-actions {
+    display: flex;
+    flex-direction: column;
+}
+
+div.swal2-actions button.swal2-cancel.btn.btn-danger {
+    margin: 10px !important;
+}
+
+div.swal2-actions button.swal2-confirm.btn.btn-success {
+    margin: 10px !important;
+}

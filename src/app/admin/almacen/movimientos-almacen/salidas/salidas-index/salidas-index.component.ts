@@ -1,12 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { rutas } from 'src/app/shared/routes/rutas';
-import {
-  pageSelection,
-  MovimientosCentral,
-} from 'src/app/shared/interfaces/almacen';
+import { pageSelection, Movimientos } from 'src/app/shared/interfaces/almacen';
 import { MatTableDataSource } from '@angular/material/table';
 import { Sort } from '@angular/material/sort';
-//import { MovimientosCentralService } from 'src/app/shared/services/almacen/transferencias/movimientos-central.service';
 import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
 import { GeneralService } from 'src/app/shared/services/general.service';
 import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
@@ -17,19 +13,21 @@ import {
   Validators,
 } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import * as Notiflix from 'notiflix';
 
 @Component({
-  selector: 'app-transferencias-index',
-  templateUrl: './transferencias-index.component.html',
-  styleUrls: ['./transferencias-index.component.scss'],
+  selector: 'app-salidas-index',
+  templateUrl: './salidas-index.component.html',
+  styleUrls: ['./salidas-index.component.scss'],
 })
-export class TransferenciasIndexComponent implements OnInit {
+export class SalidasIndexComponent implements OnInit {
   public ruta = rutas;
 
-  datosTRANSFERENCIA: MovimientosCentral[] = [];
+  datosMOVIMIENTOS: Movimientos[] = [];
+  usersucursal: any = localStorage.getItem('usersucursal');
 
-  public trasnferenciasList: Array<MovimientosCentral> = [];
-  dataSource!: MatTableDataSource<MovimientosCentral>;
+  public trasnferenciasList: Array<Movimientos> = [];
+  dataSource!: MatTableDataSource<Movimientos>;
 
   public showFilter = false;
   public searchDataValue: string = '';
@@ -87,7 +85,11 @@ export class TransferenciasIndexComponent implements OnInit {
           fechaSeleccionadaFin !== null &&
           fechaSeleccionadaFin !== undefined
         ) {
-          this.transferenciasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+          this.movimientosSalidasAll(
+            fechaSeleccionadaInicio,
+            fechaSeleccionadaFin
+          );
+          Notiflix.Loading.remove();
         }
       },
       error: () => {},
@@ -100,8 +102,12 @@ export class TransferenciasIndexComponent implements OnInit {
     fechabusquedainicio: ['', Validators.required],
     fechabusquedafin: ['', Validators.required],
   });
-  datosTRANSFERENCIAS: any;
-  private transferenciasAll(fechaInicio: string, fechaFin: string): void {
+  datosMOVIFILTRO: any;
+  private movimientosSalidasAll(fechaInicio: string, fechaFin: string): void {
+    //Notiflix.Loading.circle('Obteniendo datos...');
+    Notiflix.Loading.standard('Loading...', {
+      backgroundColor: 'rgba(0,0,255,0.1)',
+    });
     this.trasnferenciasList = [];
     this.serialNumberArray = [];
 
@@ -113,8 +119,8 @@ export class TransferenciasIndexComponent implements OnInit {
     // Mostrar resultados solo si se han ingresado fechas
 
     this.movimientosAlmacenService.getMovimientosAll().subscribe({
-      next: (datosTRANSFERENCIA: any) => {
-        this.datosTRANSFERENCIA = datosTRANSFERENCIA;
+      next: (datosMOVIMIENTOS: any) => {
+        this.datosMOVIMIENTOS = datosMOVIMIENTOS;
 
         const fechaInicioE = this.datePipe.transform(fechaInicio, 'yyyy-MM-dd');
         const fechaFinE = this.datePipe.transform(fechaFin, 'yyyy-MM-dd');
@@ -122,23 +128,25 @@ export class TransferenciasIndexComponent implements OnInit {
         // Concatenar la hora al final de las fechas
         const fechaInicioConHora = fechaInicioE + ' 00:00:00';
         const fechaFinConHora = fechaFinE + ' 23:59:59';
-        this.datosTRANSFERENCIAS = this.datosTRANSFERENCIA.filter(
-          (vent: any) =>
-            vent.movimiento_fecha >= fechaInicioConHora &&
-            vent.movimiento_fecha <= fechaFinConHora &&
-            vent.movimiento_origen == 'TRANSFERENCIA'
+        this.datosMOVIFILTRO = this.datosMOVIMIENTOS.filter(
+          (mov: any) =>
+            mov.movimiento_fecha >= fechaInicioConHora &&
+            mov.movimiento_fecha <= fechaFinConHora &&
+            mov.movimiento_tipo == 'EGRESO' &&
+            mov.sucursal_id === this.usersucursal
         );
-        //console.log(this.datosTRANSFERENCIAS);
-        this.datosTRANSFERENCIA = this.datosTRANSFERENCIAS;
-        if (this.datosTRANSFERENCIAS === 'no hay resultados') {
+        Notiflix.Loading.remove();
+        //console.log(this.datosMOVIFILTRO);
+        this.datosMOVIMIENTOS = this.datosMOVIFILTRO;
+        if (this.datosMOVIFILTRO === 'no hay resultados') {
           this.totalData = 0;
         } else {
-          this.totalData = this.datosTRANSFERENCIAS.length;
+          this.totalData = this.datosMOVIFILTRO.length;
         }
 
         // Mapea los nombres de datos de ventas
-        this.datosTRANSFERENCIA = this.datosTRANSFERENCIA.map(
-          (movimiento: MovimientosCentral) => {
+        this.datosMOVIMIENTOS = this.datosMOVIMIENTOS.map(
+          (movimiento: Movimientos) => {
             //PARA PROVEEDOR
             const usuario = this.datosUSUARIOS.find(
               (user: any) => user.user_id === movimiento.usuario_id
@@ -164,15 +172,16 @@ export class TransferenciasIndexComponent implements OnInit {
         } else {
           // Si no hay filtro, mostrar todos los datos paginados
           this.paginateData();
-          this.totalFilteredData = this.datosTRANSFERENCIA.length;
+          this.totalFilteredData = this.datosMOVIMIENTOS.length;
         }
-        //console.log(this.datosTRANSFERENCIA);
+        //console.log(this.datosMOVIMIENTOS);
       },
       error: (errorData) => {
+        Notiflix.Loading.remove();
         console.error(errorData);
       },
       complete: () => {
-        this.dataSource = new MatTableDataSource<MovimientosCentral>(
+        this.dataSource = new MatTableDataSource<Movimientos>(
           this.trasnferenciasList
         );
         this.calculateTotalPages(this.totalFilteredData, this.pageSize);
@@ -182,7 +191,7 @@ export class TransferenciasIndexComponent implements OnInit {
 
   totalFilteredData: any;
   private paginateData(): void {
-    this.datosTRANSFERENCIA.map((res: MovimientosCentral, index: number) => {
+    this.datosMOVIMIENTOS.map((res: Movimientos, index: number) => {
       const serialNumber = index + 1;
       if (index >= this.skip && serialNumber <= this.limit) {
         this.trasnferenciasList.push(res);
@@ -194,9 +203,9 @@ export class TransferenciasIndexComponent implements OnInit {
   public searchData(value: string): void {
     //this.dataSource.filter = value.trim().toLowerCase();this.trasnferenciasList = this.dataSource.filteredData;
     this.searchDataValue = value; // Almacena el valor de búsqueda
-    // Realiza el filtro en todos los datos (this.datosTRANSFERENCIA)
-    const filteredData = this.datosTRANSFERENCIA.filter(
-      (movimiento: MovimientosCentral) => {
+    // Realiza el filtro en todos los datos (this.datosMOVIMIENTOS)
+    const filteredData = this.datosMOVIMIENTOS.filter(
+      (movimiento: Movimientos) => {
         return (
           (movimiento.movimiento_id &&
             movimiento.movimiento_id
@@ -210,6 +219,14 @@ export class TransferenciasIndexComponent implements OnInit {
               .includes(value.toLowerCase())) ||
           (movimiento.nombreUsuario &&
             movimiento.nombreUsuario
+              .toLowerCase()
+              .includes(value.toLowerCase())) ||
+          (movimiento.movimiento_tipo &&
+            movimiento.movimiento_tipo
+              .toLowerCase()
+              .includes(value.toLowerCase())) ||
+          (movimiento.movimiento_origen &&
+            movimiento.movimiento_origen
               .toLowerCase()
               .includes(value.toLowerCase())) ||
           (movimiento.nombreSucursal &&
@@ -226,14 +243,14 @@ export class TransferenciasIndexComponent implements OnInit {
     if (value.trim() === '') {
       // Si el filtro está vacío, recupera todos los datos y recalcule las páginas
       this.calculateTotalPages(this.totalData, this.pageSize);
-      this.totalFilteredData = this.datosTRANSFERENCIA.length;
+      this.totalFilteredData = this.datosMOVIMIENTOS.length;
     } else {
       this.totalFilteredData = filteredData.length;
       // Recalcula las páginas disponibles para los resultados filtrados
       this.calculateTotalPages(filteredData.length, this.pageSize);
     }
     // Actualiza la vista
-    this.dataSource = new MatTableDataSource<MovimientosCentral>(
+    this.dataSource = new MatTableDataSource<Movimientos>(
       this.trasnferenciasList
     );
   }
@@ -270,22 +287,6 @@ export class TransferenciasIndexComponent implements OnInit {
     const fechaInicioConHora = fechaInicio + ' 00:00:00';
     const fechaFinConHora = fechaFin + ' 23:59:59';
 
-    /* // Convertir las cadenas de fecha a objetos Date
-    const fechaInicioDate = new Date(fechaInicioConHora);
-    const fechaFinDate = new Date(fechaFinConHora);
-
-    console.log(fechaInicioDate);
-    console.log(fechaFinDate);
-
-    // Filtrar utilizando getTime() para comparar milisegundos
-    this.stockLista = this.trasnferenciasList.filter((data) => {
-      const movimientoFecha = new Date(data.movimiento_fecha);
-      return (
-        movimientoFecha.getTime() >= fechaInicioDate.getTime() &&
-        movimientoFecha.getTime() <= fechaFinDate.getTime()
-      );
-    }); */
-
     if (
       fechaInicio !== null &&
       fechaInicio !== undefined &&
@@ -293,7 +294,7 @@ export class TransferenciasIndexComponent implements OnInit {
       fechaFin !== undefined
     ) {
       // Realizar la lógica de filtrado según el rango de fechas (fechaInicio y fechaFin)
-      this.transferenciasAll(fechaInicio, fechaFin);
+      this.movimientosSalidasAll(fechaInicio, fechaFin);
     }
   }
 
@@ -317,9 +318,9 @@ export class TransferenciasIndexComponent implements OnInit {
       fechaSeleccionadaFin !== null &&
       fechaSeleccionadaFin !== undefined
     ) {
-      this.transferenciasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+      this.movimientosSalidasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
     }
-    this.dataSource = new MatTableDataSource<MovimientosCentral>(
+    this.dataSource = new MatTableDataSource<Movimientos>(
       this.trasnferenciasList
     ); // Agregar esta línea
   }
@@ -341,7 +342,7 @@ export class TransferenciasIndexComponent implements OnInit {
       fechaSeleccionadaFin !== null &&
       fechaSeleccionadaFin !== undefined
     ) {
-      this.transferenciasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+      this.movimientosSalidasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
     }
   }
 
@@ -358,7 +359,7 @@ export class TransferenciasIndexComponent implements OnInit {
       fechaSeleccionadaFin !== null &&
       fechaSeleccionadaFin !== undefined
     ) {
-      this.transferenciasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+      this.movimientosSalidasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
     }
   }
 
@@ -386,7 +387,7 @@ export class TransferenciasIndexComponent implements OnInit {
       fechaSeleccionadaFin !== null &&
       fechaSeleccionadaFin !== undefined
     ) {
-      this.transferenciasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
+      this.movimientosSalidasAll(fechaSeleccionadaInicio, fechaSeleccionadaFin);
     }
   }
 }

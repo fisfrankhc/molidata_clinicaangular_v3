@@ -15,7 +15,11 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ComprasVerComponent } from './compras-ver/compras-ver.component';
 
 @NgModule({
-  declarations: [ComprasIndexComponent, ComprasNuevoComponent, ComprasVerComponent],
+  declarations: [
+    ComprasIndexComponent,
+    ComprasNuevoComponent,
+    ComprasVerComponent,
+  ],
   imports: [
     CommonModule,
     ComprasRoutingModule,
@@ -25,7 +29,7 @@ import { ComprasVerComponent } from './compras-ver/compras-ver.component';
     MatAutocompleteModule,
     ReactiveFormsModule,
     MatSlideToggleModule,
-    AsyncPipe
+    AsyncPipe,
   ],
   providers: [DatePipe],
 })

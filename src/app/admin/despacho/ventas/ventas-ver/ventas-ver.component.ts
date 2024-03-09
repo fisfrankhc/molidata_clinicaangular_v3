@@ -119,21 +119,23 @@ export class VentasVerComponent implements OnInit {
       next: (data: any) => {
         this.datoStock = data;
         // Mapea los nombres de datos de ventas
-        this.datoStock = this.datoStock.map((stockValor: Stock) => {
-          //PARA PROVEEDOR
-          const datoStocks = this.datosPRO.find(
-            (prod: any) =>
-              stockValor.producto_id === prod.prod_id &&
-              stockValor.almacen_id === this.usersucursal &&
-              stockValor.unidad_medida === prod.med_id
-          );
-          if (datoStocks) {
-            datoStocks.cantidadStockSucursal = stockValor.cantidad;
-            datoStocks.almacen_id = stockValor.almacen_id;
-            datoStocks.stock_id = stockValor.stock_id;
-          }
-          return datoStocks;
-        });
+        this.datoStock = this.datoStock
+          .map((stockValor: Stock) => {
+            //PARA PROVEEDOR
+            const datoStocks = this.datosPRO.find(
+              (prod: any) =>
+                stockValor.producto_id === prod.prod_id &&
+                stockValor.almacen_id === this.usersucursal &&
+                stockValor.unidad_medida === prod.med_id
+            );
+            if (datoStocks) {
+              datoStocks.cantidadStockSucursal = stockValor.cantidad;
+              datoStocks.almacen_id = stockValor.almacen_id;
+              datoStocks.stock_id = stockValor.stock_id;
+            }
+            return datoStocks ? datoStocks : null; // Devuelve null si datoStocks es undefined
+          })
+          .filter((datoStock) => datoStock !== null); // Filtra los valores null (es decir, los que eran undefined)
 
         this.ventaDetalle(this.ventaId);
         this.ventaDetalleItem(this.ventaId);

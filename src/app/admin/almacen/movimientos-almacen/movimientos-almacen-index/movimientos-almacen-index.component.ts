@@ -12,6 +12,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { SucursalService } from 'src/app/shared/services/sucursal/sucursal.service';
 
 @Component({
   selector: 'app-movimientos-almacen-index',
@@ -22,6 +23,7 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
   public ruta = rutas;
 
   datosINGRESO: Movimientos[] = [];
+  usersucursal: any = localStorage.getItem('usersucursal');
 
   public ingresoList: Array<Movimientos> = [];
   dataSource!: MatTableDataSource<Movimientos>;
@@ -44,11 +46,24 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
     private datePipe: DatePipe,
     private fb: FormBuilder,
     public movimientosAlmacenService: MovimientosAlmacenService,
-    public generalService: GeneralService
+    public generalService: GeneralService,
+    private sucursalService: SucursalService
   ) {}
 
   ngOnInit(): void {
     this.userAll();
+    this.sucursalesAll();
+  }
+
+  datosSUCURSALES: any;
+  sucursalesAll(): void {
+    this.sucursalService.getSucursalAll().subscribe({
+      next: (datosSUC: any) => {
+        this.datosSUCURSALES = datosSUC;
+      },
+      error: () => {},
+      complete: () => {},
+    });
   }
 
   fechaVisualInicio: any;
@@ -104,9 +119,10 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
         const fechaInicioConHora = fechaInicioE + ' 00:00:00';
         const fechaFinConHora = fechaFinE + ' 23:59:59';
         this.datosINGRESOS = this.datosINGRESO.filter(
-          (vent: any) =>
-            vent.movimiento_fecha >= fechaInicioConHora &&
-            vent.movimiento_fecha <= fechaFinConHora
+          (mov: any) =>
+            mov.movimiento_fecha >= fechaInicioConHora &&
+            mov.movimiento_fecha <= fechaFinConHora &&
+            mov.sucursal_id === this.usersucursal
         );
         this.datosINGRESO = this.datosINGRESOS;
         if (this.datosINGRESOS === 'no hay resultados') {
@@ -123,6 +139,13 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
           );
           if (usuario) {
             movimiento.nombreUsuario = usuario.user_name;
+          }
+          //PARA SUCURSAL
+          const sucursal = this.datosSUCURSALES.find(
+            (suc: any) => suc.suc_id === movimiento.sucursal_id
+          );
+          if (sucursal) {
+            movimiento.nombreSucursal = sucursal.suc_nombre;
           }
 
           return movimiento;
@@ -176,7 +199,15 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
             .toLowerCase()
             .includes(value.toLowerCase())) ||
         (movimiento.nombreUsuario &&
-          movimiento.nombreUsuario.toLowerCase().includes(value.toLowerCase()))
+          movimiento.nombreUsuario
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (movimiento.movimiento_tipo &&
+          movimiento.movimiento_tipo
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
+        (movimiento.nombreSucursal &&
+          movimiento.nombreSucursal.toLowerCase().includes(value.toLowerCase()))
       );
     });
 
