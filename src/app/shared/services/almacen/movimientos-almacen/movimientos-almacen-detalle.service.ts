@@ -29,6 +29,14 @@ export class MovimientosAlmacenDetalleService {
     return this.http.get<any>(`${this.apiUrl}?id=${idDetalle}`);
   }
 
+  updatedMovimientosDetalle(datos: any) {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.put(this.apiUrl, JSON.stringify(datos), { headers });
+  }
+
   private apiUrl2 = `${this.dominioUrl}/clinico/logistica/stock.php`;
   updatedStock(datos: any) {
     const headers = new HttpHeaders({
@@ -38,4 +46,3 @@ export class MovimientosAlmacenDetalleService {
     return this.http.put(this.apiUrl2, JSON.stringify(datos), { headers });
   }
 }
-
