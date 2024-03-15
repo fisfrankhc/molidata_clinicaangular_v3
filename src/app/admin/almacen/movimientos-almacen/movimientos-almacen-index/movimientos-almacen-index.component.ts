@@ -206,6 +206,10 @@ export class MovimientosAlmacenIndexComponent implements OnInit {
           movimiento.movimiento_tipo
             .toLowerCase()
             .includes(value.toLowerCase())) ||
+        (movimiento.movimiento_origen &&
+          movimiento.movimiento_origen
+            .toLowerCase()
+            .includes(value.toLowerCase())) ||
         (movimiento.nombreSucursal &&
           movimiento.nombreSucursal.toLowerCase().includes(value.toLowerCase()))
       );

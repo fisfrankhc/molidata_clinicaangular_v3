@@ -15,6 +15,7 @@ import { ProductoService } from 'src/app/shared/services/logistica/producto/prod
 import { StockService } from 'src/app/shared/services/almacen/stock/stock.service';
 import { Stock } from 'src/app/shared/interfaces/logistica';
 import { VentasDetalle } from 'src/app/shared/interfaces/despacho';
+import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 
 import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
 import { MovimientosAlmacenDetalleService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen-detalle.service';
@@ -52,7 +53,8 @@ export class VentasVerComponent implements OnInit {
     private comprobantesItemsService: ComprobantesItemsService,
     private comprobantesVentaService: ComprobantesVentaService,
     private emailService: EmailService,
-    public generalService: GeneralService
+    public generalService: GeneralService,
+    private medidaService: MedidaService
   ) {}
   ventaId: any;
   usersucursal = localStorage.getItem('usersucursal');
@@ -67,6 +69,7 @@ export class VentasVerComponent implements OnInit {
         this.ventaId = +ventaIdParam;
       }
     });
+    this.medidasAll();
     this.clientesAll();
     this.productosAll();
     this.ventaDetalle(this.ventaId);
@@ -87,6 +90,17 @@ export class VentasVerComponent implements OnInit {
       whatsappBoleta: [''],
     }),
   });
+
+  datosMED: any;
+  medidasAll(): void {
+    this.medidaService.getMedidasAll().subscribe({
+      next: (datosMED: any) => {
+        this.datosMED = datosMED;
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
 
   datosCLI: any;
   clientesAll(): void {
@@ -202,25 +216,35 @@ export class VentasVerComponent implements OnInit {
               (pro: any) => pro.prod_id === ventasDetalle.prod_id
             );
             this.sucursalVentaId = this.sucursalVenta;
+            //PARA STOCK
             const valorStock = this.datoStock.find(
               (stock: any) =>
                 stock.prod_id === ventasDetalle.prod_id &&
                 stock.almacen_id === this.sucursalVentaId
             );
+            //PARA MEDIDAS
+            const medida = this.datosMED.find(
+              (medi: any) => medi.med_id === ventasDetalle.detalle_medida
+            );
+
             if (producto) {
               ventasDetalle.nombreProducto = producto.prod_nombre;
               ventasDetalle.codigoProducto = producto.prod_codigo;
-              ventasDetalle.medidaid = producto.med_id;
+              //ventasDetalle.medidaid = producto.med_id;
             }
             if (valorStock) {
               ventasDetalle.cantidadStockSucursal =
                 valorStock.cantidadStockSucursal;
+            }
+            if (medida) {
+              ventasDetalle.medidaProducto = medida.med_simbolo;
             }
             return ventasDetalle;
           }
         );
 
         this.productoList = this.datosProductosDetalle;
+        console.log(this.productoList);
       },
       error: (errorData) => {
         console.error(
@@ -370,7 +394,8 @@ export class VentasVerComponent implements OnInit {
                         movimiento: producto.movimiento,
                         producto: producto.prod_id,
                         cantidad: producto.cantidad_venta,
-                        medida: producto.medidaid,
+                        //medida: producto.medidaid,
+                        medida: producto.detalle_medida,
                         vencimiento: '',
                         lote: '',
                         peso: '',

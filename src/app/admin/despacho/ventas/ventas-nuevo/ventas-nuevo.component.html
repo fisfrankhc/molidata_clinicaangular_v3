@@ -65,8 +65,8 @@
                                             <tr>
                                                 <th class="col-sm-2">CODIGO</th>
                                                 <th class="col-md-6">NOMBRE</th>
+                                                <th style="width:130px;">MEDIDA</th>
                                                 <th style="width:100px;">PRECIO</th>
-                                                <th style="width:80px;">MEDIDA</th>
                                                 <th>CANTIDAD</th>
                                                 <th> </th>
                                             </tr>
@@ -98,16 +98,32 @@
                                                         </mat-autocomplete>
                                                     </mat-form-field>
                                                 </td>
+                                                <!--                                                 <td>
+                                                    <input class="form-control"
+                                                        style="width:80px; background-color: var(--bs-secondary-bg);"
+                                                        type="text" formControlName="medidanombrebuscado">
+                                                </td>
                                                 <td>
                                                     <input class="form-control" style="width:100px" type="hidden"
                                                         formControlName="preciobuscado">
                                                     <input class="form-control" style="width:100px" type="number"
                                                         formControlName="precioventabuscado">
+                                                </td> -->
+                                                <td>
+                                                    <mat-select class="form-control select" placeholder="Seleccione"
+                                                        formControlName="medidasdeProducto"
+                                                        (selectionChange)="onMedidaSeleccionada($event)">
+                                                        <mat-option *ngFor="let data of medidasdeProducto"
+                                                            [value]="data">
+                                                            {{data.nombre}}
+                                                        </mat-option>
+                                                    </mat-select>
                                                 </td>
                                                 <td>
-                                                    <input class="form-control"
-                                                        style="width:80px; background-color: var(--bs-secondary-bg);"
-                                                        type="text" formControlName="medidanombrebuscado">
+                                                    <input class="form-control" style="width:100px" type="hidden"
+                                                        formControlName="precioseleccionadobuscadoreal">
+                                                    <input class="form-control" style="width:100px" type="number"
+                                                        formControlName="precioseleccionadobuscadofinal">
                                                 </td>
                                                 <td>
                                                     <input type="hidden" class="form-control"

@@ -32,7 +32,8 @@
                                     <div class="col-12 col-md-6 col-xl-6">
                                         <div class="form-group local-forms">
                                             <label>C&Oacute;DIGO <span class="login-danger">*</span></label>
-                                            <input class="form-control" formControlName="codigo" type="text" [ngClass]="{
+                                            <input class="form-control" formControlName="codigo"
+                                                (input)="convertirAMayusculas($event, 'codigo')" type="text" [ngClass]="{
                         'is-invalid': f['codigo'].touched && f['codigo'].invalid
                       }">
                                             <div *ngIf="f['codigo'].touched && f['codigo'].invalid"
@@ -42,12 +43,12 @@
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
                                     <div class="col-12 col-md-12 col-xl-12">
                                         <div class="form-group local-forms">
                                             <label>NOMBRE DEL PRODUCTO <span class="login-danger">*</span></label>
-                                            <input class="form-control" formControlName="nombre" type="text" [ngClass]="{
+                                            <input class="form-control" formControlName="nombre"
+                                                (input)="convertirAMayusculas($event, 'nombre')" type="text" [ngClass]="{
                         'is-invalid': f['nombre'].touched && f['nombre'].invalid
                       }">
                                             <div *ngIf="f['nombre'].touched && f['nombre'].invalid"
@@ -63,11 +64,23 @@
                                             <div class="form-group local-forms">
                                                 <label>DESCRIPCI&Oacute;N <span class="login-danger">*</span></label>
                                                 <textarea class="form-control" formControlName="descripcion" rows="3"
-                                                    cols="30"></textarea>
+                                                    cols="30"
+                                                    (input)="convertirAMayusculas($event, 'descripcion')"></textarea>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms">
+                                                <label>MEDIDA <span class="login-danger">*</span></label>
+                                                <mat-select formControlName="medida" class="form-control select"
+                                                    placeholder="Seleccione">
+                                                    <mat-option *ngFor="let option of medidas" [value]="option.med_id">
+                                                        {{option.med_nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
                                         <div class="col-12 col-md-6 col-xl-4">
                                             <div class="form-group local-forms">
                                                 <label>PRECIO <span class="login-danger">*</span></label>
@@ -77,26 +90,34 @@
                                         </div>
                                     </div>
                                     <div class="row">
-                                        <div class="col-12 col-md-6 col-xl-6">
+                                        <div class="col-12 col-md-6 col-xl-4">
                                             <div class="form-group local-forms">
-                                                <label>MEDIDA <span class="login-danger">*</span></label>
-                                                <mat-select [(ngModel)]="selectedValue" formControlName="medida"
-                                                    class="form-control select" placeholder="Seleccione">
+                                                <label>CATEGORIA <span class="login-danger">*</span></label>
+                                                <mat-select formControlName="categoria" class="form-control select"
+                                                    placeholder="Seleccione una categoria">
+                                                    <mat-option *ngFor="let option of categorias"
+                                                        [value]="option.cat_id">
+                                                        {{option.cat_nombre}}
+                                                    </mat-option>
+                                                </mat-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 col-xl-4">
+                                            <div class="form-group local-forms">
+                                                <label>MEDIDA UNITARIA <span class="login-danger">*</span></label>
+                                                <mat-select formControlName="medidaunitario" class="form-control select"
+                                                    placeholder="Seleccione">
                                                     <mat-option *ngFor="let option of medidas" [value]="option.med_id">
                                                         {{option.med_nombre}}
                                                     </mat-option>
                                                 </mat-select>
                                             </div>
                                         </div>
-                                        <div class="col-12 col-md-6 col-xl-6">
+                                        <div class="col-12 col-md-6 col-xl-4">
                                             <div class="form-group local-forms">
-                                                <label>CATEGORIA <span class="login-danger">*</span></label>
-                                                <mat-select formControlName="categoria"
-                                                    class="form-control select" placeholder="Seleccione una categoria">
-                                                    <mat-option *ngFor="let option of categorias" [value]="option.cat_id">
-                                                        {{option.cat_nombre}}
-                                                    </mat-option>
-                                                </mat-select>
+                                                <label>PRECIO UNITARIO <span class="login-danger">*</span></label>
+                                                <input class="form-control" formControlName="preciounitario"
+                                                    type="number" placeholder="">
                                             </div>
                                         </div>
                                     </div>

@@ -34,7 +34,7 @@
                             <div class="row align-items-center">
                                 <div class="col-12 col-md-6 col-xl-7">
                                     <div class="doctor-table-blk">
-                                        <h3>TRANSFERENCIAS EN ESPERA</h3>
+                                        <h3>TRANSFERENCIAS | Lista</h3>
                                         <div class="doctor-search-blk">
                                             <div class="top-nav-search table-search-blk">
                                                 <input class="form-control" placeholder="Escribe aqui"
@@ -107,6 +107,7 @@
                                         <th mat-sort-header="movimiento_fecha">FECHA</th>
                                         <th mat-sort-header="nombreUsuario">USUARIO</th>
                                         <th mat-sort-header="movimiento_origen">MOVIMIENTO</th>
+                                        <th mat-sort-header="movimiento_tipo">TIPO</th>
                                         <th mat-sort-header="nombreSucursal">SUCURSAL DESTINO.</th>
                                         <th class="col-1"></th>
 
@@ -124,6 +125,7 @@
                                             <td>{{data.movimiento_fecha}}</td>
                                             <td>{{data.nombreUsuario}}</td>
                                             <td>{{data.movimiento_origen }}</td>
+                                            <td>{{data.movimiento_tipo}}</td>
                                             <td>{{data.nombreSucursal}}</td>
                                             <td class="text-end">
                                                 <a type="button" class="btn btn-outline-primary"

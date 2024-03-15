@@ -274,8 +274,11 @@ export class CajaVerPagadasComponent implements OnInit {
               ventasDetalle.codigoProducto = producto.prod_codigo;
 
               // Busca la medida correspondiente en los datos de medida
-              const medida = this.datosMEDIDA.find(
+              /* const medida = this.datosMEDIDA.find(
                 (med: any) => med.med_id === producto.med_id
+              ); */
+              const medida = this.datosMEDIDA.find(
+                (med: any) => med.med_id === ventasDetalle.detalle_medida
               );
 
               // Asigna el símbolo de medida al objeto ventasDetalle
@@ -523,7 +526,7 @@ export class CajaVerPagadasComponent implements OnInit {
             nombre: producto.nombreProducto, //producto_nombre
             precio: producto.precio_venta, //precio_venta
             cantidad: producto.cantidad_venta, //cantidad_venta
-            medida: producto.medidaProducto, //medida
+            medida: producto.medidaProducto, //medida (simbolo)
           };
           console.log(dataComprobanteDetalles);
           this.comprobantesDetalleService

@@ -51,6 +51,8 @@ export class ProductosNuevoComponent implements OnInit {
     descripcion: ['', Validators.required],
     precio: ['', Validators.required],
     medida: ['', Validators.required],
+    medidaunitario: ['', Validators.required],
+    preciounitario: ['', Validators.required],
     categoria: ['', Validators.required],
   });
 
@@ -58,10 +60,16 @@ export class ProductosNuevoComponent implements OnInit {
     return this.form.controls;
   }
 
+  convertirAMayusculas(event: Event, controlName: string) {
+    const input = event.target as HTMLInputElement;
+    const value = input.value.toUpperCase();
+    this.form.get(controlName)?.setValue(value);
+  }
+
   registrarProducto() {
     if (this.form.valid) {
       const datos = this.form.value;
-
+      console.log(datos);
       this.productoService.postProducto(datos).subscribe({
         next: (response) => {
           console.log('Respuesta de la API:', response);

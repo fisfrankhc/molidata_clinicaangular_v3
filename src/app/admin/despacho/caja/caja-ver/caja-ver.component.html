@@ -61,6 +61,7 @@
                                                 <th>#</th>
                                                 <th>C&Oacute;DIGO</th>
                                                 <th>PRODUCTO</th>
+                                                <th>MED.</th>
                                                 <th>CANTIDAD</th>
                                                 <th>PRECIO</th>
                                                 <th>DSCTO.</th>
@@ -83,6 +84,11 @@
                                                 <td>
                                                     <input type="text" class="form-control"
                                                         [value]="data.nombreProducto"
+                                                        style="text-align: center; background-color: transparent;border: 0;"
+                                                        readonly>
+                                                </td>
+                                                <td style="max-width: 65px;">
+                                                    <input class="form-control" [value]="data.medidaProducto"
                                                         style="text-align: center; background-color: transparent;border: 0;"
                                                         readonly>
                                                 </td>

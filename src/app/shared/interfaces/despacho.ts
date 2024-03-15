@@ -23,6 +23,7 @@ export interface VentasDetalle {
   det_id: number;
   venta_id: number;
   prod_id: number;
+  detalle_medida: number;
   cantidad_venta: number;
   precio_venta: number;
   descuento: number;

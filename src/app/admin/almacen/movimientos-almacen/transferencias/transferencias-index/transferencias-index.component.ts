@@ -130,7 +130,6 @@ export class TransferenciasIndexComponent implements OnInit {
             trans.movimiento_fecha >= fechaInicioConHora &&
             trans.movimiento_fecha <= fechaFinConHora &&
             trans.movimiento_origen == 'TRANSFERENCIA' &&
-            trans.movimiento_tipo == 'INGRESO' &&
             trans.movimiento_observaciones == '' &&
             trans.sucursal_id === this.usersucursal
         );
@@ -218,6 +217,10 @@ export class TransferenciasIndexComponent implements OnInit {
               .includes(value.toLowerCase())) ||
           (movimiento.nombreUsuario &&
             movimiento.nombreUsuario
+              .toLowerCase()
+              .includes(value.toLowerCase())) ||
+          (movimiento.movimiento_tipo &&
+            movimiento.movimiento_tipo
               .toLowerCase()
               .includes(value.toLowerCase())) ||
           (movimiento.nombreSucursal &&

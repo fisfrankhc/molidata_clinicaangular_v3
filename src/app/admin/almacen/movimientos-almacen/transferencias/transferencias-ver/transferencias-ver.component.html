@@ -180,15 +180,18 @@
                                                             readonly></td>
                                                     <td style="max-width: 120px;">
                                                         <input class="form-control" formControlName="vencimiento"
-                                                            type="date" style="text-align: center;">
+                                                            type="date" style="text-align: center;"
+                                                            [readonly]="this.movimientoINFO[0]['movimiento_tipo']=='EGRESO'">
                                                     </td>
                                                     <td style="max-width: 70px;">
                                                         <input class="form-control" formControlName="lote"
-                                                            style="text-align: center;" type="number">
+                                                            style="text-align: center;" type="number"
+                                                            [readonly]="this.movimientoINFO[0]['movimiento_tipo']=='EGRESO'">
                                                     </td>
                                                     <td style="max-width: 90px;">
                                                         <input class="form-control" formControlName="peso"
-                                                            style="text-align: center;" type="number" step="0.1">
+                                                            style="text-align: center;" type="number" step="0.1"
+                                                            [readonly]="this.movimientoINFO[0]['movimiento_tipo']=='EGRESO'">
                                                     </td>
                                                 </tr>
                                             </ng-container>
@@ -201,12 +204,14 @@
                                 <div class="offset-lg-6 col-md-6">
                                     <div class="upload-sign">
                                         <div class="form-group float-end mb-0">
-                                            <button (click)="openEditModal(form.get('listaMovimiento')?.value)"
-                                                data-bs-toggle="modal" data-bs-target="#modal_codigosucursal"
-                                                style="cursor: pointer;" class="btn btn-primary" type="submit"
-                                                style="margin: 5px;"
-                                                [disabled]="this.form.get('movimientoDetalle')?.invalid">CONFIRMAR
-                                                TRANSFERENCIA</button>
+                                            <div *ngIf="this.movimientoINFO[0]['movimiento_tipo']=='INGRESO'">
+                                                <button (click)="openEditModal(form.get('listaMovimiento')?.value)"
+                                                    data-bs-toggle="modal" data-bs-target="#modal_codigosucursal"
+                                                    style="cursor: pointer;" class="btn btn-primary" type="submit"
+                                                    style="margin: 5px;"
+                                                    [disabled]="this.form.get('movimientoDetalle')?.invalid">CONFIRMAR
+                                                    TRANSFERENCIA</button>
+                                            </div>
                                             <a class="btn btn-light cancel-form"
                                                 [routerLink]="ruta.almacen_movimientosalmacen_transferencias">Cancelar</a>
                                         </div>

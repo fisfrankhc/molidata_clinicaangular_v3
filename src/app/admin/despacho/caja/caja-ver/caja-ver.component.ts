@@ -22,6 +22,7 @@ import { Stock } from 'src/app/shared/interfaces/logistica';
 
 import { MovimientosAlmacenService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen.service';
 import { MovimientosAlmacenDetalleService } from 'src/app/shared/services/almacen/movimientos-almacen/movimientos-almacen-detalle.service';
+import { MedidaService } from 'src/app/shared/services/logistica/producto/medida.service';
 
 @Component({
   selector: 'app-caja-ver',
@@ -45,7 +46,8 @@ export class CajaVerComponent implements OnInit {
     private stockService: StockService,
     private movimientosAlmacenService: MovimientosAlmacenService,
     private movimientosAlmacenDetalleService: MovimientosAlmacenDetalleService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private medidaService: MedidaService
   ) {}
   ventaId: number | null = null;
   public ruta = rutas;
@@ -57,6 +59,7 @@ export class CajaVerComponent implements OnInit {
         this.ventaId = +ventaIdParam;
       }
     });
+    this.medidasAll();
     this.clientesAll();
     this.productosAll();
 
@@ -78,6 +81,17 @@ export class CajaVerComponent implements OnInit {
       medioDetalle: [''],
     }),
   });
+
+  datosMED: any;
+  medidasAll(): void {
+    this.medidaService.getMedidasAll().subscribe({
+      next: (datosMED: any) => {
+        this.datosMED = datosMED;
+      },
+      error: () => {},
+      complete: () => {},
+    });
+  }
 
   datosCLI: any;
   clientesAll(): void {
@@ -188,16 +202,24 @@ export class CajaVerComponent implements OnInit {
             const producto = this.datosPRO.find(
               (pro: any) => pro.prod_id === ventasDetalle.prod_id
             );
+            //PARA MEDIDAS
+            const medida = this.datosMED.find(
+              (medi: any) => medi.med_id === ventasDetalle.detalle_medida
+            );
             if (producto) {
               ventasDetalle.nombreProducto = producto.prod_nombre;
               ventasDetalle.codigoProducto = producto.prod_codigo;
-              ventasDetalle.medidaProducto = producto.med_id;
+              //ventasDetalle.medidaProducto = producto.med_id;
+            }
+            if (medida) {
+              ventasDetalle.medidaProducto = medida.med_simbolo;
             }
             return ventasDetalle;
           }
         );
-        //console.log(this.datosProductosDetalle);
+
         this.productoList = this.datosProductosDetalle;
+        console.log(this.datosProductosDetalle);
       },
       error: (errorData) => {
         console.error(
@@ -260,7 +282,8 @@ export class CajaVerComponent implements OnInit {
           almacen: this.usersucursal,
           producto: producto.prod_id,
           cantidad: 0,
-          medida: producto.medidaProducto,
+          //medida: producto.medidaProducto,
+          medida: producto.detalle_medida,
           stock_id: '', //ID DEL STOCK PARA EL PUT
         };
         cantidadesPorId[idobtenido].cantidad += cantidad;
@@ -343,7 +366,8 @@ export class CajaVerComponent implements OnInit {
                   movimiento: producto.movimiento,
                   producto: producto.prod_id,
                   cantidad: producto.cantidad_venta,
-                  medida: producto.medidaProducto,
+                  //medida: producto.medidaProducto,
+                  medida: producto.detalle_medida,
                   vencimiento: '',
                   lote: '',
                   peso: '',

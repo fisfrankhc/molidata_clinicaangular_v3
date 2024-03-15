@@ -97,6 +97,7 @@ export class ComprasNuevoComponent implements OnInit {
         nombrebproducto: [''],
         preciobuscado: [''],
         medidabuscado: [''],
+        medidanombrebuscado: [''],
         cantidadbuscado: [''],
       }),
       listaCompra: this.fb.array([]), // FormArray para la lista de compra
@@ -112,6 +113,25 @@ export class ComprasNuevoComponent implements OnInit {
       error: (_erroData) => {},
       complete: () => {},
     });
+
+    // Agregar suscriptor para el evento valueChanges del campo nombrebproducto en caso este vacio
+    this.form
+      .get('productoBuscado.nombrebproducto')
+      ?.valueChanges.subscribe((value) => {
+        if (!value || value.trim() === '') {
+          // Si el valor es vacío, resetear los campos del grupo productoBuscado
+          this.form.get('productoBuscado')?.patchValue({
+            idbuscado: '',
+            codigobuscado: '',
+            nombrebuscado: '',
+            nombrebproducto: '',
+            preciobuscado: '',
+            medidabuscado: '',
+            medidanombrebuscado: '',
+            cantidadbuscado: '',
+          });
+        }
+      });
 
     this.medidasAll();
     this.filteresOption();
@@ -253,6 +273,9 @@ export class ComprasNuevoComponent implements OnInit {
     );
     //console.log(productoSeleccionado);
     if (productoSeleccionado) {
+      const medida = this.datosMED.find(
+        (medida: any) => medida.med_id == productoSeleccionado.med_id
+      );
       this.form.get('productoBuscado')?.patchValue({
         idbuscado: productoSeleccionado.prod_id,
         codigobuscado: productoSeleccionado.prod_codigo,
@@ -260,6 +283,7 @@ export class ComprasNuevoComponent implements OnInit {
         nombrebproducto: productoSeleccionado.prod_nombre,
         preciobuscado: productoSeleccionado.precio_venta,
         medidabuscado: productoSeleccionado.med_id,
+        medidanombrebuscado: medida.med_simbolo,
         cantidadbuscado: 1,
       });
     } else {
@@ -271,9 +295,11 @@ export class ComprasNuevoComponent implements OnInit {
         nombrebproducto: '',
         preciobuscado: '',
         medidabuscado: '',
+        medidanombrebuscado: '',
         cantidadbuscado: null,
       });
     }
+    console.log(this.form.value.productoBuscado);
   }
 
   //PARA EL TERCER FORMGROUP

@@ -43,6 +43,11 @@ interface Producto {
   movimiento: string; //
 }
 
+interface data {
+  medida_id: number;
+  medidaNombre: string;
+}
+
 @Component({
   selector: 'app-ventas-nuevo',
   templateUrl: './ventas-nuevo.component.html',
@@ -53,6 +58,7 @@ export class VentasNuevoComponent implements OnInit {
   usersucursal = localStorage.getItem('usersucursal');
   userid = localStorage.getItem('userid');
 
+  medidasdeProducto: { id: string; nombre: string; tipo: string }[] = [];
   constructor(
     private router: Router,
     private fb: FormBuilder,
@@ -88,8 +94,14 @@ export class VentasNuevoComponent implements OnInit {
         precioventabuscado: [''],
         medidabuscado: [''],
         medidanombrebuscado: [''],
+        medidaunitariobuscado: [''],
+        medidaunitarinombrebuscado: [''],
+        preciounitariobuscado: [''],
         cantidadStockBuscado: [''],
         cantidadbuscado: [''],
+        medidasdeProducto: [''],
+        precioseleccionadobuscadoreal: [''],
+        precioseleccionadobuscadofinal: [''],
       }),
       listaVenta: this.fb.array([]), // FormArray para la lista de compra
     });
@@ -114,9 +126,17 @@ export class VentasNuevoComponent implements OnInit {
             precioventabuscado: '',
             medidabuscado: '',
             medidanombrebuscado: '',
+            medidaunitariobuscado: '',
+            medidaunitarinombrebuscado: '',
+            preciounitariobuscado: '',
             cantidadStockBuscado: '',
             cantidadbuscado: '',
+            medidasdeProducto: '',
+            precioseleccionadobuscadoreal: '',
+            precioseleccionadobuscadofinal: '',
           });
+          // Limpiar el arreglo medidasdeProducto
+          this.medidasdeProducto = [];
         }
       });
   }
@@ -151,7 +171,7 @@ export class VentasNuevoComponent implements OnInit {
     this.stockService.getStockAll().subscribe({
       next: (data: any) => {
         this.datoStock = data;
-        console.log(data);
+        //console.log(data);
         // Mapea los nombres de datos de ventas
         this.datoStock = this.datoStock
           .map((stockValor: Stock) => {
@@ -162,7 +182,7 @@ export class VentasNuevoComponent implements OnInit {
                 stockValor.almacen_id === this.usersucursal &&
                 stockValor.unidad_medida === prod.med_id
             );
-            console.log(datoStocks);
+            //console.log(datoStocks);
             if (datoStocks) {
               datoStocks.cantidadStockSucursal = stockValor.cantidad;
               datoStocks.almacen_id = stockValor.almacen_id;
@@ -222,54 +242,8 @@ export class VentasNuevoComponent implements OnInit {
     }
   }
 
-  /* 
-        filteredOptions!:
-          | Observable<
-              {
-                stock: any;
-                id: string;
-                nombre: string;
-                descripcion: string;
-              }[]
-            >
-          | undefined;
-        filteresOption() {
-          this.filteredOptions = this.form
-            .get('productoBuscado.nombrebproducto')
-            ?.valueChanges.pipe(
-              startWith(''),
-              map((value) => this._filter(value as string))
-            ) as
-            | Observable<
-                { id: string; nombre: string; stock: number; descripcion: string }[]
-              >
-            | undefined;
-        }
-        private _filter(
-          value: string | null
-        ): { id: string; nombre: string; stock: number; descripcion: string }[] {
-          if (!value) {
-            return this.datoStock.map((option) => ({
-              id: option.prod_id,
-              nombre: option.prod_nombre,
-              stock: option.cantidadStockSucursal,
-              descripcion: option.prod_descripcion,
-            }));
-          }
-
-          const filterValue = value.toLowerCase();
-          return this.datoStock
-            .filter((option) =>
-              option.prod_nombre.toLowerCase().includes(filterValue)
-            )
-            .map((option) => ({
-              id: option.prod_id,
-              nombre: option.prod_nombre,
-              stock: option.cantidadStockSucursal,
-              descripcion: option.prod_descripcion,
-            }));
-  }*/
-
+  medidaUnitario: any;
+  medidaSimboloUnitario: any;
   filteredOptions!:
     | Observable<
         { id: string; nombre: string; stock: number; descripcion: string }[]
@@ -327,6 +301,48 @@ export class VentasNuevoComponent implements OnInit {
       const medida = this.datosMED.find(
         (medida: any) => medida.med_id == productoSeleccionado.med_id
       );
+      //
+      this.medidasdeProducto.push({
+        id: productoSeleccionado.med_id,
+        nombre: medida.med_simbolo,
+        tipo: 'GENERAL',
+      });
+      if (
+        productoSeleccionado.medida_unitario == '' ||
+        productoSeleccionado.medida_unitario == '0'
+      ) {
+        this.medidaUnitario = '0';
+        this.medidaSimboloUnitario = '--';
+        this.medidasdeProducto.push({
+          id: '0',
+          nombre: '--',
+          tipo: 'UNITARIO',
+        });
+      } else {
+        const medidaunitario = this.datosMED.find(
+          (medida: any) => medida.med_id == productoSeleccionado.medida_unitario
+        );
+        this.medidaSimboloUnitario = medidaunitario.med_simbolo;
+        //
+        this.medidasdeProducto.push({
+          id: productoSeleccionado.med_id,
+          nombre: medida.med_simbolo,
+          tipo: 'UNITARIO',
+        });
+      }
+      /* if (
+        productoSeleccionado.medida_unitario == '' ||
+        productoSeleccionado.medida_unitario == '0'
+      ) {
+        this.medidaUnitario = '0';
+        this.medidaSimboloUnitario = '--';
+      } else {
+        const medidaunitario = this.datosMED.find(
+          (medida: any) => medida.med_id == productoSeleccionado.medida_unitario
+        );
+        this.medidaSimboloUnitario = medidaunitario.med_simbolo;
+      } */
+      ///
       this.form.get('productoBuscado')?.patchValue({
         idbuscado: productoSeleccionado.prod_id,
         codigobuscado: productoSeleccionado.prod_codigo,
@@ -336,6 +352,12 @@ export class VentasNuevoComponent implements OnInit {
         precioventabuscado: productoSeleccionado.precio_venta,
         medidabuscado: productoSeleccionado.med_id,
         medidanombrebuscado: medida.med_simbolo,
+        medidaunitariobuscado: productoSeleccionado.medida_unitario,
+        medidaunitarionombrebuscado: this.medidaSimboloUnitario,
+        preciounitariobuscado: productoSeleccionado.precio_unitario,
+        medidasdeProducto: this.medidaUnitario,
+        precioseleccionadobuscadoreal: '',
+        precioseleccionadobuscadofinal: '',
         cantidadStockBuscado: productoSeleccionado.cantidadStockSucursal,
         cantidadbuscado: 1,
       });
@@ -350,11 +372,41 @@ export class VentasNuevoComponent implements OnInit {
         precioventabuscado: '',
         medidabuscado: '',
         medidanombrebuscado: '',
+        medidaunitariobuscado: '',
+        medidaunitarinombrebuscado: '',
+        preciounitariobuscado: '',
         cantidadStockBuscado: '',
+        medidasdeProducto: '',
+        precioseleccionadobuscadoreal: '',
+        precioseleccionadobuscadofinal: '',
         cantidadbuscado: null,
       });
     }
-    //console.log(this.form.value.productoBuscado);
+    console.log(this.medidasdeProducto);
+    console.log(this.form.value.productoBuscado);
+  }
+
+  onMedidaSeleccionada(event: any) {
+    const selectedMeasure = event.value;
+    console.log(selectedMeasure);
+
+    const productoBuscado = this.form.get('productoBuscado');
+    if (selectedMeasure.tipo === 'GENERAL') {
+      productoBuscado
+        ?.get('precioseleccionadobuscadoreal')
+        ?.setValue(productoBuscado.get('precioventabuscado')?.value);
+      productoBuscado
+        ?.get('precioseleccionadobuscadofinal')
+        ?.setValue(productoBuscado.get('precioventabuscado')?.value);
+    } else if (selectedMeasure.tipo === 'UNITARIO') {
+      productoBuscado
+        ?.get('precioseleccionadobuscadoreal')
+        ?.setValue(productoBuscado.get('preciounitariobuscado')?.value);
+      productoBuscado
+        ?.get('precioseleccionadobuscadofinal')
+        ?.setValue(productoBuscado.get('preciounitariobuscado')?.value);
+    }
+    console.log(this.form.value.productoBuscado);
   }
 
   preciosIguales: any;
@@ -386,9 +438,13 @@ export class VentasNuevoComponent implements OnInit {
         producto: productoBuscado?.get('nombrebuscado')?.value,
         nombrepobtenido: productoBuscado?.get('nombrebproducto')?.value,
         cantidad: productoBuscado?.get('cantidadbuscado')?.value,
-        preciooriginal: productoBuscado?.get('preciobuscado')?.value,
-        precio: productoBuscado?.get('precioventabuscado')?.value,
-        medida: productoBuscado?.get('medidabuscado')?.value,
+        //preciooriginal: productoBuscado?.get('preciobuscado')?.value,
+        //precio: productoBuscado?.get('precioventabuscado')?.value,
+        preciooriginal: productoBuscado?.get('precioseleccionadobuscadoreal')
+          ?.value,
+        precio: productoBuscado?.get('precioseleccionadobuscadofinal')?.value,
+        //medida: productoBuscado?.get('medidabuscado')?.value,
+        medida: productoBuscado?.get('medidasdeProducto')?.value.id,
         descuento: 0,
         subtotalagregado: (
           productoBuscado?.get('precioventabuscado')?.value *
@@ -667,6 +723,7 @@ export class VentasNuevoComponent implements OnInit {
 
   movimiento: any;
   async ConfirmarVentaClick() {
+    console.log(this.form.get('listaVenta')?.value);
     const cantidadesPorId: {
       [id: string]: {
         almacen: number;
@@ -693,6 +750,7 @@ export class VentasNuevoComponent implements OnInit {
         alert('No ha añadido productos');
       } else {
         this.form.value.listaVenta.forEach((producto: Producto) => {
+          console.log(producto);
           //PARA SUMAR LAS CANTIDADES DE LOS PRODUCTOS
           const idobtenido = producto.idobtenido;
           const cantidad = +producto.cantidad;
