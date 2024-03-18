@@ -322,11 +322,12 @@ export class VentasNuevoComponent implements OnInit {
         const medidaunitario = this.datosMED.find(
           (medida: any) => medida.med_id == productoSeleccionado.medida_unitario
         );
+        console.log(medidaunitario);
         this.medidaSimboloUnitario = medidaunitario.med_simbolo;
         //
         this.medidasdeProducto.push({
-          id: productoSeleccionado.med_id,
-          nombre: medida.med_simbolo,
+          id: medidaunitario.med_id,
+          nombre: this.medidaSimboloUnitario,
           tipo: 'UNITARIO',
         });
       }

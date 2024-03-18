@@ -53,6 +53,7 @@ export class ProductosNuevoComponent implements OnInit {
     medida: ['', Validators.required],
     medidaunitario: ['', Validators.required],
     preciounitario: ['', Validators.required],
+    cantidadpaquete: ['', Validators.required],
     categoria: ['', Validators.required],
   });
 

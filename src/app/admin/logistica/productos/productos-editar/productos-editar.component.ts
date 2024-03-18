@@ -79,6 +79,9 @@ export class ProductosEditarComponent implements OnInit {
         this.form
           .get('medidaunitario')
           ?.setValue(this.datoProducto[0]['medida_unitario']);
+        this.form
+          .get('cantidadpaquete')
+          ?.setValue(this.datoProducto[0]['cantidad_paquete']);
         this.form.get('categoria')?.setValue(this.datoProducto[0]['cat_id']);
       },
       error: (errorData) => {
@@ -98,6 +101,7 @@ export class ProductosEditarComponent implements OnInit {
     medida: ['', Validators.required],
     medidaunitario: ['', Validators.required],
     preciounitario: ['', Validators.required],
+    cantidadpaquete: ['', Validators.required],
     categoria: ['', Validators.required],
   });
   get f() {
